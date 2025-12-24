@@ -1,0 +1,230 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Analytics User",
+      "email": "analytics@example.com",
+      "password": "password123",
+      "roles": [{ "id": 1, "name": "analytics" }]
+    },
+    {
+      "id": 2,
+      "name": "Simple User",
+      "email": "user@example.com",
+      "password": "password123",
+      "roles": [{ "id": 2, "name": "simple_user" }]
+    }
+  ],
+  "posts": [
+    {
+      "id": 1,
+      "title": "UX review presentations",
+      "excerpt": "How do you create compelling presentations that wow your colleagues and impress your managers?",
+      "date": "2023-01-01",
+      "imageUrl": "/images/back.svg",
+      "tags": ["Design", "Research", "Presentation"],
+      "featured": true
+    },
+    {
+      "id": 2,
+      "title": "Migrating to Linear 101",
+      "excerpt": "Linear helps streamline software projects, sprints, tasks, and bug tracking.",
+      "date": "2023-01-02",
+      "imageUrl": "/images/back.svg",
+      "tags": ["Design", "Research"],
+      "featured": true
+    },
+    {
+      "id": 3,
+      "title": "Building your API Stack",
+      "excerpt": "The rise of RESTful APIs has been met by a rise in tools for creating, testing, and managing APIs.",
+      "date": "2023-01-03",
+      "imageUrl": "/images/back.svg",
+      "tags": ["Design", "Research"],
+      "featured": false
+    },
+    {
+      "id": 4,
+      "title": "Grid system for better Design UI",
+      "excerpt": "A grid system is a design tool used to arrange content on a webpage.",
+      "date": "2023-01-04",
+      "imageUrl": "/images/back.svg",
+      "tags": ["Design", "Interface"],
+      "featured": true
+    },
+    {
+      "id": 5,
+      "title": "Bill Walsh leadership lessons",
+      "excerpt": "The secrets of transforming a struggling team into a championship dynasty.",
+      "date": "2023-01-05",
+      "imageUrl": "/images/back.svg",
+      "tags": ["Leadership", "Management"],
+      "featured": false
+    },
+    {
+      "id": 6,
+      "title": "PM mental models",
+      "excerpt": "Mental models are simple expressions of complex processes or relationships.",
+      "date": "2023-01-06",
+      "imageUrl": "/images/back.svg",
+      "tags": ["Product", "Research"],
+      "featured": false
+    }
+  ],
+
+  "articles": [
+    {
+      "id_article": 1,
+      "titre_article": "Bill Walsh leadership lessons",
+      "description_article": "Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?",
+      "summary_article": "Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?v",
+      "contenu_article": "Full article content here...",
+      "url_article": "/blog/bill-walsh-leadership",
+      "thumbnail": "https://placehold.co/384x240/7c3aed/ffffff?text=Leadership",
+      "date_publication": "2025-01-01T00:00:00Z",
+      "tags": ["Design", "Research"]
+    },
+    {
+      "id_article": 2,
+      "titre_article": "PM mental models",
+      "description_article": "Mental models are simple expressions of complex processes or relationships.",
+      "summary_article": "Mental models are simple expressions of complex processes or relationships.",
+      "thumbnail": "https://placehold.co/384x240/4c1d95/ffffff?text=Mental+Models",
+      "date_publication": "2025-01-05T00:00:00Z",
+      "tags": ["Design", "Research", "Presentation"]
+    },
+    {
+      "id_article": 3,
+      "titre_article": "What is Wireframing?",
+      "description_article": "Introduction to Wireframing and its Principles. Learn from the best in the industry.",
+      "summary_article": "Introduction to Wireframing and its Principles.",
+      "thumbnail": "https://placehold.co/384x240/6b21d8/ffffff?text=Wireframing",
+      "date_publication": "2025-01-10T00:00:00Z",
+      "tags": ["Design", "Research", "Presentation"]
+    },
+    {
+      "id_article": 4,
+      "titre_article": "How collaboration makes us better designers",
+      "description_article": "Collaboration can make our teams stronger, and our individual designs better.",
+      "summary_article": "Collaboration can make our teams stronger.",
+      "thumbnail": "https://placehold.co/384x240/9333ea/ffffff?text=Collaboration",
+      "date_publication": "2025-01-15T00:00:00Z",
+      "tags": ["Leadership", "Management"]
+    },
+    {
+      "id_article": 5,
+      "titre_article": "Our top 10 Javascript frameworks to use",
+      "description_article": "JavaScript frameworks make development easy with extensive features and functionalities.",
+      "summary_article": "JavaScript frameworks make development easy.",
+      "thumbnail": "https://placehold.co/384x240/22c55e/ffffff?text=JS+Frameworks",
+      "date_publication": "2025-01-20T00:00:00Z",
+      "tags": ["Leadership", "Management"]
+    },
+    {
+      "id_article": 6,
+      "titre_article": "Podcast: Creating a better CX Community",
+      "description_article": "Starting a community doesn’t need to be complicated, but how do you get started?",
+      "summary_article": "Starting a community doesn’t need to be complicated.",
+      "thumbnail": "https://placehold.co/384x240/a855f7/ffffff?text=CX+Community",
+      "date_publication": "2025-01-25T00:00:00Z",
+      "tags": ["Design", "Interface"]
+    },
+    {
+      "id_article": 7,
+      "titre_article": "The ultimate guide to React Query",
+      "description_article": "Learn how to manage server state efficiently in your React applications.",
+      "thumbnail": "https://placehold.co/384x240/ef4444/ffffff?text=React+Query",
+      "date_publication": "2025-02-01T00:00:00Z",
+      "tags": ["Design", "Interface"]
+    },
+    {
+      "id_article": 8,
+      "titre_article": "Building accessible forms in 2025",
+      "description_article": "Best practices and new ARIA features for modern web forms.",
+      "thumbnail": "https://placehold.co/384x240/10b981/ffffff?text=Accessibility",
+      "date_publication": "2025-02-05T00:00:00Z",
+      "tags": ["Design", "Interface"]
+    },
+    {
+      "id_article": 9,
+      "titre_article": "Tailwind CSS vs Styled Components",
+      "description_article": "A comprehensive comparison of two popular styling approaches.",
+      "thumbnail": "https://placehold.co/384x240/f59e0b/ffffff?text=Tailwind+vs+Styled",
+      "date_publication": "2025-02-10T00:00:00Z",
+      "tags": ["Design", "Research", "Presentation"]
+    },
+    {
+      "id_article": 10,
+      "titre_article": "Next.js 15: What's new and exciting",
+      "description_article": "Explore the latest features in the newest version of Next.js.",
+      "thumbnail": "https://placehold.co/384x240/1e40af/ffffff?text=Next.js+15",
+      "date_publication": "2025-02-15T00:00:00Z",
+      "tags": ["Design", "Research"]
+    },
+    {
+      "id_article": 11,
+      "titre_article": "State management in large applications",
+      "description_article": "Patterns and tools for handling complex state at scale.",
+      "thumbnail": "https://placehold.co/384x240/dc2626/ffffff?text=State+Management",
+      "date_publication": "2025-02-20T00:00:00Z",
+      "tags": ["Design", "Interface"]
+    },
+    {
+      "id_article": 12,
+      "titre_article": "Design systems that actually get used",
+      "description_article": "How to create and maintain a design system that developers love.",
+      "thumbnail": "https://placehold.co/384x240/7c2d12/ffffff?text=Design+System",
+      "date_publication": "2025-02-25T00:00:00Z",
+      "tags": ["Leadership", "Management"]
+    }
+  ],
+  "article": {
+    "id_article": 1,
+    "titre_article": "Bill Walsh leadership lessons",
+    "description_article": "Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?",
+    "summary_article": "Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?Like to know the secrets of transforming a 2-14 team into a 3x Super Bowl winning Dynasty?v",
+    "contenu_article": "Full article content here...",
+    "url_article": "/blog/bill-walsh-leadership",
+    "thumbnail": "https://placehold.co/384x240/7c3aed/ffffff?text=Leadership",
+    "date_publication": "2025-01-01T00:00:00Z",
+    "tags": ["Design", "Research"]
+  },
+  "vulnerability" : [
+    {
+        "id": 1,
+        "title": "User Experience Design Dashboard Hotel Management",
+        "description": "In the context of user experience (UX) design, a hotel management dashboard should be designed with the needs and goals of the hotel staff in mind. This means creating a clear and intuitive interface that allows staff to easily access and use the various tools and features of the dashboard.",
+        "image": "https://placehold.co/592x330",
+        "tags": ["Design", "Research", "Presentation"]
+    },
+    {
+        "id": 2,
+        "title": "Bring of User Experience Design to Policy Making, How to Impact Society",
+        "description": "User experience (UX) design is a discipline that focuses on creating products and services that are easy to use, efficient, and enjoyable for users. In the context of policy making, UX design can be used to create policies that are effective and user-friendly.",
+        "image": "https://placehold.co/592x330",
+        "tags": ["Research", "Presentation"]
+    },
+    {
+        "id": 3,
+        "title": "UX review presentations: Bringing Design Process to Teams",
+        "description": "There are many different design processes that can be followed when creating a hotel management dashboard. Here are some tips for bringing a design process to teams and using data and inclusive collaboration to solve user problems.",
+        "image": "https://placehold.co/1216x556",
+        "tags": ["Design", "Research", "Presentation", "Collaboration"]
+    },
+    {
+        "id": 4,
+        "title": "Icon Package of Slin Icon",
+        "description": "An icon package is a collection of icons that can be used in various design projects, such as website design, app development, and graphic design.",
+        "image": "https://placehold.co/592x378",
+        "tags": ["Design", "Branding", "Identity"]
+    },
+    {
+        "id": 5,
+        "title": "UX review presentations",
+        "description": "How do you create compelling presentations that wow your colleagues and impress your managers?",
+        "image": "https://placehold.co/592x378",
+        "tags": ["Design", "Research", "Presentation"]
+    }
+  ]
+}
+
