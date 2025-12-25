@@ -17,18 +17,42 @@ import json
 def api_home(request):
     """Endpoint racine - Informations API"""
     data = {
-        'api_name': 'CIEM Veille API',
-        'version': '1.0',
-        'endpoints': {
-            'home': '/',
-            'articles': '/articles/',
-            'article_detail': '/articles/<id>/',
-            'categories': '/categories/',
-            'vulnerabilities': '/vulnerabilities/',
-            'users': '/users/'
+    'api_name': 'CIEM Veille API',
+    'version': '1.0',
+    'status': 'active',
+    'endpoints': {
+
+        'home': '/',
+        'stats': '/stats/',
+
+        'auth': {
+            'register': '/auth/register/',
+            'login': '/auth/login/',
+            'logout': '/auth/logout/',
+            'check': '/auth/check/',
+            'profile': '/auth/profile/',
+            'change_password': '/auth/change-password/',
+
+            'categories': {
+                'followed': '/auth/categories/followed/',
+                'follow': '/auth/categories/<categorie_id>/follow/'
+            }
         },
-        'status': 'active'
+
+        'articles': {
+            'list': '/articles/',
+            'detail': '/articles/<article_id>/',
+            'create': '/articles/create/'
+        },
+
+        'categories': '/categories/',
+
+        'vulnerabilities': '/vulnerabilities/',
+
+        'users': '/users/',
     }
+}
+
     return JsonResponse(data)
 
 def api_articles_list(request):

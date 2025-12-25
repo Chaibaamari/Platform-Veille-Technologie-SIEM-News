@@ -140,6 +140,12 @@ class ProfileView(APIView):
         })
     
     def put(self, request):
+        if not request.data:
+          return Response({
+               'status': 'error',
+               'message': 'Aucune donnée fournie pour la mise à jour'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
         """Mettre à jour le profil"""
         utilisateur = request.user
         serializer = UtilisateurProfileSerializer(
@@ -147,6 +153,8 @@ class ProfileView(APIView):
             data=request.data, 
             partial=True
         )
+
+        # problem: returns success even if data sent is empty [FIXED]
         
         if serializer.is_valid():
             serializer.save()
