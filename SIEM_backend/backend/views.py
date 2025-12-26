@@ -129,7 +129,7 @@ def api_vulnerabilities_list(request):
             'titre': vuln.cve_id,  # Utilise CVE comme titre
             'severite': vuln.severite,
             'score_cvss': float(vuln.score_cvss) if vuln.score_cvss else None,
-            'description': vuln.description_vuln[:200] + '...' if len(vuln.description_vuln) > 200 else vuln.description_vuln,
+            'description': vuln.description_vuln,
             'date_publication': vuln.date_publication.strftime('%Y-%m-%d'),
             'source': vuln.source_vuln,
             'type': vuln.type_vuln
@@ -193,8 +193,11 @@ def api_create_article(request):
             titre_article=data['titre'],
             url_article=data['url'],
             description_article=data.get('description', ''),
-            date_publication=data.get('date_publication', '2024-01-01')
+            date_publication=data.get('date_publication', '2024-01-01'),
+            contenu_article = data['contenu'],
+            summary_article=data['summary']
         )
+        # problem: need to add photo funcitonality
         
         # Ajouter la catégorie
         article.categories.add(categorie)
