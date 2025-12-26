@@ -120,6 +120,7 @@ class Categorie(models.Model):
 # MODÈLE ARTICLE
 # =======================
 class Article(models.Model):
+    # need to add author and source columns
     id_article = models.AutoField(primary_key=True)
     titre_article = models.CharField(max_length=500)
     url_article = models.URLField(max_length=1000, unique=True, validators=[URLValidator()])
