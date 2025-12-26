@@ -130,6 +130,8 @@ def api_vulnerabilities_list(request):
             'severite': vuln.severite,
             'score_cvss': float(vuln.score_cvss) if vuln.score_cvss else None,
             'description': vuln.description_vuln,
+            'contenu': vuln.contenu_vuln,
+            'summary': vuln.summary_vuln,
             'date_publication': vuln.date_publication.strftime('%Y-%m-%d'),
             'source': vuln.source_vuln,
             'type': vuln.type_vuln
