@@ -19,7 +19,7 @@ export default function BlogGrid({ posts }: BlogGridProps) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <BlogCard post={featured} large />
 
-                <div className="flex flex-col">
+                <div className="flex flex-col ">
                     {rightPosts.map((post) => (
                         <BlogCard key={post.id} post={post} />
                     ))}

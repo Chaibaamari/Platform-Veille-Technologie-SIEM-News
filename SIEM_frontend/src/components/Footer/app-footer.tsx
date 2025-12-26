@@ -1,8 +1,9 @@
 import { Twitter, Linkedin, Mail, Rss, Plus } from 'lucide-react';
 
 export default function Footer() {
+    // bg-slate-950
     return (
-        <div className="w-full py-7 bg-slate-950 flex flex-col justify-center items-center gap-16">
+        <div className="w-full py-7  flex flex-col justify-center items-center gap-16 bg-zinc-900">
             <div className="w-full max-w-[1216] px-8 inline-flex justify-start items-start gap-3.5 flex-wrap">
                 {/* Copyright */}
                 <div className="text-white text-xl font-normal  leading-6">

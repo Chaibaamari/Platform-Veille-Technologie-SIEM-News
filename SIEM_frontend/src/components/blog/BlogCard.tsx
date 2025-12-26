@@ -25,7 +25,7 @@ export default function BlogCard({
                       <img
                           src={post.imageUrl}
                           alt={post.title}
-                          className="w-[592] h-[246] object-cover rounded-xl"
+                          className="w-[592] object-cover"
                       />
                   </div>
 
@@ -36,9 +36,9 @@ export default function BlogCard({
                       </p>
 
                       <div className="flex items-start justify-between gap-4">
-                          <h3 className="text-2xl font-semibold text-white">
+                          <h2 className="text-2xl font-semibold text-white line-clamp-1">
                               {post.title}
-                          </h3>
+                          </h2>
                           <img
                               src="/images/arrow-up-right.svg"
                               alt="arrow"
@@ -72,17 +72,17 @@ export default function BlogCard({
 
   /* EXISTING CARD (unchanged) */
     return (
-        <Card className="bg-transparent border-none shadow-none h-full">
+        <Card className="bg-transparent border-none shadow-none h-fit">
             <div className="group cursor-pointer h-full">
                 {large ? (
                     /* LARGE CARD LAYOUT */
                     <div className="h-full flex flex-col">
                         {/* Top Image */}
-                        <div className="relative overflow-hidden rounded-xl mb-6">
+                        <div className="relative overflow-hidden mb-6">
                             <img
                                 src={post.imageUrl}
                                 alt={post.title}
-                                className="w-full object-cover aspect-video"
+                                className="w-full object-cover h-80"
                             />
                         </div>
             
@@ -92,9 +92,9 @@ export default function BlogCard({
                                 {post.date}
                             </p>
                             <div className="flex items-start justify-between gap-4">
-                                <h3 className="text-2xl font-semibold text-white">
+                                <h2 className="text-2xl font-semibold text-white line-clamp-1">
                                     {post.title}
-                                </h3>
+                                </h2>
                                 <img
                                     src="/images/arrow-up-right.svg"
                                     alt="arrow"
@@ -128,7 +128,7 @@ export default function BlogCard({
                             <img
                                 src={post.imageUrl}
                                 alt={post.title}
-                                className="w-[592] h-[246] object-cover rounded-xl"
+                                className="w-[592] object-cover"
                             />
                         </div>
             
@@ -138,9 +138,9 @@ export default function BlogCard({
                                 {post.date}
                             </p>
                             <div className="flex items-start justify-between gap-3">
-                                <h3 className="text-lg font-semibold text-white line-clamp-2">
+                                <h2 className="text-lg font-semibold text-white line-clamp-1">
                                     {post.title}
-                                </h3>
+                                </h2>
                                 <img
                                     src="/images/arrow-up-right.svg"
                                     alt="arrow"

@@ -81,7 +81,7 @@ export default function BlogPostsPage() {
     // };
 
     return (
-        <div className="w-[1280] px-8 flex flex-col justify-start items-center gap-7">
+        <div className="w-[1280] px-8 flex flex-col justify-start items-center gap-7 bg-zinc-900">
             <div className="w-[1216] flex flex-col justify-start items-start gap-8">
                 <h3 className="self-stretch text-white text-2xl font-semibold  leading-8">
                     All blog posts
@@ -108,7 +108,7 @@ export default function BlogPostsPage() {
                                                 className="flex-1 flex flex-col justify-start items-start gap-8"
                                             >
                                                 <img
-                                                    className="self-stretch h-60 relative rounded-lg object-cover"
+                                                    className="self-stretch h-60 relative object-cover"
                                                     src={article.thumbnail || 'https://placehold.co/384x240'}
                                                     alt={article.titre_article}
                                                 />
@@ -118,7 +118,7 @@ export default function BlogPostsPage() {
                                                             {format(new Date(article.date_publication), 'EEEE, d MMM yyyy')}
                                                         </div>
                                                         <div className="self-stretch flex justify-start items-start gap-4">
-                                                            <h2 className="flex-1 text-white text-2xl font-semibold  leading-8">
+                                                            <h2 className="flex-1 text-white text-2xl font-semibold  leading-8 line-clamp-1">
                                                                 {article.titre_article}
                                                             </h2>
                                                             <img

@@ -13,7 +13,7 @@ const Login = lazy(() => import('@/pages/auth/auth'));
 
 // Analytics routes
 const AnalyticsLayout = lazy(() => import('@/components/layouts/AnalyticsLayout'));
-const AnalyticsDashboard = lazy(() => import('@/pages/analytics/dashbored'));
+const AnalyticsDashboard = lazy(() => import('@/pages/simple-user/dashbored'));
 
 // Simple User routes
 const SimpleUserLayout = lazy(() => import('@/components/layouts/SimpleUserLayout'));
@@ -21,6 +21,8 @@ const SimpleUserArticles = lazy(() => import('@/pages/simple-user/Article/articl
 const ArticleDetail = lazy(() => import('@/pages/simple-user/Article/article-details'));
 const VulnerabilitiesPage = lazy(() => import('@/pages/simple-user/Vulnerability/vulnerabilities-page'));
 const VulnerabilityDetail = lazy(() => import('@/pages/simple-user/Vulnerability/vulnerability-detail'));
+const HomePage = lazy(() => import('@/pages/simple-user/home-page'));
+const NewsletterPage = lazy(() => import('@/pages/simple-user/newslatter'));
 
 // Default dashboard redirect based on role
 const DashboardRedirect = () => {
@@ -62,8 +64,17 @@ export default function AppRoutes() {
                                 <Routes>
                                     <Route path="dashboard" element={<AnalyticsDashboard />} />
                                     {/* Add more analytics pages here later */}
+                                    <Route path="article" element={<SimpleUserArticles />} />
+                                    {/* Add more simple user pages here later */}
+                                    <Route path="dashboard" element={<AnalyticsDashboard />} />
+                                    <Route path="article/:id" element={<ArticleDetail />} />
+                                    <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
+                                    <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
+                                    <Route path="home" element={<HomePage />} />
+                                    <Route path="newsletter" element={<NewsletterPage />} />
                                     <Route path="*" element={<Navigate to="/analytics/dashboard" replace />} />
                                 </Routes>
+                                <Footer />
                             </AnalyticsLayout>
                         </RoleGuard>
                     }
@@ -78,18 +89,19 @@ export default function AppRoutes() {
                                 <Routes>
                                     <Route path="article" element={<SimpleUserArticles />} />
                                     {/* Add more simple user pages here later */}
+                                    <Route path="dashboard" element={<AnalyticsDashboard />} />
                                     <Route path="article/:id" element={<ArticleDetail />} />
-                                    <Route path="/vulnerabilities" element={<VulnerabilitiesPage />} />
+                                    <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
                                     <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
+                                    <Route path="newsletter" element={<NewsletterPage />} />
+                                    <Route path="home" element={<HomePage />} />
                                     <Route path="*" element={<Navigate to="/simple_user/dashboard" replace />} />
-                                    {/* <Route path="/vulnerabilities/:id" element={<VulnerabilityDetail />} /> */}
                                 </Routes>
                                 <Footer />
                             </SimpleUserLayout>
                         </RoleGuard>
                     }
                 />
-
                 {/* Catch-all route */}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

@@ -29,3 +29,72 @@ export interface Vulnerability {
   tags: string[];
   date?: string; // optional
 }
+
+export interface Article2 {
+  id: number;
+  title: string;
+  link: string;
+  description: string;
+  content: string;
+  summary: string;
+  publication_date: string; // ISO date string
+  categories: string[];
+  source: string;
+}
+
+export interface Vulnerability2 {
+  id: number;
+  cve_id: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  published_date: string; // ISO date string
+  description: string;
+  cvss_score: number;
+  source: 'NVD' | 'MITRE';
+  type: string; // SQL injection, XSS, etc.
+}
+
+export interface AppUser {
+  name: string;
+  email: string;
+  password: string;
+  role: 'Admin' | 'User';
+}
+
+// Types pour l'UI
+export interface Stats {
+  totalArticles: number;
+  criticalVulnerabilities: number;
+  recentArticles: number;
+  totalVulnerabilities: number;
+}
+
+export interface TrendData {
+  date: string;
+  articles: number;
+  vulnerabilities: number;
+}
+
+export interface SeverityData {
+  severity: string;
+  count: number;
+  color: string;
+}
+
+export interface CategoryData {
+  category: string;
+  count: number;
+}
+
+// Constants
+export const COLORS = {
+  primary: '#6366f1',
+  secondary: '#8b5cf6',
+  success: '#10b981',
+  warning: '#f59e0b',
+  danger: '#ef4444',
+  info: '#3b82f6'
+} as const;
+
+export type TimeRange = '7d' | '30d' | '90d';
+export type FilterSeverity = 'all' | 'critical' | 'high' | 'medium' | 'low';
+export type FilterSource = 'all' | 'NVD' | 'MITRE';

@@ -2,15 +2,15 @@
 @import "tw-animate-css";
 
 
-@layer base {
+/* @layer base {
   body {
     @apply bg-[#090D1F] text-gray-100 min-h-screen;
   }
-}
+} */
 
-@layer components {
+/* @layer components {
   /* Optional: custom scrollbar for dark theme */
-  ::-webkit-scrollbar {
+  /* ::-webkit-scrollbar {
     width: 8px;
   }
   ::-webkit-scrollbar-track {
@@ -22,8 +22,8 @@
   }
   ::-webkit-scrollbar-thumb:hover {
     background: #334155;
-  }
-}
+  } */
+
 
 @custom-variant dark (&:is(.dark *));
 

@@ -35,7 +35,7 @@ export default function ArticleDetail() {
     return <div className="text-red-400 text-center py-20">Article not found</div>;
 
     return (
-        <div className="w-full max-w-[1216] mx-auto px-8 py-12 flex flex-col gap-8">
+        <div className="w-full max-w-[1216] mx-auto px-8 py-12 flex flex-col gap-8 bg-linear-to-b from-slate-950 to-zinc-900">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                 <div className='lg:col-span-2 flex flex-col gap-8'>
                     {/* Back button */}

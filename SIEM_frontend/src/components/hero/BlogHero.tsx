@@ -6,7 +6,7 @@ type BlogHeroProps = {
 
 export default function BlogHero({title}: BlogHeroProps) {
     return (
-        <section className="py-8 md:py-8 lg:py-8 w-[1440] flex flex-col justify-center items-center gap-12 bg-slate-950">
+        <section className="py-8 md:py-8 lg:py-8 w-[1440] flex flex-col justify-center items-center gap-12 bg-linear-to-b from-slate-950 to-zinc-900 ">
             <div className="mx-auto px-6">
                 {/* Bordered container with huge title */}
                 <div className="border-y border-white py-12 md:py-20 lg:py-20">

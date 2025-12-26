@@ -18,15 +18,13 @@ export default function BlogPage() {
     const posts = data || [];
 
     return (
-        <div className="w-full bg-slate-950 ">
+        <div className="w-full bg-zinc-900 ">
             <section className="py-16 w-full self-stretch">
                 <div className="mx-auto px-34">
                     <h3 className=" self-stretch text-white text-2xl font-semibold  leading-8">Recent blog posts</h3>
                     <BlogGrid posts={posts} />
                 </div>
             </section>
-
-            
         </div>
     );
 }
