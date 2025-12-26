@@ -1,6 +1,7 @@
 # backend/views.py
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -9,6 +10,12 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Article, Categorie, Vulnerabilite, Utilisateur
 from .serializers import ArticleCreateSerializer
 import json
+from .serializers import (
+    UtilisateurSerializer, 
+    UtilisateurLoginSerializer,
+    UtilisateurProfileSerializer,
+    CategorieSerializer
+)
 
 # =======================
 # VUES API (Retour JSON)
@@ -175,48 +182,62 @@ def api_stats(request):
     }
     return JsonResponse(stats)
 
-@api_view(['POST'])
-@csrf_exempt  # Désactiver CSRF pour cette vue API
-def api_create_article(request):
-    """Créer un nouvel article (POST) avec DRF"""
-    try:
-        # Utiliser request.data qui est déjà parsé par DRF
-        data = request.data
-        
-        # Récupérer la catégorie
-        categorie_nom = data.get('categorie', 'AWS Security')
-        categorie, created = Categorie.objects.get_or_create(
-            nom_categorie=categorie_nom,
-            defaults={'description_categorie': f'Catégorie {categorie_nom}'}
-        )
-        
-        # Créer l'article
-        article = Article.objects.create(
-            titre_article=data['titre'],
-            url_article=data['url'],
-            description_article=data.get('description', ''),
-            date_publication=data.get('date_publication', '2024-01-01'),
-            contenu_article = data['contenu'],
-            summary_article=data['summary']
-        )
-        # problem: need to add photo funcitonality
-        
-        # Ajouter la catégorie
-        article.categories.add(categorie)
-        
-        return Response({
-            'status': 'success',
-            'message': 'Article créé avec succès',
-            'article_id': article.id_article
-        }, status=status.HTTP_201_CREATED)
-        
-    except KeyError as e:
-        return Response({
-            'status': 'error',
-            'message': f'Champ manquant: {str(e)}'
-        }, status=status.HTTP_400_BAD_REQUEST)
-    except Exception as e:
-        return Response({
-            'status': 'error',
-            'message': str(e)
-        }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class APICreateArticle(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = UtilisateurProfileSerializer(request.user)
+
+        is_admin = getattr(request.user, 'role_utilisateur', None) == 'admin'
+
+        if is_admin == False:
+            return Response({
+               'status': 'error',
+               'message': 'Need to be an admin'
+            }, status=status.HTTP_403_FORBIDDEN)
+
+
+        """Créer un nouvel article (POST) avec DRF"""
+        try:
+            # Utiliser request.data qui est déjà parsé par DRF
+            data = request.data
+            
+            # problem: links to AWS_SECURITY category by default
+            categorie_nom = data.get('categorie', 'AWS Security')
+            categorie, created = Categorie.objects.get_or_create(
+                nom_categorie=categorie_nom,
+                defaults={'description_categorie': f'Catégorie {categorie_nom}'}
+            )
+            
+            # Créer l'article
+            article = Article.objects.create(
+                titre_article=data['titre'],
+                url_article=data['url'],
+                description_article=data.get('description', ''),
+                date_publication=data.get('date_publication', '2024-01-01'),
+                contenu_article = data['contenu'],
+                summary_article=data['summary']
+            )
+            # problem: need to add photo funcitonality
+            
+            # Ajouter la catégorie
+            article.categories.add(categorie)
+            
+            return Response({
+                'status': 'success',
+                'message': 'Article créé avec succès',
+                'article_id': article.id_article
+            }, status=status.HTTP_201_CREATED)
+            
+        except KeyError as e:
+            return Response({
+                'status': 'error',
+                'message': f'Champ manquant: {str(e)}'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({
+                'status': 'error',
+                'message': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)

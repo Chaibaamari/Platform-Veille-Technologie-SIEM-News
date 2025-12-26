@@ -52,7 +52,7 @@ urlpatterns = [
     # ============================================
     path('articles/', views.api_articles_list, name='api_articles_list'),
     path('articles/<int:article_id>/', views.api_article_detail, name='api_article_detail'),
-    path('articles/create/', views.api_create_article, name='api_create_article'),
+    path('articles/create/', views.APICreateArticle.as_view(), name='api_create_article'),
     
     # ============================================
     # CATÉGORIES
