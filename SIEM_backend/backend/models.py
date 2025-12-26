@@ -127,6 +127,8 @@ class Article(models.Model):
     contenu_article = models.TextField(blank=True)
     summary_article = models.TextField(blank=True)
     date_publication = models.DateField()
+
+    # problem: photos should be uploaded in a folder path, then shown from that path
     thumbnail = models.URLField(max_length=500, blank=True, null=True)
     
     # Relation ARTICLE (0,n) — appartient — (0,n) CATÉGORIE
