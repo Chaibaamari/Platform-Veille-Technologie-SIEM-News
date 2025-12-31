@@ -83,7 +83,7 @@ def api_articles_list(request):
         'articles': articles_data
     })
 
-@api_view(["GET", "DELETE"])
+@api_view(["GET", "DELETE", "PUT"])
 @permission_classes([IsAuthenticated])
 def api_article_detail(request, article_id):
     article = get_object_or_404(Article, id_article=article_id)
@@ -112,6 +112,36 @@ def api_article_detail(request, article_id):
             for cat in article.categories.all()
         ],
     }
+
+    if request.method == "PUT":
+        if request.user.role_utilisateur != "admin":
+            return Response(
+                {"error": "Admin Only"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        if not request.data:
+          return Response({
+               'status': 'error',
+               'message': 'Aucune donnée fournie pour la mise à jour'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        """Mettre à jour l'article"""
+        data = request.data
+        article.titre_article = data.get("titre", article.titre_article)
+        article.url_article = data.get("url", article.url_article)
+        article.description_article = data.get("description", article.description_article)
+        article.contenu_article = data.get("contenu", article.contenu_article)
+        article.summary_article = data.get("summary", article.summary_article)
+        article.thumbnail = data.get("thumbnail", article.thumbnail)
+
+        article.save()
+        
+        return Response(
+            {"message": "Article updated successfully"},
+            status=status.HTTP_200_OK
+        )
+
 
     return Response(data, status=status.HTTP_200_OK)
 
