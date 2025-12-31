@@ -83,26 +83,37 @@ def api_articles_list(request):
         'articles': articles_data
     })
 
+@api_view(["GET", "DELETE"])
+@permission_classes([IsAuthenticated])
 def api_article_detail(request, article_id):
-    """Détail d'un article spécifique"""
     article = get_object_or_404(Article, id_article=article_id)
-    
+
+    if request.method == "DELETE":
+        if request.user.role_utilisateur != "admin":
+            return Response(
+                {"error": "Admin only"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        article.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     data = {
-        'id': article.id_article,
-        'titre': article.titre_article,
-        'url': article.url_article,
-        'description': article.description_article,
-        'contenu': article.contenu_article,
-        'summary': article.summary_article,
-        'date_publication': article.date_publication.strftime('%Y-%m-%d'),
-        'thumbnail': article.thumbnail,
-        'categories': [{
-            'id': cat.id_categorie,
-            'nom': cat.nom_categorie
-        } for cat in article.categories.all()]
+        "id": article.id_article,
+        "titre": article.titre_article,
+        "url": article.url_article,
+        "description": article.description_article,
+        "contenu": article.contenu_article,
+        "summary": article.summary_article,
+        "date_publication": article.date_publication.strftime("%Y-%m-%d"),
+        "thumbnail": article.thumbnail,
+        "categories": [
+            {"id": cat.id_categorie, "nom": cat.nom_categorie}
+            for cat in article.categories.all()
+        ],
     }
-    
-    return JsonResponse(data)
+
+    return Response(data, status=status.HTTP_200_OK)
 
 def api_categories_list(request):
     """Liste toutes les catégories"""
