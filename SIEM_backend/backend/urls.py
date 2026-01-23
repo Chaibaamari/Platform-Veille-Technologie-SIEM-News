@@ -1,28 +1,7 @@
 # backend/urls.py
 from django.urls import path
-
-# Import conditionnel de SimpleJWT
-try:
-    from rest_framework_simplejwt.views import TokenRefreshView
-    SIMPLE_JWT_AVAILABLE = True
-except ImportError:
-    SIMPLE_JWT_AVAILABLE = False
-    TokenRefreshView = None
-
 # Vues API classiques
 from . import views
-
-# Vues d'authentification
-from .views_auth import (
-    RegisterView,
-    LoginView,
-    LogoutView,
-    ProfileView,
-    ChangePasswordView,
-    FollowCategoryView,
-    UserFollowedCategoriesView,
-    CheckAuthView
-)
 
 urlpatterns = [
     # ============================================
@@ -34,30 +13,33 @@ urlpatterns = [
     # ============================================
     # AUTHENTIFICATION
     # ============================================
-    path('auth/register/', RegisterView.as_view(), name='register'),
-    path('auth/login/', LoginView.as_view(), name='login'),
-    path('auth/logout/', LogoutView.as_view(), name='logout'),
-    path('auth/check/', CheckAuthView.as_view(), name='check-auth'),
+    path('auth/register/', views.RegisterView.as_view(), name='register'),
+    path('auth/login/', views.LoginView.as_view(), name='login'),
+    path('auth/logout/', views.LogoutView.as_view(), name='logout'),
+    path('auth/check/', views.CheckAuthView.as_view(), name='check-auth'),
+    path('auth/refresh/', views.RefreshTokenView.as_view(), name='refresh-token'),
+    path('auth/forgot-password/', views.ForgotPasswordView.as_view(), name='forgot-password'),
+    path('auth/validate-reset-token/<uuid:token>/', views.ValidateResetTokenView.as_view(), name='validate-reset-token'),
+    path('auth/reset-password/', views.ResetPasswordView.as_view(), name='reset-password'),
     
     # Profil utilisateur
-    path('auth/profile/', ProfileView.as_view(), name='profile'),
-    path('auth/change-password/', ChangePasswordView.as_view(), name='change-password'),
-    
-    # Gestion des catégories suivies
-    path('auth/categories/followed/', UserFollowedCategoriesView.as_view(), name='followed-categories'),
-    path('auth/categories/<int:categorie_id>/follow/', FollowCategoryView.as_view(), name='follow-category'),
+    path('auth/profile/', views.ProfileView.as_view(), name='profile'),
+    path('auth/change-password/', views.ChangePasswordView.as_view(), name='change-password'),
     
     # ============================================
     # ARTICLES
     # ============================================
     path('articles/', views.api_articles_list, name='api_articles_list'),
     path('articles/<int:article_id>/', views.api_article_detail, name='api_article_detail'),
-    path('articles/create/', views.APICreateArticle.as_view(), name='api_create_article'),
+    # path('articles/create/', views.APICreateArticle.as_view(), name='api_create_article'),
     
     # ============================================
     # CATÉGORIES
     # ============================================
     path('categories/', views.api_categories_list, name='api_categories_list'),
+    path('users/add-category/', views.api_add_category_to_user),
+    path('users/remove-category/', views.api_remove_category_from_user),
+    path('users/categories/followed/', views.api_user_followed_categories, name='followed-categories'),
     
     # ============================================
     # VULNÉRABILITÉS
@@ -68,16 +50,20 @@ urlpatterns = [
     # UTILISATEURS
     # ============================================
     path('users/', views.api_users_list, name='api_users_list'),
-
+    path('users/add', views.api_add_user, name='api_add_user'),
+    path('users/<int:user_id>/delete/', views.api_delete_user, name='delete-user'),
+    path('users/<int:user_id>/deactivate/', views.api_deactivate_user, name='deactivate-user'),
+    path('users/<int:user_id>/reactivate/', views.api_reactivate_user, name='reactivate-user'),
 
     # ============================================
     # VEILLE
     # ============================================
-    path('lancer_veille/', views.trigger_scraping, name='start_scraping_background'),
-]
+    path('lancer_veille/', views.api_start_scrapping, name='start_scraping_background'),
 
-# Ajouter le refresh token endpoint si SimpleJWT est disponible
-if SIMPLE_JWT_AVAILABLE and TokenRefreshView:
-    urlpatterns += [
-        path('auth/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
-    ]
+    # ============================================
+    # SOURCES
+    # ============================================
+    path('sources/', views.api_list_sources),
+    path('sources/add/', views.api_add_source),
+    path('sources/<int:source_id>/delete/', views.api_delete_source),
+]

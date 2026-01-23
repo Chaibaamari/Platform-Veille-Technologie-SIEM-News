@@ -3,26 +3,39 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from django.utils import timezone
+from django.conf import settings
 
 # Import conditionnel de SimpleJWT
 try:
     from rest_framework_simplejwt.tokens import RefreshToken
-    from rest_framework_simplejwt.views import TokenRefreshView
+    from rest_framework_simplejwt.exceptions import TokenError
     SIMPLE_JWT_AVAILABLE = True
 except ImportError:
     SIMPLE_JWT_AVAILABLE = False
     RefreshToken = None
-    TokenRefreshView = None
 
-from .models import Utilisateur, Categorie
-from .serializers import (
+from .utils import send_password_reset_email
+from backend.models import Utilisateur, Categorie, PasswordResetToken
+from backend.serializers import (
     UtilisateurSerializer, 
     UtilisateurLoginSerializer,
     UtilisateurProfileSerializer,
-    CategorieSerializer
+    CategorieSerializer,
+    ForgotPasswordSerializer,
+    ResetPasswordSerializer
 )
 
+def get_tokens_for_user(utilisateur: Utilisateur):
+    refresh = RefreshToken.for_user(utilisateur)
+
+    refresh['role'] = utilisateur.role_utilisateur
+    refresh['nom_utilisateur'] = utilisateur.nom_utilisateur
+    refresh['email'] = utilisateur.email_utilisateur
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token)
+    }
 
 class RegisterView(APIView):
     """Inscription d'un nouvel utilisateur"""
@@ -76,23 +89,85 @@ class LoginView(APIView):
             utilisateur = serializer.validated_data['utilisateur']
             
             # Générer les tokens JWT
-            refresh = RefreshToken.for_user(utilisateur)
-            
-            return Response({
+            tokens = get_tokens_for_user(utilisateur)
+
+            # Créer la réponse
+            response = Response({
                 'status': 'success',
                 'message': 'Connexion réussie',
                 'user': UtilisateurProfileSerializer(utilisateur).data,
                 'tokens': {
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token),
+                    'access': tokens['access'],
                 }
             })
+
+            # Stocker le refresh token dans un cookie HTTP-only
+            response.set_cookie(
+                key='refresh_token',
+                value=tokens['refresh'],
+                httponly=True,  # Empêche l'accès JavaScript
+                secure=settings.SIMPLE_JWT.get('AUTH_COOKIE_SECURE', False),
+                samesite=settings.SIMPLE_JWT.get('AUTH_COOKIE_SAMESITE', 'Lax'),  # Protection CSRF
+                max_age=settings.SIMPLE_JWT.get('REFRESH_TOKEN_LIFETIME').total_seconds(),  # Durée du refresh token
+                path='/',
+            )
+            
+            return response
         
         return Response({
             'status': 'error',
             'errors': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
 
+class RefreshTokenView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get('refresh_token')
+
+        if not refresh_token:
+            return Response({
+                'status': 'error',
+                'message': 'Refresh token manquant'
+            }, status=status.HTTP_401_UNAUTHORIZED)
+        
+        try:
+            # Vérifier et décoder le refresh token
+            refresh = RefreshToken(refresh_token)
+            
+            # Générer un nouveau access token
+            access_token = str(refresh.access_token)
+            
+            response = Response({
+                'status': 'success',
+                'tokens': {
+                    'access': access_token
+                }
+            })
+            
+            # Si ROTATE_REFRESH_TOKENS est activé, mettre à jour le cookie
+            if settings.SIMPLE_JWT.get('ROTATE_REFRESH_TOKENS', False):
+                # Générer un nouveau refresh token
+                refresh.set_jti()
+                refresh.set_exp()
+                
+                response.set_cookie(
+                    key='refresh_token',
+                    value=str(refresh),
+                    httponly=True,
+                    secure=settings.SIMPLE_JWT.get('AUTH_COOKIE_SECURE', True),
+                    samesite=settings.SIMPLE_JWT.get('AUTH_COOKIE_SAMESITE', 'Lax'),
+                    max_age=settings.SIMPLE_JWT.get('REFRESH_TOKEN_LIFETIME').total_seconds(),
+                    path='/',
+                )
+            
+            return response
+            
+        except TokenError as e:
+            return Response({
+                'status': 'error',
+                'message': 'Token invalide ou expiré'
+            }, status=status.HTTP_401_UNAUTHORIZED)
 
 class LogoutView(APIView):
     """Déconnexion utilisateur (blacklist du token)"""
@@ -216,60 +291,130 @@ class ChangePasswordView(APIView):
             'status': 'success',
             'message': 'Mot de passe changé avec succès'
         })
-
-
-class FollowCategoryView(APIView):
-    """Suivre ou ne plus suivre une catégorie"""
-    permission_classes = [IsAuthenticated]
     
-    def post(self, request, categorie_id):
-        """Toggle follow/unfollow d'une catégorie"""
-        try:
-            categorie = Categorie.objects.get(id_categorie=categorie_id)
-            utilisateur = request.user
+class ForgotPasswordView(APIView):
+    """Demande de réinitialisation de mot de passe"""
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            email = serializer.validated_data['email_utilisateur']
             
-            # Vérifier si l'utilisateur suit déjà cette catégorie
-            if utilisateur.categories_suivies.filter(id_categorie=categorie_id).exists():
-                # Désabonner
-                utilisateur.categories_suivies.remove(categorie)
-                action = 'unfollowed'
-                message = 'Vous ne suivez plus cette catégorie'
-            else:
-                # Abonner
-                utilisateur.categories_suivies.add(categorie)
-                action = 'followed'
-                message = 'Vous suivez maintenant cette catégorie'
+            try:
+                utilisateur = Utilisateur.objects.get(
+                    email_utilisateur=email,
+                    is_active=True
+                )
+                
+                # Invalider tous les anciens tokens non utilisés
+                PasswordResetToken.objects.filter(
+                    utilisateur=utilisateur,
+                    is_used=False
+                ).update(is_used=True)
+                
+                # Créer un nouveau token
+                reset_token = PasswordResetToken.objects.create(
+                    utilisateur=utilisateur
+                )
+                
+                # Envoyer l'email
+                send_password_reset_email(utilisateur, reset_token)
+                
+            except Utilisateur.DoesNotExist:
+                # Ne pas révéler si l'utilisateur existe ou non
+                pass
             
+            # Toujours retourner le même message pour la sécurité
             return Response({
                 'status': 'success',
-                'action': action,
-                'message': message,
-                'category': CategorieSerializer(categorie).data
+                'message': 'Si cet email existe dans notre système, vous recevrez un lien de réinitialisation.'
             })
+        
+        return Response({
+            'status': 'error',
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ValidateResetTokenView(APIView):
+    """Valider un token de réinitialisation"""
+    permission_classes = [AllowAny]
+    
+    def get(self, request, token):
+        try:
+            reset_token = PasswordResetToken.objects.get(token=token)
             
-        except Categorie.DoesNotExist:
+            if reset_token.is_valid():
+                return Response({
+                    'status': 'success',
+                    'message': 'Token valide',
+                    'email': reset_token.utilisateur.email_utilisateur
+                })
+            else:
+                return Response({
+                    'status': 'error',
+                    'message': 'Token expiré ou déjà utilisé'
+                }, status=status.HTTP_400_BAD_REQUEST)
+                
+        except PasswordResetToken.DoesNotExist:
             return Response({
                 'status': 'error',
-                'message': 'Catégorie non trouvée'
+                'message': 'Token invalide'
             }, status=status.HTTP_404_NOT_FOUND)
 
 
-class UserFollowedCategoriesView(APIView):
-    """Liste des catégories suivies par l'utilisateur connecté"""
-    permission_classes = [IsAuthenticated]
+class ResetPasswordView(APIView):
+    """Réinitialiser le mot de passe"""
+    permission_classes = [AllowAny]
     
-    def get(self, request):
-        """Récupérer toutes les catégories suivies"""
-        utilisateur = request.user
-        categories = utilisateur.categories_suivies.all()
-        serializer = CategorieSerializer(categories, many=True)
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            token_uuid = serializer.validated_data['token']
+            new_password = serializer.validated_data['new_password']
+            
+            try:
+                reset_token = PasswordResetToken.objects.get(token=token_uuid)
+                
+                if not reset_token.is_valid():
+                    return Response({
+                        'status': 'error',
+                        'message': 'Token expiré ou déjà utilisé'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                
+                # Mettre à jour le mot de passe
+                utilisateur = reset_token.utilisateur
+                utilisateur.set_password(new_password)
+                utilisateur.save()
+                
+                # Marquer le token comme utilisé
+                reset_token.is_used = True
+                reset_token.save()
+                
+                # Invalider tous les autres tokens de cet utilisateur
+                PasswordResetToken.objects.filter(
+                    utilisateur=utilisateur,
+                    is_used=False
+                ).update(is_used=True)
+                
+                return Response({
+                    'status': 'success',
+                    'message': 'Mot de passe réinitialisé avec succès'
+                })
+                
+            except PasswordResetToken.DoesNotExist:
+                return Response({
+                    'status': 'error',
+                    'message': 'Token invalide'
+                }, status=status.HTTP_404_NOT_FOUND)
         
         return Response({
-            'status': 'success',
-            'count': categories.count(),
-            'categories': serializer.data
-        })
-
+            'status': 'error',
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 class CheckAuthView(APIView):
     """Vérifier si l'utilisateur est authentifié"""

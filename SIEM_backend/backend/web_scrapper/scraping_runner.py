@@ -1,7 +1,6 @@
 from threading import Thread
 import logging
-from .scraping_module import launch_web_scrapping  # your function
-import json
+from .scraping_module import launch_web_scrapping
 
 # Global flag to indicate scraping status
 is_scraping = False

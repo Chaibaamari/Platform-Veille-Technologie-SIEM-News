@@ -1,7 +1,8 @@
 # backend/serializers.py
 from rest_framework import serializers
 from .models import Utilisateur, Categorie, Article, Vulnerabilite
-
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 # ============================================
 # SERIALIZERS UTILISATEUR & AUTHENTIFICATION
@@ -75,42 +76,35 @@ class UtilisateurSerializer(serializers.ModelSerializer):
 
 
 class UtilisateurLoginSerializer(serializers.Serializer):
-    """Serializer pour la connexion"""
     email_utilisateur = serializers.EmailField()
-    password = serializers.CharField(
-        write_only=True,
-        style={'input_type': 'password'}
-    )
+    password = serializers.CharField(write_only=True)
     
     def validate(self, data):
-        """Vérifier les credentials"""
-        email_utilisateur = data.get('email_utilisateur')
+        email = data.get('email_utilisateur')
         password = data.get('password')
         
-        if not email_utilisateur or not password:
-            raise serializers.ValidationError(
-                'L\'email et le mot de passe sont requis'
-            )
-        
         try:
-            utilisateur = Utilisateur.objects.get(email_utilisateur=email_utilisateur)
+            utilisateur = Utilisateur.objects.get(email_utilisateur=email)
+            
+            # Vérifier si l'utilisateur est actif
+            if not utilisateur.is_active:
+                raise serializers.ValidationError(
+                    'Ce compte a été désactivé. Contactez un administrateur.'
+                )
+            
+            # Vérifier le mot de passe
+            if not utilisateur.check_password(password):
+                raise serializers.ValidationError(
+                    'Email ou mot de passe incorrect'
+                )
+            
+            data['utilisateur'] = utilisateur
+            return data
+            
         except Utilisateur.DoesNotExist:
             raise serializers.ValidationError(
                 'Email ou mot de passe incorrect'
             )
-        
-        if not utilisateur.check_password(password):
-            raise serializers.ValidationError(
-                'Email ou mot de passe incorrect'
-            )
-        
-        if not utilisateur.is_active:
-            raise serializers.ValidationError(
-                'Ce compte est désactivé'
-            )
-        
-        data['utilisateur'] = utilisateur
-        return data
 
 
 class UtilisateurProfileSerializer(serializers.ModelSerializer):
@@ -124,9 +118,6 @@ class UtilisateurProfileSerializer(serializers.ModelSerializer):
             'nom_utilisateur',
             'email_utilisateur',
             'role_utilisateur',
-            'date_creation',
-            'is_active',
-            'last_login',
             'nb_categories_suivies'
         ]
         read_only_fields = ['id_utilisateur', 'date_creation', 'role_utilisateur', 'last_login']
@@ -136,6 +127,40 @@ class UtilisateurProfileSerializer(serializers.ModelSerializer):
         return obj.categories_suivies.count()
 
 
+class ForgotPasswordSerializer(serializers.Serializer):
+    email_utilisateur = serializers.EmailField()
+    
+    def validate_email_utilisateur(self, value):
+        """Vérifie que l'email existe"""
+        from .models import Utilisateur
+        if not Utilisateur.objects.filter(email_utilisateur=value, is_active=True).exists():
+            # Ne pas révéler si l'email existe ou non pour la sécurité
+            # On retourne quand même True mais on n'enverra pas d'email
+            pass
+        return value
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    token = serializers.UUIDField()
+    new_password = serializers.CharField(write_only=True, min_length=8)
+    confirm_password = serializers.CharField(write_only=True, min_length=8)
+    
+    def validate(self, data):
+        """Valide que les mots de passe correspondent"""
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError({
+                'confirm_password': 'Les mots de passe ne correspondent pas'
+            })
+        
+        # Valider la complexité du mot de passe
+        try:
+            validate_password(data['new_password'])
+        except ValidationError as e:
+            raise serializers.ValidationError({
+                'new_password': list(e.messages)
+            })
+        
+        return data
 # ============================================
 # SERIALIZERS CATÉGORIE
 # ============================================
@@ -149,10 +174,8 @@ class CategorieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categorie
         fields = [
-            'id_categorie',
+            'id',
             'nom_categorie',
-            'description_categorie',
-            'date_creation',
             'nb_articles',
             'nb_abonnes',
             'is_followed'

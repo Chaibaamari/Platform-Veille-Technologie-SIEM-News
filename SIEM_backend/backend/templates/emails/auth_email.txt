@@ -1,0 +1,13 @@
+Bonjour {{ username }},
+
+Nous sommes ravis de vous accueillir dans notre équipe. Voici vos informations d'authentification pour accéder à votre espace personnel :
+
+Email : {{ username }}
+Mot de passe : {{ password }}
+
+Pour commencer, connectez-vous ici : {{ url }}
+
+Si vous avez des questions ou des problèmes, n'hésitez pas à nous contacter.
+
+Cordialement,
+© 2026. Tous droits réservés.

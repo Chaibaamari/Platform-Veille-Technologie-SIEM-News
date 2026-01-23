@@ -2,6 +2,9 @@ from django.db import models
 from django.core.validators import URLValidator
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.utils import timezone
+from datetime import timedelta
+import uuid
 
 # =======================
 # MANAGER PERSONNALISÉ
@@ -41,6 +44,8 @@ class UtilisateurManager(BaseUserManager):
 # =======================
 class Utilisateur(AbstractBaseUser):
     ROLE_CHOICES = [
+        ('veilleur', 'Veilleur'),
+        ('analyste', 'Analyste'),
         ('admin', 'Administrateur'),
         ('utilisateur', 'Utilisateur'),
     ]
@@ -100,6 +105,34 @@ class Utilisateur(AbstractBaseUser):
         return self.nom_utilisateur
 
 
+class PasswordResetToken(models.Model):
+    """Token pour réinitialisation de mot de passe"""
+    utilisateur = models.ForeignKey(
+        'Utilisateur',
+        on_delete=models.CASCADE,
+        related_name='password_reset_tokens'
+    )
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    
+    class Meta:
+        db_table = 'password_reset_token'
+        ordering = ['-created_at']
+    
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(hours=1)
+        super().save(*args, **kwargs)
+    
+    def is_valid(self):
+        """Vérifie si le token est toujours valide"""
+        return not self.is_used and timezone.now() < self.expires_at
+    
+    def __str__(self):
+        return f"Token for {self.utilisateur.email_utilisateur}"
+
 # =======================
 # MODÈLE CATÉGORIE
 # =======================
@@ -109,6 +142,7 @@ class Categorie(models.Model):
     
     class Meta:
         db_table = 'categorie'
+        ordering = ['nom_categorie']
     
     def __str__(self):
         return self.nom_categorie
@@ -124,6 +158,7 @@ class Source(models.Model):
 
     class Meta:
         db_table = 'source'
+        ordering = ['nom_source']
 
 # =======================
 # MODÈLE ARTICLE

@@ -65,7 +65,7 @@ class FaissService:
     # Save index
     def save_index(self):
         faiss.write_index(self.index, self.index_path)
-        print("FAISS index saved.")
+        logger.info("FAISS index saved.")
 
 # singleton instance
 faiss_service = FaissService()
