@@ -68,6 +68,12 @@ urlpatterns = [
     # UTILISATEURS
     # ============================================
     path('users/', views.api_users_list, name='api_users_list'),
+
+
+    # ============================================
+    # VEILLE
+    # ============================================
+    path('lancer_veille/', views.trigger_scraping, name='start_scraping_background'),
 ]
 
 # Ajouter le refresh token endpoint si SimpleJWT est disponible

@@ -16,6 +16,7 @@ from .serializers import (
     UtilisateurProfileSerializer,
     CategorieSerializer
 )
+from backend.web_scrapper.scraping_runner import start_scraping_background
 
 # =======================
 # VUES API (Retour JSON)
@@ -131,17 +132,18 @@ def api_vulnerabilities_list(request):
     vulns_data = []
     for vuln in vulnerabilities:
         vulns_data.append({
-            'id': vuln.id_vulnerabilite,
             'cve_id': vuln.cve_id,
-            'titre': vuln.cve_id,  # Utilise CVE comme titre
             'severite': vuln.severite,
             'score_cvss': float(vuln.score_cvss) if vuln.score_cvss else None,
             'description': vuln.description_vuln,
-            'contenu': vuln.contenu_vuln,
-            'summary': vuln.summary_vuln,
             'date_publication': vuln.date_publication.strftime('%Y-%m-%d'),
-            'source': vuln.source_vuln,
-            'type': vuln.type_vuln
+            'types': [
+                {
+                    'cwe_id': t.cwe_id,
+                    'type_vul': t.type_vul
+                } 
+                for t in vuln.types_vuln.all()
+            ]
         })
     
     return JsonResponse({
@@ -241,3 +243,12 @@ class APICreateArticle(APIView):
                 'status': 'error',
                 'message': str(e)
             }, status=status.HTTP_400_BAD_REQUEST)
+        
+
+# endpoing to trigger the scrapping
+def trigger_scraping(request):
+    started = start_scraping_background()
+    if started:
+        return JsonResponse({'status': 'success', 'message': 'Scraping started in background'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Scraping already running'})

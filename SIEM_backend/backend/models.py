@@ -104,10 +104,8 @@ class Utilisateur(AbstractBaseUser):
 # MODÈLE CATÉGORIE
 # =======================
 class Categorie(models.Model):
-    id_categorie = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     nom_categorie = models.CharField(max_length=100, unique=True)
-    description_categorie = models.TextField(blank=True)
-    date_creation = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         db_table = 'categorie'
@@ -115,6 +113,17 @@ class Categorie(models.Model):
     def __str__(self):
         return self.nom_categorie
 
+
+# =======================
+# MODÈLE Source
+# =======================
+class Source(models.Model):
+    id_source = models.AutoField(primary_key=True)
+    nom_source = models.CharField(max_length=500)
+    flux_rss = models.URLField(max_length=1000, unique=True, validators=[URLValidator()])
+
+    class Meta:
+        db_table = 'source'
 
 # =======================
 # MODÈLE ARTICLE
@@ -138,6 +147,9 @@ class Article(models.Model):
         related_name='articles',
         blank=True
     )
+
+    # Relation Article (1,1) - (0,n) Source
+    source = models.ForeignKey(Source, on_delete=models.CASCADE, default=None)
     
     class Meta:
         db_table = 'article'
@@ -146,6 +158,12 @@ class Article(models.Model):
     def __str__(self):
         return f"{self.titre_article[:50]}..."
 
+# =======================
+# MODÈLE Type Vulnérabilité
+# =======================
+class Type_Vulnerabilite(models.Model):
+    cwe_id = models.CharField(primary_key=True, max_length=10)
+    type_vul = models.CharField(max_length=100, unique=True)
 
 # =======================
 # MODÈLE VULNÉRABILITÉ
@@ -156,18 +174,19 @@ class Vulnerabilite(models.Model):
         ('medium', 'Moyenne'),
         ('high', 'Élevée'),
         ('critical', 'Critique'),
+        ('unknown', 'Inconnue')
     ]
     
-    id_vulnerabilite = models.AutoField(primary_key=True)
-    cve_id = models.CharField(max_length=50, unique=True)
+    cve_id = models.CharField(primary_key=True, max_length=50, unique=True)
     severite = models.CharField(max_length=20, choices=SEVERITY_CHOICES)
     score_cvss = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
     description_vuln = models.TextField()
-    contenu_vuln = models.TextField(blank=True)
-    summary_vuln = models.TextField(blank=True)
     date_publication = models.DateField()
-    source_vuln = models.CharField(max_length=100)
-    type_vuln = models.CharField(max_length=100)
+
+    types_vuln = models.ManyToManyField(
+        Type_Vulnerabilite, 
+        blank=True
+    )
     
     class Meta:
         db_table = 'vulnerabilite'
