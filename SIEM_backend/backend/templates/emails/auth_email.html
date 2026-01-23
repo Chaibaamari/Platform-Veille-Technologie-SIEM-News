@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informations d'Authentification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .email-header {
+            background-color: #1E1E2E;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }
+        .email-body {
+            padding: 20px;
+            color: #333333;
+            line-height: 1.6;
+        }
+        .email-footer {
+            text-align: center;
+            font-size: 14px;
+            color: #666666;
+            padding: 10px;
+            background-color: #f1f1f1;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            color: #ffffff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .info-box {
+            margin: 20px 0;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Bienvenue</h1>
+        </div>
+        <div class="email-body">
+            <p>Bonjour <strong>{{ username }}</strong>,</p>
+            <p>Nous sommes ravis de vous accueillir dans notre équipe. Voici vos informations d'authentification pour accéder à votre espace personnel :</p>
+            <div class="info-box">
+                <p><strong>Email :</strong> {{ username }}</p>
+                <p><strong>Mot de passe :</strong> {{ password }}</p>
+            </div>
+            <p>Pour commencer, connectez-vous en cliquant sur le bouton ci-dessous :</p>
+            <a href="{{ url }}" class="btn">Se connecter</a>
+            <p>Si vous avez des questions ou des problèmes, n'hésitez pas à nous contacter.</p>
+            <p>Cordialement,</p>
+        </div>
+        <div class="email-footer">
+            <p>© 2026. Tous droits réservés.</p>
+        </div>
+    </div>
+</body>
+</html>
