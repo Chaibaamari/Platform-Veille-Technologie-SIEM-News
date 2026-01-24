@@ -23,55 +23,54 @@ export default function BlogCard({
       return (
           <Card className="bg-transparent border-none">
               <Link to={`/${role}/article/${article.id}`}>
-                <div className="flex gap-8 items-start">
-                  {/* Image */}
-                  <div className="shrink-0">
+                  <div className="flex gap-8 items-start">
+                      {/* Image */}
+                      <div className="shrink-0">
 
-                      <img
-                          width={592}
-                          src={article?.thumbnail || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUkOkp-ul9SF-K79OGubZg13v0qMPuV271RQ&s"}
-                          alt={article.titre}
-                          className="w-[592] object-cover"
-                      />
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 flex flex-col gap-4 pt-1">
-                      <p className="text-violet-400 text-sm font-semibold">
-                          {article.date_publication}
-                      </p>
-
-                      <div className="flex items-start justify-between gap-4">
-                          <h2 className="text-2xl font-semibold text-white line-clamp-1">
-                              {article.titre}
-                          </h2>
                           <img
-                              src="/images/arrow-up-right.svg"
-                              alt="arrow"
-                              className="w-5 h-5 mt-1"
+                              src={article?.thumbnail || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUkOkp-ul9SF-K79OGubZg13v0qMPuV271RQ&s"}
+                              alt={article.titre}
+                              className="w-148 h-74 object-cover rounded-lg"
                           />
                       </div>
 
-                      <p className="text-neutral-300 text-base leading-6 line-clamp-2">
-                          {article.description}
-                      </p>
+                      {/* Content */}
+                      <div className="flex-1 flex flex-col gap-4 pt-1">
+                          <p className="text-violet-400 text-sm font-semibold">
+                              {article.date_publication}
+                          </p>
 
-                      <div className="flex flex-wrap gap-2 mt-2">
-                          {article.categories.map((tag) => (
-                              <Badge
-                                  key={tag}
-                                  className="px-2.5 py-0.5 rounded-2xl text-sm font-medium"
-                                  style={{
-                                      backgroundColor: getTagBg(tag),
-                                      color: getTagText(tag),
-                                  }}
-                              >
-                                  {tag}
-                              </Badge>
-                          ))}
+                          <div className="flex items-start justify-between gap-4">
+                              <h2 className="text-2xl font-semibold text-white line-clamp-1">
+                                  {article.titre}
+                              </h2>
+                              <img
+                                  src="/images/arrow-up-right.svg"
+                                  alt="arrow"
+                                  className="w-5 h-5 mt-1"
+                              />
+                          </div>
+
+                          <p className="text-neutral-300 text-base leading-6 line-clamp-2">
+                              {article.description}
+                          </p>
+
+                          <div className="flex flex-wrap gap-2 mt-2">
+                              {article.categories.map((tag) => (
+                                  <Badge
+                                      key={tag}
+                                      className="px-2.5 py-0.5 rounded-2xl text-sm font-medium"
+                                      style={{
+                                          backgroundColor: getTagBg(tag),
+                                          color: getTagText(tag),
+                                      }}
+                                  >
+                                      {tag}
+                                  </Badge>
+                              ))}
+                          </div>
                       </div>
                   </div>
-              </div>
               </Link>
           </Card>
       );
@@ -90,7 +89,7 @@ export default function BlogCard({
                                 <img
                                     src={article?.thumbnail || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUkOkp-ul9SF-K79OGubZg13v0qMPuV271RQ&s"}
                                     alt={article.titre}
-                                    className="w-full object-cover h-80"
+                                    className="w-full h-fit object-cover"
                                 />
                             </div>
                 
@@ -132,11 +131,11 @@ export default function BlogCard({
                         /* SMALL CARD LAYOUT */
                         <div className="flex gap-4 h-full items-start">
                             {/* Image - fixed size */}
-                            <div className="shrink-0">
+                            <div>
                                 <img
                                     src={article?.thumbnail || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUkOkp-ul9SF-K79OGubZg13v0qMPuV271RQ&s"}
                                     alt={article.titre}
-                                    className="w-[592] object-cover"
+                                    className="w-[592px] h-[296px] object-cover rounded-lg"
                                 />
                             </div>
                 
