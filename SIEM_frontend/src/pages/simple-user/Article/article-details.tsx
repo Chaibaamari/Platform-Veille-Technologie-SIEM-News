@@ -9,7 +9,6 @@ import { getTagBg, getTagText } from '@/lib/utils';
 import { useState } from 'react';
 import { queryClient } from '@/main';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import type { Category } from '@/types/blog';
 import { useAppSelector } from '@/stores/hooks';
 
 export default function ArticleDetail() {
@@ -20,9 +19,7 @@ export default function ArticleDetail() {
 
     const { data: article, isLoading, error } = useQuery({
         queryKey: ['articles', id],
-        // queryKey: [`article/${id}`],
         queryFn: () => apiClient({ queryKey: [`articles/${id}`] }),
-        // queryFn: () => apiClient,
         enabled: !!id,
     });
 
@@ -38,26 +35,13 @@ export default function ArticleDetail() {
 
     const categories = fetched_categories?.['categories']
 
-    // const { data: articles ,isLoading, error } = useQuery({
-    //     queryKey: ['/articles/'],
-    //     queryFn: () => apiClient({ queryKey: ['/articles'] }),
-    // });
-
     const [openPopover, setOpenPopover] = useState(false);
     const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
-
-        // Initialize selected categories when article loads
-    // useEffect(() => {
-    //     if (article?.categories) {
-    //         const categoryIds = article.categories.map((cat: any) => cat.id_category);
-    //         setSelectedCategoryIds(categoryIds);
-    //     }
-    // }, [article]);
     
 
     const recommendedArticles = articles?.articles
         ?.filter((a: any) => a.id !== Number(id))
-        .slice(0, 6) || [];
+        .slice(0, 9) || [];
     
     const updateCategoriesMutation = useMutation({
         mutationFn: (selectedIds: number[]) => {
@@ -201,7 +185,7 @@ export default function ArticleDetail() {
                                     className="prose prose-invert prose-lg max-w-none
                                             [&>h3]:text-2xl [&>h3]:font-bold [&>h3]:text-white [&>h3]:mb-4 [&>h3]:mt-8
                                             [&>h3]:pb-3 [&>h3]:border-b [&>h3]:border-violet-500/30
-                                            [&>h3]:bg-gradient-to-r [&>h3]:from-violet-500/10 [&>h3]:to-transparent
+                                            [&>h3]:bg-linear-to-r [&>h3]:from-violet-500/10 [&>h3]:to-transparent
                                             [&>h3]:px-4 [&>h3]:py-3 [&>h3]:rounded-lg [&>h3]:-ml-4
                                             [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mt-4 [&>ul>li]:text-neutral-300 [&>ul>li]:leading-relaxed [&>ul>li]:mb-2
                                             [&>p]:text-neutral-300 [&>p]:leading-relaxed [&>p]:mb-4"
