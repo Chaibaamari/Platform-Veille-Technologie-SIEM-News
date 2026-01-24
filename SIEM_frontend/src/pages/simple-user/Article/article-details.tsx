@@ -141,7 +141,7 @@ export default function ArticleDetail() {
                                         </div>
                                         
                                         <div className="flex flex-col gap-2 max-h-72 overflow-y-auto">
-                                            {categories.map((category: any) => {
+                                            {categories && categories.map((category: any) => {
                                                 const isSelected = selectedCategoryIds.includes(category.id);
                                                 
                                                 return (
