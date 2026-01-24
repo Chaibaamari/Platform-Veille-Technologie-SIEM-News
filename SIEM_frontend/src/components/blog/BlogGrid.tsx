@@ -19,7 +19,7 @@ export default function BlogGrid({ posts }: BlogGridProps) {
             <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
                 <BlogCard article={featured} large />
 
-                <div className="grid grid-cols-2 gap-8 ">
+                <div className="grid grid-cols-1 gap-8 ">
                     {rightPosts.map((post) => (
                         <BlogCard key={post.id} article={post} />
                     ))}
@@ -27,7 +27,7 @@ export default function BlogGrid({ posts }: BlogGridProps) {
             </div>
 
             {/* Rest posts – full-width rows */}
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 gap-8">
                 {restPosts.map((post) => (
                     <BlogCard
                         key={post.id}
