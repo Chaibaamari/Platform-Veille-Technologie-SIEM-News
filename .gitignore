@@ -1,0 +1,18 @@
+# Python
+*.pyc
+__pycache__/
+.env
+venv/
+env/
+
+# Django
+*.log
+*.pot
+local_settings.py
+db.sqlite3
+media/
+
+# IDE/OS specific files (optional)
+.idea/
+.vscode/
+.DS_Store

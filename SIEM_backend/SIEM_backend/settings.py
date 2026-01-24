@@ -43,7 +43,7 @@ EMAIL_HOST_USER = email_username
 EMAIL_HOST_PASSWORD = email_password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://127.0.0.1:5173')
 
 LOGGING = {
     "version": 1,
@@ -172,13 +172,14 @@ SIMPLE_JWT = {
     'AUTH_COOKIE_SECURE': False,  # False en développement, True en production
     'AUTH_COOKIE_SAMESITE': 'Lax',
 }
-# CORS (pour permettre les requêtes depuis Postman/frontend)
-CORS_ALLOW_ALL_ORIGINS = True  # En développement seulement
-# Ou plus sécurisé :
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
 ]
+
+# CORS (pour permettre les requêtes depuis Postman/frontend)
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
 WSGI_APPLICATION = 'SIEM_backend.wsgi.application'
 
 

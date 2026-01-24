@@ -36,7 +36,7 @@ export default function Login() {
         },
         onSuccess: async (data) => {
             // Store token first so the next API call can use it
-            localStorage.setItem('auth_token', data.token);
+            localStorage.setItem('auth_token', data.tokens['access']);
             // Get user permissions after successful login
             // try {
             //     const fallbackPath = sanitizeRedirectPath(localStorage.getItem('post_login_redirect'));
@@ -86,7 +86,7 @@ export default function Login() {
             //     // Show a warning but don't prevent login
             //     console.warn('Permissions could not be loaded, continuing with basic access');
             // }
-            const userRoleRaw = data.user.roles[0]?.name || '';
+            const userRoleRaw = data.user['role_utilisateur'] || '';
             const userRole = normalizeRole(userRoleRaw) || '';
             // const dashboardPath = getDashboardPathForRole(userRole);
 
@@ -96,21 +96,17 @@ export default function Login() {
 
   // Dispatch the login success
             dispatch(loginSuccess({
-                token: data.token,
+                token: data.tokens['access'],
                 user: {
-                    id: data.user.id,
-                    name: data.user.name,
-                    email: data.user.email,
+                    id: data.user.id_utilisateur,
+                    name: data.user.nom_utilisateur,
+                    email: data.user.email_utilisateur,
                 },
                 role: userRole,
             }));
 
             localStorage.removeItem('post_login_redirect');
 
-  // THIS IS THE KEY FIX: Wait one tick before navigating
-            // setTimeout(() => {
-            //     navigate(redirectTo, { replace: true });
-            // }, 100); // 100ms is enough — no flash, smooth
             return navigate(`${role}/`, { replace: true });
         },
         onError: (error: any) => {

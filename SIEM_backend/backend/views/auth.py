@@ -105,10 +105,9 @@ class LoginView(APIView):
             response.set_cookie(
                 key='refresh_token',
                 value=tokens['refresh'],
-                httponly=True,  # Empêche l'accès JavaScript
-                secure=settings.SIMPLE_JWT.get('AUTH_COOKIE_SECURE', False),
-                samesite=settings.SIMPLE_JWT.get('AUTH_COOKIE_SAMESITE', 'Lax'),  # Protection CSRF
-                max_age=settings.SIMPLE_JWT.get('REFRESH_TOKEN_LIFETIME').total_seconds(),  # Durée du refresh token
+                httponly=True,
+                samesite='None',
+                max_age=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds(),
                 path='/',
             )
             

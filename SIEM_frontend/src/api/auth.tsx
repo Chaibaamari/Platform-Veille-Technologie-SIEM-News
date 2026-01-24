@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { apiMutation } from './client';
 
 export interface LoginRequest {
@@ -7,60 +6,48 @@ export interface LoginRequest {
 };
 
 export interface LoginResponse {
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    roles: Array<{
-      id: number;
-      name: string;
-    }>;
-  };
-  token: string;
+  status: string;
   message: string;
+  user: {
+    id_utilisateur: number;
+    nom_utilisateur: string;
+    email_utilisateur: string;
+    role_utilisateur: string; 
+  };
+  tokens: {
+    access: string;
+  };
 }
 
+
 export const authApi = {
-  // login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-  //     return apiMutation('login', {
-  //         method: 'POST',
-  //         body: JSON.stringify(credentials),
-  //     });
-  // },
-  login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-    // Fake token generation (in real app, server does this)
-    const fakeToken = 'fake-jwt-token-' + Math.random().toString(36).substr(2);
+  login: async (credentials: { email: string; password: string }): Promise<LoginResponse> => {
+    return apiMutation('auth/login/', {   // ← adjust endpoint path !!!
+      method: 'POST',
+      body: JSON.stringify({
+        email_utilisateur: credentials.email,     // ← field name must match serializer
+        password: credentials.password,
+      }),
+    });
+  },
 
-    // Find user in db.json
-    const response = await fetch('http://localhost:4000/users');
-    const users = await response.json();
+  // Optional: helper to get current user (using access token or cookie)
+  getProfile: async () => {
+    return apiMutation('auth/profile/', { method: 'GET' });
+  },
 
-    const user = users.find(
-      (u: any) => u.email === credentials.email && u.password === credentials.password
-    );
-
-    if (!user) {
-      throw new Error('Invalid email or password');
-    }
-
-    // Return format matching your Login component expectation
-    return {
-      token: fakeToken,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        roles: user.roles,
-      },
-      message: 'Login successful',
-    };
+  refresh: async () => {
+    return apiMutation('auth/refresh/', { method: 'POST' });
   },
 
   logout: async () => {
-    return apiMutation('logout', {
-      method: 'POST',
-    });
+    try {
+      await apiMutation('auth/logout/', {
+        method: 'POST',
+        body: JSON.stringify({ refresh: "not needed if using cookie" }),
+      });
+    } catch {
+      console.log('Logout API call failed, proceeding to clear local state.');
+    }
   },
 };
-
-

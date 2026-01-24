@@ -1,8 +1,8 @@
 import BlogCard from "./BlogCard"
-import { type BlogPost } from "@/types/blog"
+import { type Article } from "@/types/blog"
 
 interface BlogGridProps {
-    posts: BlogPost[];
+    posts: Article[];
 }
 
 export default function BlogGrid({ posts }: BlogGridProps) {
@@ -17,11 +17,11 @@ export default function BlogGrid({ posts }: BlogGridProps) {
 
             {/* Top section */}
             <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
-                <BlogCard post={featured} large />
+                <BlogCard article={featured} large />
 
                 <div className="grid grid-cols-2 gap-8 ">
                     {rightPosts.map((post) => (
-                        <BlogCard key={post.id} post={post} />
+                        <BlogCard key={post.id} article={post} />
                     ))}
                 </div>
             </div>
@@ -31,7 +31,7 @@ export default function BlogGrid({ posts }: BlogGridProps) {
                 {restPosts.map((post) => (
                     <BlogCard
                         key={post.id}
-                        post={post}
+                        article={post}
                         variant="row"
                     />
                 ))}

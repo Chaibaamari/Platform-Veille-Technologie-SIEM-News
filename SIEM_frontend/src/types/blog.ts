@@ -1,24 +1,24 @@
 // src/types/blog.ts
 export interface BlogPost {
   id: number;
-  title: string;
-  excerpt: string;
-  date: string;
-  imageUrl: string;
-  tags: string[];
+  titre: string;
+  description: string;
+  date_publication: Date;
+  thumbnail: string;
+  categories: string[];
   featured?: boolean; // for large featured post
 };
 
 export interface Article {
-  id_article: number;
-  titre_article: string;
-  description_article: string;
-  summary_article?: string;
-  contenu_article?: string;
+  id: number;
+  titre: string;
+  description: string;
+  summary?: string;
+  contenu?: string;
   url_article?: string;
   thumbnail?: string;
   date_publication: string;
-  tags: string[];// ISO string, e.g. "2025-01-01T00:00:00Z"
+  categories: string[];// ISO string, e.g. "2025-01-01T00:00:00Z"
 }
 
 export interface Vulnerability {
@@ -58,22 +58,17 @@ export interface Source {
   id: number;
   name: string;
   url: string;
-  type: 'RSS' | 'API' | 'WEB';
   active: boolean;
-  last_check: string;
-  created_by: number;
 }
 
 export interface Category {
   id: number;
   name: string;
-  color: string;
 }
 
 export interface AppUser {
   name: string;
   email: string;
-  password: string;
   role: 'Admin' | 'User';
 }
 

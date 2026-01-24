@@ -24,18 +24,18 @@ export default function ArticleDetail() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
-    // const { data: article, isLoading, error } = useQuery({
-    //     queryKey: ['articles', id],
-    //     // queryKey: [`article/${id}`],
-    //     queryFn: () => apiClient({ queryKey: [`articles/${id}`] }),
-    //     // queryFn: () => apiClient,
-    //     enabled: !!id,
-    // });
-
-    const { data: articles ,isLoading, error } = useQuery({
-        queryKey: ['articles'],
-        queryFn: () => apiClient({ queryKey: ['/articles'] }),
+    const { data: articles, isLoading, error } = useQuery({
+        queryKey: ['articles', id],
+        // queryKey: [`article/${id}`],
+        queryFn: () => apiClient({ queryKey: [`articles/${id}`] }),
+        // queryFn: () => apiClient,
+        enabled: !!id,
     });
+
+    // const { data: articles ,isLoading, error } = useQuery({
+    //     queryKey: ['/articles/'],
+    //     queryFn: () => apiClient({ queryKey: ['/articles'] }),
+    // });
 
     const [openPopover, setOpenPopover] = useState(false);
     const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
@@ -60,7 +60,7 @@ export default function ArticleDetail() {
                 id_article: Number(id),
                 category_ids: selectedIds,
             };
-            return apiMutation(`/articles/${id}/categories`, {
+            return apiMutation(`articles/${id}/categories`, {
                 method: 'POST',
                 body: JSON.stringify(payload),
             });

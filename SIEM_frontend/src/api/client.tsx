@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const API_BASE_URL = 'http://localhost:4000/';
+const API_BASE_URL = 'http://127.0.0.1:8000/api/';
 
 // Custom fetch wrapper for React Query (kept for future real API integration, but not used currently)
 export const apiClient = async ({ queryKey, signal }: { queryKey: [string, ...unknown[]], signal?: AbortSignal }) => {
@@ -7,6 +7,7 @@ export const apiClient = async ({ queryKey, signal }: { queryKey: [string, ...un
     const token = localStorage.getItem('auth_token');
     const config = {
         signal,
+        credentials: 'include' as RequestCredentials,
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -41,6 +42,7 @@ export const apiBlog = async ({
         `${API_BASE_URL}${url}${queryString ? `?${queryString}` : ""}`,
         {
             signal,
+            credentials: 'include',
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",

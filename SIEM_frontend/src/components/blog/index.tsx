@@ -7,7 +7,7 @@ export default function BlogPage() {
     // const [page, setPage] = useState(1);
 
     const { data, isLoading, error } = useQuery({
-        queryKey: ["posts"],
+        queryKey: ["articles/"],
         queryFn: apiClient,
         staleTime: 5000
     });
@@ -15,8 +15,7 @@ export default function BlogPage() {
     if (isLoading) return <div className="text-center py-20 text-white">Loading posts...</div>;
     if (error) return <div className="text-center py-20 text-red-400">Error loading posts</div>;
 
-    const posts = data || [];
-
+    const posts = data.articles || [];
     return (
         <div className="w-full bg-zinc-900 ">
             <section className="py-16 w-full self-stretch">
