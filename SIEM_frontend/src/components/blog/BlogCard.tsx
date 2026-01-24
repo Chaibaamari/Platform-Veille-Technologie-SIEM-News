@@ -17,8 +17,8 @@ export default function BlogCard({
   variant = "default",
 }: BlogCardProps) {
     const { role } = useAppSelector((state) => state.auth);
-    console.log(article)
-  /* ROW VARIANT (FULL WIDTH) */
+
+    /* ROW VARIANT (FULL WIDTH) */
   if (variant === "row") {
       return (
           <Card className="bg-transparent border-none">

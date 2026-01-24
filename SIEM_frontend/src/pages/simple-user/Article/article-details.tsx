@@ -9,28 +9,34 @@ import { getTagBg, getTagText } from '@/lib/utils';
 import { useState } from 'react';
 import { queryClient } from '@/main';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-
-
-const FAKE_CATEGORIES = [
-  { id_category: 1, nom_category: "Technologie" },
-  { id_category: 2, nom_category: "Développement" },
-  { id_category: 3, nom_category: "Design" },
-  { id_category: 4, nom_category: "Productivité" },
-  { id_category: 5, nom_category: "Inspiration" },
-  { id_category: 6, nom_category: "Tutoriels" },
-]; 
+import type { Category } from '@/types/blog';
+import { useAppSelector } from '@/stores/hooks';
 
 export default function ArticleDetail() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { role } = useAppSelector((state) => state.auth);
+    
 
-    const { data: articles, isLoading, error } = useQuery({
+    const { data: article, isLoading, error } = useQuery({
         queryKey: ['articles', id],
         // queryKey: [`article/${id}`],
         queryFn: () => apiClient({ queryKey: [`articles/${id}`] }),
         // queryFn: () => apiClient,
         enabled: !!id,
     });
+
+    const { data: articles } = useQuery({
+        queryKey: ['articles'],
+        queryFn: () => apiClient({ queryKey: ['articles'] })
+    });
+
+    const { data: fetched_categories } = useQuery({
+        queryKey: ['categories'],
+        queryFn: () => apiClient({ queryKey: ['categories'] })
+    });
+
+    const categories = fetched_categories?.['categories']
 
     // const { data: articles ,isLoading, error } = useQuery({
     //     queryKey: ['/articles/'],
@@ -40,8 +46,6 @@ export default function ArticleDetail() {
     const [openPopover, setOpenPopover] = useState(false);
     const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
 
-    const article = articles?.find((a: any) => a.id_article === Number(id));
-
         // Initialize selected categories when article loads
     // useEffect(() => {
     //     if (article?.categories) {
@@ -49,15 +53,16 @@ export default function ArticleDetail() {
     //         setSelectedCategoryIds(categoryIds);
     //     }
     // }, [article]);
+    
 
-    const recommendedArticles = articles
-        ?.filter((a: any) => a.id_article !== Number(id))
+    const recommendedArticles = articles?.articles
+        ?.filter((a: any) => a.id !== Number(id))
         .slice(0, 6) || [];
     
     const updateCategoriesMutation = useMutation({
         mutationFn: (selectedIds: number[]) => {
             const payload = {
-                id_article: Number(id),
+                id: Number(id),
                 category_ids: selectedIds,
             };
             return apiMutation(`articles/${id}/categories`, {
@@ -99,7 +104,7 @@ export default function ArticleDetail() {
                     {/* Back button */}
                 
                     <button
-                        onClick={() => navigate("/simple_user/article")}
+                        onClick={() => navigate(`/${role}/article`)}
                         className="flex items-center gap-2 text-violet-400 hover:text-violet-300"
                     >
                         <ChevronLeft size={20} /> Back to all posts
@@ -112,7 +117,7 @@ export default function ArticleDetail() {
 
                         <div className="self-stretch flex justify-start items-start gap-4">
                             <h1 className="flex-1 text-white text-4xl font-bold leading-10">
-                                {article.titre_article}
+                                {article.titre}
                             </h1>
 
                             {/* Category Button with Popover */}
@@ -136,13 +141,13 @@ export default function ArticleDetail() {
                                         </div>
                                         
                                         <div className="flex flex-col gap-2 max-h-72 overflow-y-auto">
-                                            {FAKE_CATEGORIES.map((category) => {
-                                                const isSelected = selectedCategoryIds.includes(category.id_category);
+                                            {categories.map((category: any) => {
+                                                const isSelected = selectedCategoryIds.includes(category.id);
                                                 
                                                 return (
                                                     <button
-                                                        key={category.id_category}
-                                                        onClick={() => toggleCategory(category.id_category)}
+                                                        key={category.id}
+                                                        onClick={() => toggleCategory(category.id)}
                                                         className={`
                                                             flex items-center justify-between px-3 py-2.5 rounded-lg 
                                                             transition-all duration-200
@@ -153,7 +158,7 @@ export default function ArticleDetail() {
                                                         `}
                                                     >
                                                         <span className={`font-medium ${isSelected ? 'text-violet-300' : 'text-neutral-300'}`}>
-                                                            {category.nom_category}
+                                                            {category.nom}
                                                         </span>
                                                         {isSelected && (
                                                             <Check size={18} className="text-violet-400" />
@@ -186,65 +191,39 @@ export default function ArticleDetail() {
                         <img
                             className="self-stretch h-96 object-cover rounded-lg"
                             src={article.thumbnail || 'https://placehold.co/778x426'}
-                            alt={article.titre_article}
+                            alt={article.titre}
                         />
 
                         <div className="self-stretch flex flex-col gap-6 text-neutral-300 text-xl font-normal space-y-5 leading-6">
                             {/* Render content */}
-                            {article.contenu_article && (
-                                <p className="text-neutral-300 text-lg leading-relaxed">
-                                    {article.contenu_article}
-                                </p>
-                            )}
+                            {article.contenu && (
+                                <div
+                                    className="prose prose-invert prose-lg max-w-none
+                                            [&>h3]:text-2xl [&>h3]:font-bold [&>h3]:text-white [&>h3]:mb-4 [&>h3]:mt-8
+                                            [&>h3]:pb-3 [&>h3]:border-b [&>h3]:border-violet-500/30
+                                            [&>h3]:bg-gradient-to-r [&>h3]:from-violet-500/10 [&>h3]:to-transparent
+                                            [&>h3]:px-4 [&>h3]:py-3 [&>h3]:rounded-lg [&>h3]:-ml-4
+                                            [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mt-4 [&>ul>li]:text-neutral-300 [&>ul>li]:leading-relaxed [&>ul>li]:mb-2
+                                            [&>p]:text-neutral-300 [&>p]:leading-relaxed [&>p]:mb-4"
+                                    dangerouslySetInnerHTML={{ __html: article.contenu }}
+                                />
+                                )}
+
                             
-                            {/* Render HTML description with enhanced structure */}
-                            {/* {article.description_article && (
-                                <div className="flex flex-col gap-8">
-                                    <div
-                                        className="prose prose-invert prose-lg max-w-none
-                                                [&>h3]:text-2xl [&>h3]:font-bold [&>h3]:text-white [&>h3]:mb-4 [&>h3]:mt-8 [&>h3]:first:mt-0
-                                                [&>h3]:pb-3 [&>h3]:border-b [&>h3]:border-violet-500/30
-                                                [&>h3]:bg-gradient-to-r [&>h3]:from-violet-500/10 [&>h3]:to-transparent
-                                                [&>h3]:px-4 [&>h3]:py-3 [&>h3]:rounded-lg [&>h3]:-ml-4
-                                                [&>ul]:list-none [&>ul]:pl-0 [&>ul]:space-y-3 [&>ul]:mt-4
-                                                [&>ul>li]:text-neutral-300 [&>ul>li]:leading-relaxed [&>ul>li]:text-base
-                                                [&>ul>li]:pl-6 [&>ul>li]:relative [&>ul>li]:py-2
-                                                [&>ul>li]:before:content-['▪'] [&>ul>li]:before:absolute [&>ul>li]:before:left-0
-                                                [&>ul>li]:before:text-violet-400 [&>ul>li]:before:font-bold [&>ul>li]:before:text-xl
-                                                [&>p]:text-neutral-300 [&>p]:leading-relaxed [&>p]:mb-4"
-                                        dangerouslySetInnerHTML={{ __html: article.description_article }}
-                                    />
-                                </div>
-                            )} */}
-                            {article.summary_article && (
-                                <div className="flex flex-col gap-8">
-                                    <div
-                                        className="prose prose-invert prose-lg max-w-none
-                                                [&>h3]:text-2xl [&>h3]:font-bold [&>h3]:text-white [&>h3]:mb-4 [&>h3]:mt-8 [&>h3]:first:mt-0
-                                                [&>h3]:pb-3 [&>h3]:border-b [&>h3]:border-violet-500/30
-                                                [&>h3]:bg-linear-to-r [&>h3]:from-violet-500/10 [&>h3]:to-transparent
-                                                [&>h3]:px-4 [&>h3]:py-3 [&>h3]:rounded-lg [&>h3]:-ml-4
-                                                [&>ul]:list-none [&>ul]:pl-0 [&>ul]:space-y-3 [&>ul]:mt-4
-                                                [&>ul>li]:text-neutral-300 [&>ul>li]:leading-relaxed [&>ul>li]:text-base
-                                                [&>ul>li]:pl-6 [&>ul>li]:relative [&>ul>li]:py-2
-                                                [&>ul>li]:before:content-['▪'] [&>ul>li]:before:absolute [&>ul>li]:before:left-0
-                                                [&>ul>li]:before:text-violet-400 [&>ul>li]:before:font-bold [&>ul>li]:before:text-xl
-                                                [&>p]:text-neutral-300 [&>p]:leading-relaxed [&>p]:mb-4"
-                                        dangerouslySetInnerHTML={{ __html: article.summary_article }}
-                                    />
-                                </div>
-                            )}
-                            
-                            {article.description_article && (
+                            {article.summary && (
                                 <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
-                                    <h4 className="text-violet-400 font-semibold text-lg mb-3">Description</h4>
-                                    <p className="text-neutral-300 leading-8">{article.description_article}</p>
+                                    <h4 className="text-violet-400 font-semibold text-lg mb-3">Résumé</h4>
+                                    <div
+                                        className="text-neutral-300 leading-8"
+                                        dangerouslySetInnerHTML={{ __html: article.summary }}
+                                    />
                                 </div>
                             )}
 
+
                             {/* Add your tags */}
                             <div className="flex flex-wrap mt-auto  justify-start items-start gap-2">
-                                {(article.tags || []).map((tag: string) => (
+                                {(article.categoroes || []).map((tag: string) => (
                                     <Badge
                                         key={tag}
                                         className="px-2.5 py-0.5 rounded-2xl text-sm font-medium"
@@ -257,31 +236,7 @@ export default function ArticleDetail() {
                                     </Badge>
                                 ))}
                             </div>
-                        </div>
-
-                        {/* Newsletter section */}
-                        <div className="flex flex-col items-center gap-10 w-full">
-                            <div className="flex flex-col items-center gap-6">
-                                <div className="text-violet-500 text-base font-semibold">Newsletters</div>
-                                <h2 className="text-white text-5xl font-semibold leading-15 text-center">
-                                    Stories and interviews
-                                </h2>
-                                <p className="w-full max-w-[768] text-neutral-300 text-xl text-center">
-                                    Subscribe to learn about new product features, the latest in technology, solutions, and updates.
-                                </p>
-                            </div>
-
-                            <div className="flex gap-4">
-                                <input
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    className="w-96 px-4 py-3 bg-white rounded-lg border border-gray-300 text-gray-500"
-                                />
-                                <button className="px-5 py-3 bg-violet-500 rounded-lg text-white font-medium">
-                                    Subscribe
-                                </button>
-                            </div>
-                        </div>
+                        </div>            
                     </div>
 
                 </div>
@@ -293,18 +248,18 @@ export default function ArticleDetail() {
                         <div className="flex flex-col gap-8">
                             {recommendedArticles.map((rec: any) => (
                                 <Link
-                                    key={rec.id_article}
-                                    to={`/simple_user/article/${rec.id_article}`}
+                                    key={rec.id}
+                                    to={`/${role}/article/${rec.id}`}
                                     className="group flex gap-4 hover:opacity-90 transition-opacity"
                                 >
                                     <img
                                         className="w-32 h-24 object-cover rounded-lg shrink-0"
                                         src={rec.thumbnail || 'https://placehold.co/128x96'}
-                                        alt={rec.titre_article}
+                                        alt={rec.titre}
                                     />
                                     <div className="flex flex-col justify-between">
                                         <h4 className="text-white text-lg font-medium line-clamp-2 group-hover:text-violet-300 transition-colors">
-                                            {rec.titre_article}
+                                            {rec.titre}
                                         </h4>
                                         <p className="text-neutral-400 text-sm mt-2">
                                             {format(new Date(rec.date_publication), 'd MMM yyyy')}

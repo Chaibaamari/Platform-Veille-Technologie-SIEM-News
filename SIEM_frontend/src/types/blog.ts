@@ -63,7 +63,7 @@ export interface Source {
 
 export interface Category {
   id: number;
-  name: string;
+  nom: string;
 }
 
 export interface AppUser {
