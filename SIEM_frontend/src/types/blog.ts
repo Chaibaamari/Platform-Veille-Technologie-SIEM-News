@@ -53,6 +53,23 @@ export interface Vulnerability2 {
   type: string; // SQL injection, XSS, etc.
 }
 
+// ============ Source & Category Types ============
+export interface Source {
+  id: number;
+  name: string;
+  url: string;
+  type: 'RSS' | 'API' | 'WEB';
+  active: boolean;
+  last_check: string;
+  created_by: number;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  color: string;
+}
+
 export interface AppUser {
   name: string;
   email: string;

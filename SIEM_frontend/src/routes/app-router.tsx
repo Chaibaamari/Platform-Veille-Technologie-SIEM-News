@@ -7,9 +7,18 @@ import { useAppSelector } from '@/stores/hooks';
 import { LoadingSpinner } from '@/components/Error/loading-spinner';
 import { getDashboardPathForRole, normalizeRole } from '@/lib/auth-utils';
 import Footer from '@/components/Footer/app-footer';
+import Dashboard from '@/components/dashbored/dashboed-app';
 
 // Lazy load components for code splitting
 const Login = lazy(() => import('@/pages/auth/auth'));
+
+// Admin routes
+const AdminLayout = lazy(() => import('@/components/layouts/AdminLayout'));
+const AdminUsersPage = lazy(() => import('@/pages/admin/users-page'));
+
+// Veilleur routes
+const VeilleurLayout = lazy(() => import('@/components/layouts/VeilleurLayout'));
+const VeilleurSourcesPage = lazy(() => import('@/pages/veilleur/source-page'));
 
 // Analytics routes
 const AnalyticsLayout = lazy(() => import('@/components/layouts/AnalyticsLayout'));
@@ -55,6 +64,29 @@ export default function AppRoutes() {
                 <Route path="/" element={<DashboardRedirect />} />
                 <Route path="/dashboard" element={<DashboardRedirect />} />
 
+                
+                {/* Admin Routes */}
+                <Route
+                    path="/admin/*"
+                    element={
+                        <RoleGuard allowedRoles={['admin']}>
+                            <AdminLayout>
+                                <Routes>
+                                    <Route path="users" element={<AdminUsersPage />} />
+                                    <Route path="home" element={<HomePage />} />
+                                    <Route path="dashboard" element={<Dashboard />} />
+                                    <Route path="article" element={<SimpleUserArticles />} />
+                                    <Route path="article/:id" element={<ArticleDetail />} />
+                                    <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
+                                    <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
+                                    <Route path="newsletter" element={<NewsletterPage />} />
+                                    <Route path="*" element={<Navigate to="/admin/users" replace />} />
+                                </Routes>
+                                <Footer />
+                            </AdminLayout>
+                        </RoleGuard>
+                    }
+                /> 
                 {/* Analytics Routes */}
                 <Route
                     path="/analytics/*"
@@ -76,6 +108,29 @@ export default function AppRoutes() {
                                 </Routes>
                                 <Footer />
                             </AnalyticsLayout>
+                        </RoleGuard>
+                    }
+                />
+
+                {/* Veilleur Routes */}
+                <Route
+                    path="/veilleur/*"
+                    element={
+                        <RoleGuard allowedRoles={['veilleur']}>
+                            <VeilleurLayout>
+                                <Routes>
+                                    <Route path="sources" element={<VeilleurSourcesPage />} />
+                                    <Route path="home" element={<HomePage />} />
+                                    <Route path="dashboard" element={<Dashboard />} />
+                                    <Route path="article" element={<SimpleUserArticles />} />
+                                    <Route path="article/:id" element={<ArticleDetail />} />
+                                    <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
+                                    <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
+                                    <Route path="newsletter" element={<NewsletterPage />} />
+                                    <Route path="*" element={<Navigate to="/veilleur/sources" replace />} />
+                                </Routes>
+                                <Footer />
+                            </VeilleurLayout>
                         </RoleGuard>
                     }
                 />
