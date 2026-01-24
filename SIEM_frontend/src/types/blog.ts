@@ -21,13 +21,16 @@ export interface Article {
   categories: string[];// ISO string, e.g. "2025-01-01T00:00:00Z"
 }
 
+export interface TypeVulnerability {
+  cwe_id: string,
+  type_vul: string
+}
+
 export interface Vulnerability {
-  id: number;
-  title: string;
+  cve_id: number;
   description: string;
-  image: string;
-  tags: string[];
-  date?: string; // optional
+  types: TypeVulnerability[];
+  date_publication?: string; // optional
 }
 
 export interface Article2 {

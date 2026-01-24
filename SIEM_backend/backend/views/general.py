@@ -54,7 +54,7 @@ def api_home(request):
 def api_articles_list(request):
     articles = Article.objects.all().order_by('-date_publication')
 
-    paginated = paginate_queryset(articles, request, page_size=10)
+    paginated = paginate_queryset(articles, request, page_size=30)
 
     articles_data = []
     for article in paginated['items']:
@@ -101,7 +101,7 @@ def api_categories_list(request):
     paginated = paginate_queryset(categories, request, page_size=10)
 
     categories_data = []
-    for cat in paginated['items']:
+    for cat in categories:
         categories_data.append({
             'id': cat.id,
             'nom': cat.nom_categorie,

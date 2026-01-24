@@ -9,7 +9,6 @@ import { getTagBg, getTagText } from '@/lib/utils';
 import { useState } from 'react';
 import { queryClient } from '@/main';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import type { Category } from '@/types/blog';
 import { useAppSelector } from '@/stores/hooks';
 
 export default function ArticleDetail() {
