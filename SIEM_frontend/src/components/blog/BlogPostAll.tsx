@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { getTagBg, getTagText } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import { useAppSelector } from '@/stores/hooks';
 
 // interface ApiResponse {
 //   data: Article[];
@@ -52,18 +53,19 @@ export default function BlogPostsPage() {
         queryFn: apiClient,
         staleTime: 5000
     });
-
+    const { role } = useAppSelector((state) => state.auth);
+    
 
     if (isLoading) return <div className="text-center py-20 text-white">Loading posts...</div>;
     if (isError) return <div className="text-center py-20 text-red-400">Error: {(error as Error)?.message}</div>;
 
     // const allArticles = data?.pages.flatMap((page) => page.data) ?? [];
-    const allArticles = data?.articles?.slice(9) || [];
+    const allArticles = data?.articles
+        ?.slice(10) || [];
+    // const currentPage = data?.pagination.page ?? 1;
+    // const totalPages = data?.pagination.total_pages ?? 1;
 
-    // const currentPage = data?.pages[data.pages.length - 1]?.currentPage ?? 1;
-    // const totalPages = data?.pages[data.pages.length - 1]?.totalPages ?? 1;
-
-  // Helper to generate page numbers for display
+    //Helper to generate page numbers for display
     // const getPageNumbers = () => {
     //     const pages = [];
     //     if (totalPages <= 7) {
@@ -80,6 +82,7 @@ export default function BlogPostsPage() {
     //     return pages;
     // };
 
+    
     return (
         <div className="w-[1280] px-8 flex flex-col justify-start items-center gap-7 bg-zinc-900">
             <div className="w-[1216] flex flex-col justify-start items-start gap-8">
@@ -103,7 +106,7 @@ export default function BlogPostsPage() {
                                     >
                                         {rowArticles.map((article: Article) => (
                                             <Link
-                                                to={`/simple_user/article/${article.id}`}
+                                                to={`/${role}/article/${article.id}`}
                                                 key={article.id}
                                                 className="flex-1 flex flex-col justify-start items-start gap-8"
                                             >
@@ -167,8 +170,8 @@ export default function BlogPostsPage() {
                     Previous
                 </button>
 
-                <div className="flex items-center gap-0.5">
-                    {/* {getPageNumbers().map((page, i) =>
+                {/* <div className="flex items-center gap-0.5">
+                    {getPageNumbers().map((page, i) =>
                         page === '...' ? (
                             <div
                                 key={`ellipsis-${i}`}
@@ -179,18 +182,18 @@ export default function BlogPostsPage() {
                         ) : (
                             <button
                                 key={page}
-                                // onClick={() => {
-                                //     const targetPage = page as number;
-                                //     if (targetPage > currentPage) {
-                                //         // Jump forward – fetch until we reach it (simple way)
-                                //         for (let p = currentPage + 1; p <= targetPage; p++) {
-                                //             fetchNextPage();
-                                //         }
-                                //     } else if (targetPage < currentPage) {
-                                //         // Can't easily go back with infinite query unless refetching
-                                //         window.location.reload(); // or implement refetch with page param
-                                //     }
-                                // }}
+                                onClick={() => {
+                                    const targetPage = page as number;
+                                    if (targetPage > currentPage) {
+                                        // Jump forward – fetch until we reach it (simple way)
+                                        for (let p = currentPage + 1; p <= targetPage; p++) {
+                                            fetchNextPage();
+                                        }
+                                    } else if (targetPage < currentPage) {
+                                        // Can't easily go back with infinite query unless refetching
+                                        window.location.reload(); // or implement refetch with page param
+                                    }
+                                }}
                                 className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-medium ${page === currentPage
                                         ? 'bg-purple-50 text-neutral-900'
                                         : 'text-zinc-100 hover:bg-white/10'
@@ -199,8 +202,8 @@ export default function BlogPostsPage() {
                                 {page}
                             </button>
                         )
-                    )} */}
-                </div>
+                    )}
+                </div> */}
 
                 <button
                     // onClick={() => fetchNextPage()}

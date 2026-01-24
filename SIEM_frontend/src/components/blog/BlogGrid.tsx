@@ -10,7 +10,7 @@ export default function BlogGrid({ posts }: BlogGridProps) {
 
     const featured = posts[0];
     const rightPosts = posts.slice(1, 3);
-    const restPosts = posts.slice(3);
+    const restPosts = posts.slice(3, 10);
 
     return (
         <div className="flex flex-col gap-5 w-full">
