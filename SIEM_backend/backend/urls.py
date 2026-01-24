@@ -2,6 +2,7 @@
 from django.urls import path
 # Vues API classiques
 from . import views
+from .views import reports
 
 urlpatterns = [
     # ============================================
@@ -66,4 +67,13 @@ urlpatterns = [
     path('sources/', views.api_list_sources),
     path('sources/add/', views.api_add_source),
     path('sources/<int:source_id>/delete/', views.api_delete_source),
+    
+    # ============================================
+    # RAPPORTS
+    # ============================================
+    path('reports/articles/pdf/', reports.generate_articles_pdf, name='articles-pdf'),
+    path('reports/articles/excel/', reports.generate_articles_excel, name='articles-excel'),
+    path('reports/vulnerabilities/pdf/', reports.generate_vulnerabilities_pdf, name='vulnerabilities-pdf'),
+    path('reports/vulnerabilities/excel/', reports.generate_vulnerabilities_excel, name='vulnerabilities-excel'),
+    path('reports/comprehensive/', reports.generate_comprehensive_report, name='comprehensive-report'),
 ]
