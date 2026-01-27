@@ -45,7 +45,8 @@ urlpatterns = [
     # VULNÉRABILITÉS
     # ============================================
     path('vulnerabilities/', views.api_vulnerabilities_list, name='api_vulnerabilities_list'),
-    
+    path('vulnerabilities/<str:vulnerability_id>/', views.api_vulnerability_detail, name='api_vulnerability_detail'),
+
     # ============================================
     # UTILISATEURS
     # ============================================

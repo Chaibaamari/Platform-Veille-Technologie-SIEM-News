@@ -161,6 +161,8 @@ class ResetPasswordSerializer(serializers.Serializer):
             })
         
         return data
+    
+
 # ============================================
 # SERIALIZERS CATÉGORIE
 # ============================================
@@ -221,6 +223,7 @@ class CategorieListSerializer(serializers.ModelSerializer):
 class ArticleListSerializer(serializers.ModelSerializer):
     """Serializer pour lister les articles (version allégée)"""
     categories_noms = serializers.SerializerMethodField()
+    source = serializers.SerializerMethodField()
     
     class Meta:
         model = Article
@@ -231,12 +234,16 @@ class ArticleListSerializer(serializers.ModelSerializer):
             'description_article',
             'date_publication',
             'thumbnail',
-            'categories_noms'
+            'categories_noms',
+            'source'
         ]
     
     def get_categories_noms(self, obj):
         """Retourne les noms des catégories"""
         return [cat.nom_categorie for cat in obj.categories.all()]
+    
+    def get_source(self, obj):
+        return obj.source.nom_source
 
 
 class ArticleDetailSerializer(serializers.ModelSerializer):
@@ -257,158 +264,43 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
             'categories'
         ]
 
-
-class ArticleCreateSerializer(serializers.ModelSerializer):
-    """Serializer pour créer/modifier un article"""
-    categories_ids = serializers.ListField(
-        child=serializers.IntegerField(),
-        write_only=True,
-        required=False
-    )
-    
-    class Meta:
-        model = Article
-        fields = [
-            'titre_article',
-            'url_article',
-            'description_article',
-            'contenu_article',
-            'summary_article',
-            'date_publication',
-            'thumbnail',
-            'categories_ids'
-        ]
-    
-    def validate_url_article(self, value):
-        """Vérifier que l'URL est unique pour un nouvel article"""
-        if self.instance is None:  # Création
-            if Article.objects.filter(url_article=value).exists():
-                raise serializers.ValidationError("Un article avec cette URL existe déjà")
-        else:  # Modification
-            if Article.objects.exclude(id_article=self.instance.id_article).filter(url_article=value).exists():
-                raise serializers.ValidationError("Un article avec cette URL existe déjà")
-        return value
-    
-    def create(self, validated_data):
-        """Créer un article avec ses catégories"""
-        categories_ids = validated_data.pop('categories_ids', [])
-        
-        article = Article.objects.create(**validated_data)
-        
-        if categories_ids:
-            categories = Categorie.objects.filter(id_categorie__in=categories_ids)
-            article.categories.set(categories)
-        
-        return article
-    
-    def update(self, instance, validated_data):
-        """Mettre à jour un article et ses catégories"""
-        categories_ids = validated_data.pop('categories_ids', None)
-        
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        
-        if categories_ids is not None:
-            categories = Categorie.objects.filter(id_categorie__in=categories_ids)
-            instance.categories.set(categories)
-        
-        return instance
-
-
-# ============================================
-# SERIALIZERS SIMPLIFIÉS POUR LA CRÉATION D'ARTICLES
-# ============================================
-
-class ArticleCreateSimpleSerializer(serializers.Serializer):
-    """Serializer simplifié pour créer un article via l'API simple"""
-    titre = serializers.CharField(max_length=500)
-    url = serializers.URLField(max_length=1000)
-    description = serializers.CharField(required=False, allow_blank=True)
-    categorie = serializers.CharField(max_length=100, default='AWS Security')
-    date_publication = serializers.CharField(required=False, default='2024-01-01')
-    
-    def validate(self, data):
-        """Validation personnalisée"""
-        # Vérifier que l'URL n'existe pas déjà
-        if Article.objects.filter(url_article=data.get('url')).exists():
-            raise serializers.ValidationError({
-                'url': 'Un article avec cette URL existe déjà'
-            })
-        return data
-    
-    def create(self, validated_data):
-        """Créer un article avec la catégorie spécifiée"""
-        # Récupérer ou créer la catégorie
-        categorie_nom = validated_data.get('categorie', 'AWS Security')
-        categorie, created = Categorie.objects.get_or_create(
-            nom_categorie=categorie_nom,
-            defaults={'description_categorie': f'Catégorie {categorie_nom}'}
-        )
-        
-        # Créer l'article
-        article = Article.objects.create(
-            titre_article=validated_data['titre'],
-            url_article=validated_data['url'],
-            description_article=validated_data.get('description', ''),
-            date_publication=validated_data.get('date_publication', '2024-01-01')
-        )
-        
-        # Ajouter la catégorie
-        article.categories.add(categorie)
-        
-        return article
-
-
 # ============================================
 # SERIALIZERS VULNÉRABILITÉ
 # ============================================
 
 class VulnerabiliteListSerializer(serializers.ModelSerializer):
     """Serializer pour lister les vulnérabilités"""
+    types_vuln = serializers.SerializerMethodField()
     
     class Meta:
         model = Vulnerabilite
         fields = [
-            'id_vulnerabilite',
             'cve_id',
             'severite',
             'score_cvss',
-            'type_vuln',
+            'types_vuln',
             'date_publication',
-            'source_vuln'
+            'description_vuln'
         ]
+
+
+    def get_types_vuln(self, obj):
+        return [{
+            'type_vul': type_vuln.type_vul,
+            'cwe_id': type_vuln.cwe_id
+        } for type_vuln in obj.types_vuln.all()]
 
 
 class VulnerabiliteDetailSerializer(serializers.ModelSerializer):
     """Serializer détaillé pour une vulnérabilité"""
+    types_vuln = serializers.SerializerMethodField()
     
     class Meta:
         model = Vulnerabilite
         fields = '__all__'
 
-
-class VulnerabiliteCreateSerializer(serializers.ModelSerializer):
-    """Serializer pour créer/modifier une vulnérabilité"""
-    
-    class Meta:
-        model = Vulnerabilite
-        fields = [
-            'cve_id',
-            'severite',
-            'score_cvss',
-            'description_vuln',
-            'date_publication',
-            'source_vuln',
-            'type_vuln'
-        ]
-    
-    def validate_cve_id(self, value):
-        """Vérifier l'unicité du CVE ID"""
-        if self.instance is None:  # Création
-            if Vulnerabilite.objects.filter(cve_id=value).exists():
-                raise serializers.ValidationError(f"La vulnérabilité {value} existe déjà")
-        else:  # Modification
-            if Vulnerabilite.objects.exclude(id_vulnerabilite=self.instance.id_vulnerabilite).filter(cve_id=value).exists():
-                raise serializers.ValidationError(f"La vulnérabilité {value} existe déjà")
-        return value
+    def get_types_vuln(self, obj):
+        return [{
+            'type_vul': type_vuln.type_vul,
+            'cwe_id': type_vuln.cwe_id
+        } for type_vuln in obj.types_vuln.all()]

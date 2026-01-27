@@ -1,4 +1,4 @@
-import Dashboard from "@/components/dashbored/dashboed-app";
+import Dashboard from "@/components/dashbored/dashboard-app";
 import BlogHero from "@/components/hero/BlogHero";
 
 const DashboardUSER: React.FC = () => {

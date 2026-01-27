@@ -25,7 +25,7 @@ const VeilleurSourcesPage = lazy(() => import('@/pages/veilleur/source-page'));
 const AnalyticsLayout = lazy(() => import('@/components/layouts/AnalyticsLayout'));
 
 // Simple User routes
-const Dashboard = lazy(() => import('@/pages/simple-user/dashbored'));
+const Dashboard = lazy(() => import('@/pages/simple-user/dashboard'));
 const SimpleUserLayout = lazy(() => import('@/components/layouts/SimpleUserLayout'));
 const SimpleUserArticles = lazy(() => import('@/pages/simple-user/Article/article'));
 const ArticleDetail = lazy(() => import('@/pages/simple-user/Article/article-details'));
@@ -58,7 +58,7 @@ export default function AppRoutes() {
         <Suspense fallback={<LoadingSpinner />}>
             <Routes>
                 {/* Public routes */}
-                <Route path="/" element={<HomePage />} />
+                <Route path="/home" element={<HomePage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
