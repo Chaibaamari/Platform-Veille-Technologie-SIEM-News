@@ -1,11 +1,10 @@
 import Navbar, { type NavItem } from "../NavBar/navbar-app";
 
 const navLinks: NavItem[] = [
-    { name: 'Utilisateurs', href: '/admin/users' },
-    { name: 'Home', href: '/admin/home' },
     { name: 'Dashboard', href: '/admin/dashboard' },
     { name: 'Articles', href: '/admin/article' },
     { name: 'Vulnérabilités', href: '/admin/vulnerabilities' },
+    { name: 'Utilisateurs', href: '/admin/users' },
     { name: 'Newsletter', href: '/admin/newsletter' },
 ];
 

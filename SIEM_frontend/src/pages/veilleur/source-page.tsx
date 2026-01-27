@@ -29,7 +29,6 @@ export default function VeilleurSourcesPage() {
         createSource({
             name: data.name,
             url: data.url,
-            type: data.type as "RSS" | "API" | "WEB",
             active: data.active,
         });
     };

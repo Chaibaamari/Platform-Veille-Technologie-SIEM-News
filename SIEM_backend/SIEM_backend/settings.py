@@ -43,7 +43,7 @@ EMAIL_HOST_USER = email_username
 EMAIL_HOST_PASSWORD = email_password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://127.0.0.1:5173')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
 
 LOGGING = {
     "version": 1,
@@ -174,7 +174,7 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:5173",
+    "http://localhost:5173",
 ]
 
 # CORS (pour permettre les requêtes depuis Postman/frontend)

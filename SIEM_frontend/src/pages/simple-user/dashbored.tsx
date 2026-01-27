@@ -7,7 +7,7 @@ const DashboardUSER: React.FC = () => {
 
     return (
         <div className="h-full w-full ">
-            <BlogHero/>
+            <BlogHero title="VIELLE"/>
             <Dashboard />
         </div>
     );

@@ -1,3 +1,4 @@
+import type { ForgotForm } from '@/pages/auth/ForgotPassword';
 import { apiMutation } from './client';
 
 export interface LoginRequest {
@@ -50,4 +51,18 @@ export const authApi = {
       console.log('Logout API call failed, proceeding to clear local state.');
     }
   },
+
+  forgotPassword : async (data: ForgotForm) => {
+    return apiMutation('auth/forgot-password/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  ResetPassword : async (token: string, new_password: string , confirm_password:string) => {
+    return apiMutation('auth/reset-password/', {
+      method: 'POST',
+      body: JSON.stringify({ token, new_password , confirm_password }),
+    });
+  }
 };

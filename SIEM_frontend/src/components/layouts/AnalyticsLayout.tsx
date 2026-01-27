@@ -1,10 +1,9 @@
 import Navbar, { type NavItem } from "../NavBar/navbar-app";
 
 const navLinks : NavItem[] = [
-    { name: 'Home', href: '/analytics/home' },
+    { name: 'Dashbored', href: '/analytics/dashbored' },
     { name: 'Article', href: '/analytics/article' },
     { name: 'Vulnerabilities', href: '/analytics/vulnerabilities' },
-    { name: 'Dashbored', href: '/analytics/dashbored' },
     { name: 'Newsletter', href: '/analytics/newsletter' },
 ];
 interface AnalyticsLayoutProps {
