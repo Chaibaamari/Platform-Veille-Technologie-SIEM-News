@@ -76,4 +76,6 @@ urlpatterns = [
     path('reports/vulnerabilities/pdf/', reports.generate_vulnerabilities_pdf, name='vulnerabilities-pdf'),
     path('reports/vulnerabilities/excel/', reports.generate_vulnerabilities_excel, name='vulnerabilities-excel'),
     path('reports/comprehensive/', reports.generate_comprehensive_report, name='comprehensive-report'),
+    path('reports/article/<int:article_id>/pdf/', reports.generate_single_article_pdf, name='single-article-pdf'),
+    path('reports/article/<int:article_id>/excel/', reports.generate_single_article_excel, name='single-article-excel'),
 ]

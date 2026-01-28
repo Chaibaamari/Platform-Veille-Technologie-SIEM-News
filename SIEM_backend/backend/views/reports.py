@@ -170,3 +170,73 @@ def generate_comprehensive_report(request):
             {"error": "Erreur lors de la génération du rapport"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+
+@api_view(['GET'])
+#@permission_classes([IsAuthenticated])
+def generate_single_article_pdf(request, article_id):
+    """
+    Génère un rapport PDF pour un article unique
+    Paramètre : article_id (ID de l'article)
+    """
+    try:
+        buffer = ReportGenerator.generate_single_article_pdf(article_id=article_id)
+        
+        response = HttpResponse(
+            buffer.getvalue(),
+            content_type='application/pdf'
+        )
+        response['Content-Disposition'] = f'attachment; filename="article_{article_id}.pdf"'
+        
+        logger.info(f"Rapport PDF article {article_id} généré par {request.user}")
+        return response
+    
+    except ValueError as e:
+        logger.error(f"Article non trouvé: {str(e)}")
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        logger.error(f"Erreur lors de la génération du rapport article PDF: {str(e)}\n{error_details}")
+        return Response(
+            {"error": f"Erreur: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def generate_single_article_excel(request, article_id):
+    """
+    Génère un rapport Excel pour un article unique
+    Paramètre : article_id (ID de l'article)
+    """
+    try:
+        buffer = ReportGenerator.generate_single_article_excel(article_id=article_id)
+        
+        response = HttpResponse(
+            buffer.getvalue(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename="article_{article_id}.xlsx"'
+        
+        logger.info(f"Rapport Excel article {article_id} généré par {request.user}")
+        return response
+    
+    except ValueError as e:
+        logger.error(f"Article non trouvé: {str(e)}")
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        logger.error(f"Erreur lors de la génération du rapport article Excel: {str(e)}\n{error_details}")
+        return Response(
+            {"error": f"Erreur: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
