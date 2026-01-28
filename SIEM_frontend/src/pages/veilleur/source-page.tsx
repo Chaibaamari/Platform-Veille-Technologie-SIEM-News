@@ -165,7 +165,7 @@ export default function VeilleurSourcesPage() {
                                 source={source}
                                 onToggle={() => toggleSource({ id: source.id, active: !source.active })}
                                 onDelete={() => {
-                                    if (confirm('Supprimer cette source ?')) {console.log(source.id); deleteSource(source.id)};
+                                    deleteSource(source.id)
                                 }}
                             />
                         ))

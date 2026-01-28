@@ -82,3 +82,51 @@ export const apiMutation = async (url: string, options: RequestInit = {}) => {
     }
     return response.json();
 };
+
+// Helper to download binary file using fetch (compatible with your auth setup)
+export async function downloadReport(
+  endpoint: string,          // e.g. 'reports/articles/pdf/'
+  defaultFileName: string    // e.g. 'articles-report.pdf'
+) {
+    const token = localStorage.getItem('auth_token');
+
+    const headers: HeadersInit = {
+        'Accept': '*/*',  // crucial — do NOT force application/json
+        ...(token && { Authorization: `Bearer ${token}` }),
+    };
+
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers,
+    });
+
+    if (!response.ok) {
+    let errorText = '';
+    try {
+        errorText = await response.text();
+    } catch {
+        throw new Error(`Report download failed: ${response.status} - ${errorText || response.statusText}`);
+    }
+    };
+
+  // Try to get real filename from Content-Disposition (Django should set this)
+    const disposition = response.headers.get('content-disposition');
+    let fileName = defaultFileName;
+
+    if (disposition) {
+        const match = disposition.match(/filename="?(.+)"?$/i);
+        if (match?.[1]) fileName = match[1];
+    }
+
+  // Trigger download
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+};

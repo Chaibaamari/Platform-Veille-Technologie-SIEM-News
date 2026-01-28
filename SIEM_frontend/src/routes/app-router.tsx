@@ -7,6 +7,7 @@ import { useAppSelector } from '@/stores/hooks';
 import { LoadingSpinner } from '@/components/Error/loading-spinner';
 import { getDashboardPathForRole, normalizeRole } from '@/lib/auth-utils';
 import Footer from '@/components/Footer/app-footer';
+import NotFound from '@/pages/404/NotFound';
 
 // Lazy load components for code splitting
 const Login = lazy(() => import('@/pages/auth/auth'));
@@ -63,7 +64,7 @@ export default function AppRoutes() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
 
-                {/* <Route path="/unauthorized" element={<Unauthorized />} /> */}
+                <Route path="/unauthorized" element={<NotFound />} />
 
                 {/* Root redirect to role-based dashboard */}
                 <Route path="/" element={<DashboardRedirect />} />

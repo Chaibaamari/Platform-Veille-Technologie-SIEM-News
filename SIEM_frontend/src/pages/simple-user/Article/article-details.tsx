@@ -2,7 +2,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Check, ChevronLeft, Tag } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, Tag } from 'lucide-react';
 import { apiClient, apiMutation } from '@/api/client';
 import { Badge } from '@/components/ui/badge';
 import { getTagBg, getTagText } from '@/lib/utils';
@@ -10,6 +10,9 @@ import { useState } from 'react';
 import { queryClient } from '@/main';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAppSelector } from '@/stores/hooks';
+import BlogHero from '@/components/hero/BlogHero';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
 
 export default function ArticleDetail() {
     const { id } = useParams<{ id: string }>();
@@ -17,7 +20,7 @@ export default function ArticleDetail() {
     const { role } = useAppSelector((state) => state.auth);
     
 
-    const { data: article, isLoading, error } = useQuery({
+    const { data: article, isLoading, error , isError } = useQuery({
         queryKey: ['articles', id],
         queryFn: () => apiClient({ queryKey: [`articles/${id}`] }),
         enabled: !!id,
@@ -77,9 +80,26 @@ export default function ArticleDetail() {
         // updateCategoriesMutation.mutate(selectedCategoryIds);
     };
 
-    if (isLoading) return <div className="text-white text-center py-20">Loading...</div>;
-    if (error || !article)
-    return <div className="text-red-400 text-center py-20">Article not found</div>;
+    if (isLoading) {
+            return (
+                <div className="w-full min-h-screen bg-zinc-900">
+                    <BlogHero />
+                    <LoadingState title="Chargement des articles" />;
+                </div>
+            )
+            }
+        
+            if (isError || !article) {
+                return (
+                    <div className="w-full min-h-screen bg-zinc-900">
+                        <BlogHero />
+                        <ErrorState
+                            title="Erreur lors du chargement des articles"
+                            error={error}
+                        />
+                    </div>
+                );
+    }
 
     return (
         <div className="w-full max-w-[1216] mx-auto px-8 py-12 flex flex-col gap-8 bg-linear-to-b from-slate-950 to-zinc-900">
@@ -107,9 +127,10 @@ export default function ArticleDetail() {
                             {/* Category Button with Popover */}
                             <Popover open={openPopover} onOpenChange={setOpenPopover}>
                                 <PopoverTrigger asChild>
-                                    <button className="flex items-center gap-2 px-4 py-2 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/30 rounded-lg text-violet-400 hover:text-violet-300 transition-colors">
-                                        <Tag size={18} />
-                                        <span className="font-medium">Categories</span>
+                                    <button className="px-6 py-3 rounded-xl flex items-center gap-2 transition bg-transparent border border-neutral-800 hover:bg-neutral-800 hover:border-violet-500 text-neutral-400 hover:text-white">
+                                        <Tag className="w-5 h-5 text-violet-500" />
+                                        <span>Categories</span>
+                                        <ChevronDown className={`w-4 h-4 text-violet-500 transition-transform ${openPopover ? 'rotate-180' : ''}`} />
                                     </button>
                                 </PopoverTrigger>
                                 <PopoverContent
@@ -191,7 +212,7 @@ export default function ArticleDetail() {
                                             [&>p]:text-neutral-300 [&>p]:leading-relaxed [&>p]:mb-4"
                                     dangerouslySetInnerHTML={{ __html: article.contenu }}
                                 />
-                                )}
+                            )}
 
                             
                             {article.summary && (
@@ -220,7 +241,7 @@ export default function ArticleDetail() {
                                     </Badge>
                                 ))}
                             </div>
-                        </div>            
+                        </div>
                     </div>
 
                 </div>

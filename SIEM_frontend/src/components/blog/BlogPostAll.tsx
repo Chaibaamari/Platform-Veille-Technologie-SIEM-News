@@ -4,83 +4,82 @@ import type { Article } from '@/types/blog';
 // import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight} from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { getTagBg, getTagText } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '@/stores/hooks';
+import { useState } from 'react';
+import { ErrorState } from '../ui/ErrorState';
+import { LoadingState } from '../ui/LoadingState';
 
-// interface ApiResponse {
-//   data: Article[];
-//   total: number;
-//   currentPage: number;
-//   totalPages: number;
-//   limit: number;
-// }
+interface ArticlesResponse {
+  articles: Article[];
+  pagination: {
+    page: number;
+    page_size: number;
+    total_pages: number;
+    total_items: number;
+    has_next: boolean;
+    has_previous: boolean;
+  };
+}
 
-// const PAGE_SIZE = 6;
+const PAGE_SIZE = 9; // matches 3 rows × 3 articles
 
 export default function BlogPostsPage() {
-    // const {
-    //     data,
-    //     isLoading,
-    //     isError,
-    //     error,
-    //     fetchNextPage,
-    //     fetchPreviousPage,
-    //     hasNextPage,
-    //     hasPreviousPage,
-    //     isFetchingNextPage,
-    //     isFetchingPreviousPage,
-    // } = useInfiniteQuery<ApiResponse>({
-    //     queryKey: ['articles'],
-    //     queryFn: ({ pageParam = 1 }) =>
-    //         apiClient({
-    //             queryKey: [`articles?page=${pageParam}&limit=${PAGE_SIZE}`],
-    //             // queryKey: [`/articles?page=${pageParam}&limit=${PAGE_SIZE}`],
-    //         }),
-    //     initialPageParam: 1,
-    //     getNextPageParam: (lastPage) =>
-    //         lastPage.currentPage < lastPage.totalPages
-    //             ? lastPage.currentPage + 1
-    //             : undefined,
-    //     getPreviousPageParam: (firstPage) =>
-    //         firstPage.currentPage > 1 ? firstPage.currentPage - 1 : undefined,
-    //     staleTime: 5000,
-    // });
-    const { data, isLoading, error , isError } = useQuery({
-        queryKey: ["articles/"],
-        queryFn: apiClient,
-        staleTime: 5000
-    });
+    const [page, setPage] = useState(1);
     const { role } = useAppSelector((state) => state.auth);
-    
 
-    if (isLoading) return <div className="text-center py-20 text-white">Loading posts...</div>;
-    if (isError) return <div className="text-center py-20 text-red-400">Error: {(error as Error)?.message}</div>;
+    const { data, isLoading, isError, error } = useQuery({
+        queryKey: ['articles/', page, PAGE_SIZE],
+        queryFn: async () => {
+            const response = await apiClient({
+                queryKey: [`articles/?page=${page}&page_size=${PAGE_SIZE}`], // note: ? not &
+            });
+            return response as ArticlesResponse;
+        },
+        staleTime: 3 * 60 * 1000, // 3 minutes – adjust as needed
+    });
 
-    // const allArticles = data?.pages.flatMap((page) => page.data) ?? [];
-    const allArticles = data?.articles
-        ?.slice(10) || [];
-    // const currentPage = data?.pagination.page ?? 1;
-    // const totalPages = data?.pagination.total_pages ?? 1;
+    const typedData = data as ArticlesResponse | undefined;
+    const allArticles = typedData?.articles || [];
+    const pagination = typedData?.pagination;
 
-    //Helper to generate page numbers for display
-    // const getPageNumbers = () => {
-    //     const pages = [];
-    //     if (totalPages <= 7) {
-    //         for (let i = 1; i <= totalPages; i++) pages.push(i);
-    //     } else {
-    //         if (currentPage <= 4) {
-    //             pages.push(1, 2, 3, 4, 5, '...', totalPages);
-    //         } else if (currentPage >= totalPages - 3) {
-    //             pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-    //         } else {
-    //             pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
-    //         }
-    //     }
-    //     return pages;
-    // };
+    const totalPages = pagination?.total_pages ?? 1;
+    const currentPage = pagination?.page ?? 1;
+    const hasPrevious = pagination?.has_previous ?? false;
+    const hasNext = pagination?.has_next ?? false;
+
+    // Helper to generate page numbers for display
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            if (currentPage <= 4) {
+                pages.push(1, 2, 3, 4, 5, '...', totalPages);
+            } else if (currentPage >= totalPages - 3) {
+                pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+            } else {
+                pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+            }
+        }
+        return pages;
+    };
+
+    if (isLoading) {
+        return <LoadingState title="Chargement des articles" />;
+    }
+
+    if (isError) {
+        return (
+            <ErrorState
+                title="Erreur lors du chargement des articles"
+                error={error}
+            />
+        );
+    }
 
     
     return (
@@ -162,15 +161,15 @@ export default function BlogPostsPage() {
             {/* Pagination Controls */}
             <div className="self-stretch h-16 pt-5 border-t border-gray-200/30 flex justify-between items-center">
                 <button
-                    // onClick={() => fetchPreviousPage()}
-                    // disabled={!hasPreviousPage || isFetchingPreviousPage}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={!hasPrevious || isLoading}
                     className="flex items-center gap-2 text-zinc-100 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                     <ChevronLeft className="w-5 h-5" />
                     Previous
                 </button>
 
-                {/* <div className="flex items-center gap-0.5">
+                <div className="flex items-center gap-0.5">
                     {getPageNumbers().map((page, i) =>
                         page === '...' ? (
                             <div
@@ -187,7 +186,7 @@ export default function BlogPostsPage() {
                                     if (targetPage > currentPage) {
                                         // Jump forward – fetch until we reach it (simple way)
                                         for (let p = currentPage + 1; p <= targetPage; p++) {
-                                            fetchNextPage();
+                                            setPage((p) => p + 1)
                                         }
                                     } else if (targetPage < currentPage) {
                                         // Can't easily go back with infinite query unless refetching
@@ -203,11 +202,11 @@ export default function BlogPostsPage() {
                             </button>
                         )
                     )}
-                </div> */}
+                </div>
 
                 <button
-                    // onClick={() => fetchNextPage()}
-                    // disabled={!hasNextPage || isFetchingNextPage}
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={!hasNext || isLoading}
                     className="flex items-center gap-2 text-zinc-100 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                     Next
