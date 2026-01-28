@@ -39,14 +39,14 @@ const DashboardRedirect = () => {
     const { role } = useAppSelector((state) => state.auth);
 
     if (!role) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/home" replace />;
     }
 
     const normalizedRole = normalizeRole(role);
     const targetRoute = getDashboardPathForRole(normalizedRole);
 
     if (!targetRoute) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/home" replace />;
     }
 
     return <Navigate to={targetRoute} replace />;
@@ -58,7 +58,7 @@ export default function AppRoutes() {
         <Suspense fallback={<LoadingSpinner />}>
             <Routes>
                 {/* Public routes */}
-                <Route path="/" element={<HomePage />} />
+                <Route path="/home" element={<HomePage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
@@ -148,7 +148,6 @@ export default function AppRoutes() {
                                     <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
                                     <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
                                     <Route path="newsletter" element={<NewsletterPage />} />
-                                    <Route path="home" element={<HomePage />} />
                                     <Route path="*" element={<Navigate to="/simple_user/dashboard" replace />} />
                                 </Routes>
                                 <Footer />
