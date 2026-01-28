@@ -3,10 +3,11 @@ import { Loader2, Clock } from 'lucide-react';
 type Props = {
   isScanning: boolean;
   progress: number;
-  estimatedTime: number;
+  scanningPhase: string;
+  details: string
 };
 
-export default function ScanningProgress({ isScanning, progress, estimatedTime }: Props) {
+export default function ScanningProgress({ isScanning, progress, scanningPhase, details }: Props) {
   if (!isScanning) return null;
 
     return (
@@ -16,12 +17,12 @@ export default function ScanningProgress({ isScanning, progress, estimatedTime }
                     <Loader2 className="w-6 h-6 text-violet-400 animate-spin" />
                     <div>
                         <h3 className="text-white font-semibold text-lg">Veille en cours...</h3>
-                        <p className="text-slate-400 text-sm">Analyse des sources actives</p>
+                        <p className="text-slate-400 text-sm">{ scanningPhase }</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2 bg-slate-800 px-4 py-2 rounded-lg">
                     <Clock className="w-4 h-4 text-violet-400" />
-                    <span className="text-white font-medium">{estimatedTime} min restantes</span>
+                    <span className="text-white font-medium">{details}</span>
                 </div>
             </div>
 

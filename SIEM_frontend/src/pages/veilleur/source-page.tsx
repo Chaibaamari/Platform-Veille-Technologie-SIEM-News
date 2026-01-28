@@ -5,11 +5,19 @@ import SourceCreateDialog from '@/components/ui/SourceCreateDialog';
 import ScanningProgress from '@/components/ui/ScanningProgress';
 import SourcesStatsCards from '@/components/ui/SourcesStatsCards';
 import SourceCard from '@/components/ui/SourceCard';
+import type { Source } from '@/types/blog';
+import { apiClient } from '@/api/client';
 
+type Progress = {
+    percentage: number,
+    message: string,
+    is_running: boolean,
+    step: string
+}
 
 export default function VeilleurSourcesPage() {
   const {
-    sources,
+    sourcesData,
     isLoading,
     createSource,
     isCreating,
@@ -19,44 +27,72 @@ export default function VeilleurSourcesPage() {
     isTriggering,
   } = useSources();
 
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanProgress, setScanProgress] = useState(0);
-  const [estimatedTime, setEstimatedTime] = useState(0);
+    const [isScanning, setIsScanning] = useState(false);
+    const [scanProgress, setScanProgress] = useState(0);
+    const [scanningPhase, setScanningPhase] = useState<string>('');
+    const [scanningMessage, setscanningMessage] = useState<string>('')
 
-    const activeCount = sources.filter((s) => s.active).length;
+    const sources = sourcesData?.sources || []
+    const activeCount = sources.filter((s: Source) => s.active).length;
+
+    const [statusMessage, setStatusMessage] = useState<{
+        type: 'success' | 'error' | null;
+        text: string;
+    }>({ type: null, text: '' });
+
+    const clearStatusMessage = () =>setStatusMessage({ type: null, text: '' });
 
     const handleCreateSource = (data: { name: string; url: string; type: string; active: boolean }) => {
         createSource({
-            name: data.name,
-            url: data.url,
+            nom_source: data.name,
+            flux_rss: data.url,
             active: data.active,
         });
     };
 
-    const handleTrigger = () => {
-        // if (!confirm('Déclencher la veille sur toutes les sources actives ? (~20 min)')) return;
+    const handleTrigger = async () => {
         setIsScanning(true);
         setScanProgress(0);
-        setEstimatedTime(20);
-        triggerVeille();
+        setScanningPhase("Starting...");
+        
+        await triggerVeille();
 
-        // // Simulation
-        // const total = 20 * 60 * 1000;
-        // const start = Date.now();
-        // const iv = setInterval(() => {
-        //     const elapsed = Date.now() - start;
-        //     const p = Math.min((elapsed / total) * 100, 100);
-        //     setScanProgress(p);
-        //     setEstimatedTime(Math.ceil((total - elapsed) / 60000));
-        //     if (p >= 100) {
-        //         clearInterval(iv);
-        //         setIsScanning(false);
-        //     }
-        // }, 1000);
+        const intervalId = setInterval(async () => {
+        try {
+            const progress: Progress = await apiClient({
+                queryKey: ['veille/progress'],
+            });
+
+            setScanProgress(progress.percentage);
+            setScanningPhase(progress.step);
+            setIsScanning(progress.is_running);
+            setscanningMessage(progress.message)
+
+            console.log(progress)
+
+            if (!progress.is_running) {
+                clearInterval(intervalId);
+                setStatusMessage({
+                    type: 'success',
+                    text: 'La veille s’est terminée avec succès',
+                });
+            }
+            } catch (err) {
+                console.error("Progress polling failed", err);
+                clearInterval(intervalId);
+                setIsScanning(false);
+
+                setStatusMessage({
+                    type: 'error',
+                    text: "Une erreur est survenue pendant la veille",
+                });
+            }
+        }, 4000);
     };
 
+
     if (isLoading) {
-    return <div className="flex min-h-screen items-center justify-center text-white">Chargement...</div>;
+        return <div className="flex min-h-screen items-center justify-center text-white">Chargement...</div>;
     };
 
     return (
@@ -92,8 +128,27 @@ export default function VeilleurSourcesPage() {
                         <SourceCreateDialog onCreate={handleCreateSource} isCreating={isCreating} />
                     </div>
                 </div>
+                
+                {statusMessage.type && (
+                    <div
+                        className={`mb-6 flex items-center justify-between gap-4 rounded-xl px-4 py-3 text-sm ${
+                        statusMessage.type === 'success'
+                                ? 'bg-emerald-900/40 text-emerald-300 border border-emerald-700'
+                                : 'bg-red-900/40 text-red-300 border border-red-700'
+                    }`}>
+                        {statusMessage.text}
 
-                <ScanningProgress isScanning={isScanning} progress={scanProgress} estimatedTime={estimatedTime} />
+                        <button
+                            onClick={clearStatusMessage}
+                            className="text-slate-400 hover:text-white transition"
+                            aria-label="Fermer le message"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
+
+                <ScanningProgress details={scanningMessage} isScanning={isScanning} progress={scanProgress} scanningPhase={scanningPhase}/>
 
                 <SourcesStatsCards sources={sources} />
 
@@ -104,13 +159,13 @@ export default function VeilleurSourcesPage() {
                             <p className="mt-2 text-sm text-slate-500">Ajoutez votre première source pour commencer</p>
                         </div>
                     ) : (
-                        sources.map((source) => (
+                        sources.map((source: Source) => (
                             <SourceCard
                                 key={source.id}
                                 source={source}
                                 onToggle={() => toggleSource({ id: source.id, active: !source.active })}
                                 onDelete={() => {
-                                    if (confirm('Supprimer cette source ?')) deleteSource(source.id);
+                                    if (confirm('Supprimer cette source ?')) {console.log(source.id); deleteSource(source.id)};
                                 }}
                             />
                         ))

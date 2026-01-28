@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Trash2, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { format } from 'date-fns';
+import { RefreshCw, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import type { Source } from '@/types/blog';
 
 type Props = {
@@ -15,10 +14,7 @@ export default function SourceCard({ source, onToggle, onDelete }: Props) {
             <div className="flex items-start justify-between">
                 <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-white font-semibold text-lg">{source.name}</h3>
-                        <span className="px-3 py-1 bg-violet-500/20 text-violet-300 rounded-full text-xs font-medium border border-violet-500/30">
-                            {source.type}
-                        </span>
+                        <h3 className="text-white font-semibold text-lg">{source.nom_source}</h3>
                         {source.active ? (
                             <span className="flex items-center gap-1.5 text-green-400 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/30">
                                 <CheckCircle className="w-3.5 h-3.5" />
@@ -32,16 +28,10 @@ export default function SourceCard({ source, onToggle, onDelete }: Props) {
                         )}
                     </div>
 
-                    <p className="text-slate-400 text-sm mb-3 truncate max-w-2xl" title={source.url}>
-                        {source.url}
+                    <p className="text-slate-400 text-sm mb-3 truncate max-w-2xl" title={source.flux_rss}>
+                        {source.flux_rss}
                     </p>
 
-                    <div className="flex items-center gap-2 text-xs text-slate-500">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>
-                            Dernière vérification : {source.last_check ? format(new Date(source.last_check), 'dd/MM/yyyy à HH:mm') : 'Jamais'}
-                        </span>
-                    </div>
                 </div>
 
                 <div className="flex gap-2">

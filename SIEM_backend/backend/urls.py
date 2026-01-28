@@ -59,7 +59,8 @@ urlpatterns = [
     # ============================================
     # VEILLE
     # ============================================
-    path('lancer_veille/', views.api_start_scrapping, name='start_scraping_background'),
+    path('veille/trigger', views.api_start_scrapping, name='start_scraping_background'),
+    path('veille/progress', views.api_scraping_progress, name='start_scraping_background'),
 
     # ============================================
     # SOURCES
@@ -67,4 +68,5 @@ urlpatterns = [
     path('sources/', views.api_list_sources),
     path('sources/add/', views.api_add_source),
     path('sources/<int:source_id>/delete/', views.api_delete_source),
+    path('sources/<int:source_id>/update/', views.api_activate_source),
 ]

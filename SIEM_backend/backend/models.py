@@ -155,6 +155,7 @@ class Source(models.Model):
     id_source = models.AutoField(primary_key=True)
     nom_source = models.CharField(max_length=500)
     flux_rss = models.URLField(max_length=1000, unique=True, validators=[URLValidator()])
+    active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'source'

@@ -1,6 +1,6 @@
 from threading import Thread
 import logging
-from .scraping_module import launch_web_scrapping
+from .scraping_module import launch_web_scrapping, scraping_progress
 
 # Global flag to indicate scraping status
 is_scraping = False
@@ -9,18 +9,19 @@ def start_scraping_background():
     global is_scraping
 
     if is_scraping:
-        logging.warning("Scraping already in progress. Skipping this request.")
-        return False  # indicate it was already running
+        return False
 
     def wrapper():
         global is_scraping
         is_scraping = True
+        scraping_progress["is_running"] = True
+
         try:
             launch_web_scrapping()
         finally:
+            scraping_progress["is_running"] = False
             is_scraping = False
 
-    thread = Thread(target=wrapper, daemon=True)
-    thread.start()
-    logging.info("Scraping started in the background")
-    return True  # indicate scraping started successfully
+    Thread(target=wrapper, daemon=True).start()
+    return True
+

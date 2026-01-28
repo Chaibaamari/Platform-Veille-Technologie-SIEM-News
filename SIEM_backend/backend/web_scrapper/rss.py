@@ -6,7 +6,7 @@ import logging
 from backend.models import Source
 
 # Configure basic logging to the console
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger('backend')
 
 namespaces = {'dc': 'http://purl.org/dc/elements/1.1/'}
 
@@ -99,6 +99,10 @@ def read_rss_feeds():
 
     articles = []
     for source in sources:
+
+        if not source.active:
+            continue
+    
         url = source.flux_rss
         name = source.nom_source
 

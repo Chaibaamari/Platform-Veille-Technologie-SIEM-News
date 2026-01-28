@@ -50,8 +50,8 @@ export interface Vulnerability {
 // ============ Source & Category Types ============
 export interface Source {
   id: number;
-  name: string;
-  url: string;
+  nom_source: string;
+  flux_rss: string;
   active: boolean;
 }
 

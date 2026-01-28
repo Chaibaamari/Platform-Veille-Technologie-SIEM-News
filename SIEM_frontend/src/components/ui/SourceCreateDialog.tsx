@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Link2, Tag, Globe } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
+import { Plus, Link2, Tag } from 'lucide-react';
 
 type Props = {
     onCreate: (data: { name: string; url: string; type: string; active: boolean }) => void;
@@ -73,39 +72,6 @@ export default function SourceCreateDialog({ onCreate, isCreating }: Props) {
                             className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all"
                             placeholder="https://techcrunch.com/feed/"
                         />
-                    </div>
-
-                    {/* Type Select */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-300 flex items-center gap-2">
-                            <Globe className="w-4 h-4 text-violet-400" />
-                            Type de source
-                        </label>
-                        <Select value={form.type} onValueChange={(value) => setForm((p) => ({ ...p, type: value }))}>
-                            <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white h-12 focus:ring-2 focus:ring-violet-500">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="bg-slate-800 border-slate-700">
-                                <SelectItem value="RSS" className="text-white hover:bg-slate-700 cursor-pointer">
-                                    <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-orange-400 rounded-full"></span>
-                                        RSS Feed
-                                    </div>
-                                </SelectItem>
-                                <SelectItem value="API" className="text-white hover:bg-slate-700 cursor-pointer">
-                                    <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
-                                        API
-                                    </div>
-                                </SelectItem>
-                                <SelectItem value="WEB" className="text-white hover:bg-slate-700 cursor-pointer">
-                                    <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                                        Web Scraping
-                                    </div>
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
                     </div>
 
                     {/* Active Checkbox */}
