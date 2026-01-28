@@ -64,7 +64,7 @@ export default function AppRoutes() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
 
-                <Route path="/unauthorized" element={<NotFound />} />
+                {/* <Route path="/unauthorized" element={<NotFound />} /> */}
 
                 {/* Root redirect to role-based dashboard */}
                 <Route path="/" element={<DashboardRedirect />} />
@@ -85,7 +85,7 @@ export default function AppRoutes() {
                                     <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
                                     <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
                                     <Route path="newsletter" element={<NewsletterPage />} />
-                                    <Route path="*" element={<Navigate to="/admin/article" replace />} />
+                                    <Route path="*" element={<NotFound />}  />
                                 </Routes>
                                 <Footer />
                             </AdminLayout>
@@ -106,7 +106,7 @@ export default function AppRoutes() {
                                     <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
                                     <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
                                     <Route path="newsletter" element={<NewsletterPage />} />
-                                    <Route path="*" element={<Navigate to="/analytics/article" replace />} />
+                                    <Route path="*" element={<NotFound />}  />
                                 </Routes>
                                 <Footer />
                             </AnalyticsLayout>
@@ -127,7 +127,7 @@ export default function AppRoutes() {
                                     <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
                                     <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
                                     <Route path="sources" element={<VeilleurSourcesPage />} />
-                                    <Route path="*" element={<Navigate to="/veilleur/article" replace />} />
+                                    <Route path="*" element={<NotFound />}  />
                                 </Routes>
                                 <Footer />
                             </VeilleurLayout>
@@ -149,7 +149,7 @@ export default function AppRoutes() {
                                     <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
                                     <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
                                     <Route path="newsletter" element={<NewsletterPage />} />
-                                    <Route path="*" element={<Navigate to="/simple_user/dashboard" replace />} />
+                                    <Route path="*" element={<NotFound />}  />
                                 </Routes>
                                 <Footer />
                             </SimpleUserLayout>

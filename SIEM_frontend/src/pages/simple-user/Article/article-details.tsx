@@ -2,7 +2,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Check, ChevronDown, ChevronLeft, Tag } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, Heart, Tag } from 'lucide-react';
 import { apiClient, apiMutation } from '@/api/client';
 import { Badge } from '@/components/ui/badge';
 import { getTagBg, getTagText } from '@/lib/utils';
@@ -13,11 +13,14 @@ import { useAppSelector } from '@/stores/hooks';
 import BlogHero from '@/components/hero/BlogHero';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { useFavorites } from '@/hook/useFavorites';
 
 export default function ArticleDetail() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { role } = useAppSelector((state) => state.auth);
+    const { toggleFavorite, isFavorite } = useFavorites();
+
     
 
     const { data: article, isLoading, error , isError } = useQuery({
@@ -81,15 +84,15 @@ export default function ArticleDetail() {
     };
 
     if (isLoading) {
-            return (
-                <div className="w-full min-h-screen bg-zinc-900">
-                    <BlogHero />
-                    <LoadingState title="Chargement des articles" />;
-                </div>
-            )
+        return (
+            <div className="w-full min-h-screen bg-zinc-900">
+                <BlogHero />
+                <LoadingState title="Chargement des articles" />;
+            </div>
+        );
             }
         
-            if (isError || !article) {
+            if (isError) {
                 return (
                     <div className="w-full min-h-screen bg-zinc-900">
                         <BlogHero />
@@ -123,6 +126,19 @@ export default function ArticleDetail() {
                             <h1 className="flex-1 text-white text-4xl font-bold leading-10">
                                 {article.titre}
                             </h1>
+                            <button
+                                onClick={() => toggleFavorite(article)}
+                                className={`px-4 py-3 rounded-xl flex items-center gap-2 transition border ${isFavorite(article.id)
+                                        ? 'bg-red-500/10 border-red-500/50 text-red-400 hover:bg-red-500/20'
+                                        : 'bg-transparent border-neutral-800 text-neutral-400 hover:bg-neutral-800 hover:border-violet-500 hover:text-white'
+                                    }`}
+                            >
+                                <Heart
+                                    className={`w-5 h-5 transition ${isFavorite(article.id) ? 'fill-red-500' : ''
+                                        }`}
+                                />
+                                <span>{isFavorite(article.id) ? 'Enregistré' : 'Enregistrer'}</span>
+                            </button>
 
                             {/* Category Button with Popover */}
                             <Popover open={openPopover} onOpenChange={setOpenPopover}>

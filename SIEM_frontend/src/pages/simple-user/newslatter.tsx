@@ -1,12 +1,17 @@
+// src/components/Newsletter.tsx
 import { useState } from 'react';
-import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
+import { CheckCircle, Loader2, AlertCircle, ArrowRight, Calendar, Heart, Badge } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useAppSelector } from '@/stores/hooks';
+import { useFavorites } from '@/hook/useFavorites';
+import { getTagBg, getTagText } from '@/lib/utils';
 
 export interface NewsletterFormData {
   email: string;
 }
 
 interface NewsletterProps {
-  apiUrl?: string; // Optional: override default API endpoint
+  apiUrl?: string;
   onSuccess?: () => void;
   onError?: (error: string) => void;
 }
@@ -19,6 +24,9 @@ export default function Newsletter({
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
+    
+    const { favorites, toggleFavorite, isFavorite } = useFavorites();
+    const { role } = useAppSelector((state) => state.auth);
 
     const validateEmail = (email: string) => {
         return email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/);
@@ -29,13 +37,13 @@ export default function Newsletter({
 
         if (!email.trim()) {
             setStatus('error');
-            setMessage('Please enter your email');
+            setMessage('Veuillez entrer votre email');
             return;
         }
 
         if (!validateEmail(email)) {
             setStatus('error');
-            setMessage('Please enter a valid email address');
+            setMessage('Veuillez entrer une adresse email valide');
             return;
         }
 
@@ -54,96 +62,223 @@ export default function Newsletter({
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to subscribe');
+                throw new Error(data.message || 'Échec de l\'inscription');
             }
 
             setStatus('success');
-            setMessage('Thank you! You are now subscribed.');
+            setMessage('Merci ! Vous êtes maintenant abonné.');
             setEmail('');
             onSuccess?.();
         } catch (err) {
             setStatus('error');
-            setMessage(err instanceof Error ? err.message : 'Something went wrong');
-            onError?.(err instanceof Error ? err.message : 'Unknown error');
+            setMessage(err instanceof Error ? err.message : 'Une erreur est survenue');
+            onError?.(err instanceof Error ? err.message : 'Erreur inconnue');
         }
     };
 
     return (
-        <div className="h-screen self-stretch flex flex-col justify-start items-center gap-10 py-12 bg-linear-to-b from-slate-950 to-zinc-900">
-            {/* Title & Description */}
-            <div className="self-stretch flex flex-col justify-start items-center gap-6">
-                <div className="self-stretch flex flex-col justify-start items-start gap-3">
-                    <div className="self-stretch text-center text-violet-500 text-base font-semibold  leading-6">
-                        Newsletters
+        <div className="w-full bg-linear-to-b from-slate-950 to-zinc-900">
+
+            {/* Favorite Articles Section */}
+            <div className="py-16 px-4 border-t border-neutral-800">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex items-center justify-between mb-12">
+                        <div className="flex items-center gap-3">
+                            <Heart className="w-8 h-8 text-violet-500 fill-violet-500" />
+                            <h2 className="text-white text-3xl font-bold">
+                                Articles favoris
+                            </h2>
+                            <span className="px-3 py-1 bg-violet-500/10 border border-violet-500/30 rounded-full text-violet-400 text-sm font-medium">
+                                {favorites.length}
+                            </span>
+                        </div>
+                        <Link
+                            to={`/${role}/article`}
+                            className="flex items-center gap-2 text-violet-400 hover:text-violet-300 transition"
+                        >
+                            <span>Voir tous les articles</span>
+                            <ArrowRight className="w-5 h-5" />
+                        </Link>
                     </div>
-                    <div className="self-stretch text-center text-white text-5xl font-semibold  leading-15">
-                        Stories and interviews
-                    </div>
-                </div>
-                <div className="w-full max-w-3xl text-center text-neutral-300 text-xl font-normal  leading-8">
-                    Subscribe to learn about new product features, the latest in technology, solutions, and updates.
+
+                    {/* Articles Grid */}
+                    {favorites.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {favorites.slice(0, 6).map((article) => (
+                                <div
+                                    key={article.id}
+                                    className="group bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden hover:border-violet-500 transition-all duration-300"
+                                >
+                                    {/* Image */}
+                                    <div className="relative h-48 overflow-hidden">
+                                        <Link to={`/${role}/article/${article.id}`}>
+                                            <img
+                                                src={article.thumbnail || 'https://images.pexels.com/photos/270360/pexels-photo-270360.jpeg'}
+                                                alt={article.titre}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            />
+                                        </Link>
+                                        
+                                        {/* Favorite Button */}
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                toggleFavorite(article);
+                                            }}
+                                            className="absolute top-3 right-3 w-10 h-10 bg-neutral-900/80 backdrop-blur-sm border border-neutral-700 hover:border-red-500 rounded-full flex items-center justify-center transition-all group/heart"
+                                        >
+                                            <Heart
+                                                className={`w-5 h-5 transition-all ${isFavorite(article.id)
+                                                    ? 'text-red-500 fill-red-500'
+                                                    : 'text-neutral-400 group-hover/heart:text-red-500'
+                                                    }`}
+                                            />
+                                        </button>
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="p-6 space-y-4">
+                                        {/* Category */}
+                                        <div className="flex flex-wrap mt-auto  justify-start items-start gap-2">
+                                            {(article.categories || []).map((tag: string) => (
+                                                <Badge
+                                                    key={tag}
+                                                    className="px-2.5 py-0.5 rounded-2xl text-sm font-medium"
+                                                    style={{
+                                                        backgroundColor: getTagBg(tag),
+                                                        color: getTagText(tag),
+                                                    }}
+                                                >
+                                                    {tag}
+                                                </Badge>
+                                            ))}
+                                        </div>
+
+                                        {/* Title */}
+                                        <Link to={`/${role}/article/${article.id}`}>
+                                            <h3 className="text-white text-xl font-semibold line-clamp-2 group-hover:text-violet-400 transition">
+                                                {article.titre}
+                                            </h3>
+                                        </Link>
+
+                                        {/* Description */}
+                                        <p className="text-neutral-400 text-sm line-clamp-3">
+                                            {article.contenu?.replace(/<[^>]*>/g, '') || 'Aucune description disponible'}
+                                        </p>
+
+                                        {/* Footer */}
+                                        <div className="flex items-center justify-between pt-4 border-t border-neutral-800">
+                                            <div className="flex items-center gap-2 text-neutral-500 text-sm">
+                                                <Calendar className="w-4 h-4" />
+                                                <span>
+                                                    {new Date(article.date_publication).toLocaleDateString('fr-FR', {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric'
+                                                    })}
+                                                </span>
+                                            </div>
+                                            <Link
+                                                to={`/${role}/article/${article.id}`}
+                                                className="flex items-center gap-1 text-violet-400 hover:text-violet-300 text-sm font-medium transition"
+                                            >
+                                                Lire
+                                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-16">
+                            <Heart className="w-20 h-20 text-neutral-700 mx-auto mb-4" />
+                            <h3 className="text-white text-xl font-semibold mb-2">
+                                Aucun article favori
+                            </h3>
+                            <p className="text-neutral-400 mb-6">
+                                Commencez à ajouter des articles à vos favoris en cliquant sur le cœur
+                            </p>
+                            <Link
+                                to={`/${role}/article`}
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-violet-500 hover:bg-violet-600 rounded-xl text-white font-medium transition"
+                            >
+                                Découvrir les articles
+                                <ArrowRight className="w-5 h-5" />
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
+            {/* Newsletter Section */}
+            <div className="flex flex-col justify-start items-center gap-10 py-16 px-4">
+                <div className="max-w-3xl flex flex-col justify-start items-center gap-6">
+                    <div className="flex flex-col justify-start items-start gap-3">
+                        <div className="text-center text-violet-500 text-base font-semibold leading-6 items-center w-full">
+                            Newsletters
+                        </div>
+                        <div className="text-center text-white text-5xl font-semibold leading-tight">
+                            Stories and interviews
+                        </div>
+                    </div>
+                    <div className="text-center text-neutral-300 text-xl font-normal leading-8">
+                        Subscribe to learn about new product features, the latest in technology, solutions, and updates.
+                    </div>
+                </div>
 
-            {/* Form */}
-            <form
-                onSubmit={handleSubmit}
-                className="flex justify-start items-start gap-4 flex-wrap"
-            >
-                <div className="w-full sm:w-96 flex flex-col justify-start items-start">
-                    <div className="self-stretch flex flex-col justify-start items-start gap-2">
-                        <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
+                <form
+                    onSubmit={handleSubmit}
+                    className="flex justify-center items-start gap-4 flex-wrap max-w-2xl w-full"
+                >
+                    <div className="flex-1 min-w-70 flex flex-col justify-start items-start">
+                        <div className="w-full flex flex-col justify-start items-start gap-2">
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email"
-                                className="self-stretch pl-4 pr-3.5 py-3 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] outline  outline-gray-300 flex justify-start items-center gap-2 overflow-hidden text-gray-500 text-base font-normal  leading-6 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition"
+                                placeholder="Entrez votre email"
+                                className="w-full px-4 py-3 bg-white rounded-lg shadow-sm border border-gray-300 text-gray-900 text-base placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition"
                                 disabled={status === 'loading'}
                             />
-                        </div>
-
-                        {/* Privacy notice */}
-                        <div className="self-stretch text-sm text-neutral-300 font-normal  leading-5">
-                            We care about your data in our{' '}
-                            <a href="/privacy" className="underline hover:text-violet-400 transition">
-                                privacy policy
-                            </a>
+                            <div className="text-sm text-neutral-300 font-normal leading-5">
+                                Nous prenons soin de vos données dans notre{' '}
+                                <a href="/privacy" className="underline hover:text-violet-400 transition">
+                                    politique de confidentialité
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Submit Button */}
-                <button
-                    type="submit"
-                    disabled={status === 'loading'}
-                    className="px-5 py-3 bg-violet-500 rounded-lg shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] outline  outline-violet-500 flex justify-center items-center gap-2 overflow-hidden text-white text-base font-medium  leading-6 hover:bg-violet-600 transition disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                    {status === 'loading' ? (
-                        <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Subscribing...
-                        </>
-                    ) : (
-                        'Subscribe'
-                    )}
-                </button>
-            </form>
+                    <button
+                        type="submit"
+                        disabled={status === 'loading'}
+                        className="px-6 py-3 bg-violet-500 rounded-lg shadow-sm flex justify-center items-center gap-2 text-white text-base font-medium hover:bg-violet-600 transition disabled:opacity-70 disabled:cursor-not-allowed"
+                    >
+                        {status === 'loading' ? (
+                            <>
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                Inscription...
+                            </>
+                        ) : (
+                            'S\'abonner'
+                        )}
+                    </button>
+                </form>
 
-            {/* Status Messages */}
-            {status === 'success' && (
-                <div className="mt-6 flex items-center gap-2 text-green-400 text-lg">
-                    <CheckCircle className="w-6 h-6" />
-                    {message}
-                </div>
-            )}
+                {status === 'success' && (
+                    <div className="flex items-center gap-2 px-4 py-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400">
+                        <CheckCircle className="w-5 h-5" />
+                        <span>{message}</span>
+                    </div>
+                )}
 
-            {status === 'error' && (
-                <div className="mt-6 flex items-center gap-2 text-red-400 text-lg">
-                    <AlertCircle className="w-6 h-6" />
-                    {message}
-                </div>
-            )}
+                {status === 'error' && (
+                    <div className="flex items-center gap-2 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400">
+                        <AlertCircle className="w-5 h-5" />
+                        <span>{message}</span>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
