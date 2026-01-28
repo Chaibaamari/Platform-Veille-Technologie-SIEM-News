@@ -1,14 +1,17 @@
-from rest_framework.decorators import api_view, permission_classes
+from datetime import timedelta
+from django.db.models import Count
+from django.utils import timezone
+from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-from backend.permissions import IsAdmin, IsVeilleur
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from backend.models import Article, Categorie, Vulnerabilite, Utilisateur
+from backend.models import Article, Categorie, Vulnerabilite
 from .utils import paginate_queryset
+from backend.serializers import ArticleListSerializer, VulnerabiliteListSerializer, VulnerabiliteDetailSerializer
+from django.db.models.functions import TruncMonth
+from collections import defaultdict
 
 def api_home(request):
     """Endpoint racine - Informations API"""
@@ -117,40 +120,149 @@ def api_categories_list(request):
 
 def api_vulnerabilities_list(request):
     vulnerabilities = Vulnerabilite.objects.all().order_by('-date_publication')
-
     paginated = paginate_queryset(vulnerabilities, request, page_size=10)
 
-    vulns_data = []
+    vuln_data = []
     for vuln in paginated['items']:
-        vulns_data.append({
-            'cve_id': vuln.cve_id,
-            'severite': vuln.severite,
-            'score_cvss': float(vuln.score_cvss) if vuln.score_cvss else None,
-            'description': vuln.description_vuln,
-            'date_publication': vuln.date_publication.strftime('%Y-%m-%d'),
-            'types': [
-                {
-                    'cwe_id': t.cwe_id,
-                    'type_vul': t.type_vul
-                }
-                for t in vuln.types_vuln.all()
-            ]
-        })
+        vuln_data.append(vuln)
 
     return JsonResponse({
         'pagination': paginated['pagination'],
-        'vulnerabilities': vulns_data
+        'vulnerabilities': VulnerabiliteListSerializer(vuln_data, many=True).data
     })
 
+def api_vulnerability_detail(request, vulnerability_id):
+    """Détail d'un article spécifique"""
+    vulnerabilitie = get_object_or_404(Vulnerabilite, cve_id=vulnerability_id)
+    data = VulnerabiliteDetailSerializer(vulnerabilitie).data
+    return JsonResponse(data)
 
 def api_stats(request):
-    """Statistiques générales"""
-    stats = {
-        'articles': Article.objects.count(),
-        'categories': Categorie.objects.count(),
-        'vulnerabilities': Vulnerabilite.objects.count(),
-        'articles_recent': Article.objects.count(),
-        'vulns_critical': Vulnerabilite.objects.filter(severite='critical').count(),
-        'vulns_high': Vulnerabilite.objects.filter(severite='high').count(),
+    """Return general dashboard statistics."""
+
+    # ----------------------------
+    # Time ranges
+    # ----------------------------
+    today = timezone.now().date()
+    last_7_days = today - timedelta(days=7)
+    last_12_months = today - timedelta(days=365)
+
+    # ----------------------------
+    # Recent articles & vulnerabilities
+    # ----------------------------
+    recent_articles_qs = Article.objects.filter(date_publication__gte=last_7_days)
+    recent_vulns_qs = Vulnerabilite.objects.filter(date_publication__gte=last_7_days)
+
+    # ----------------------------
+    # Categories repartition (top 5 + "Another")
+    # ----------------------------
+    TOP_N = 5
+    category_counts = (
+        Categorie.objects
+        .annotate(article_count=Count('articles'))
+        .filter(article_count__gt=0)
+        .order_by('-article_count')
+    )
+
+    top_categories = category_counts[:TOP_N]
+    other_categories = category_counts[TOP_N:]
+
+    categories_repartition = [
+        {"category": cat.nom_categorie, "count": cat.article_count}
+        for cat in top_categories
+    ]
+
+    other_count = sum(cat.article_count for cat in other_categories)
+    if other_count > 0:
+        categories_repartition.append({"category": "Another", "count": other_count})
+
+    # ----------------------------
+    # Trends data (articles & vulnerabilities per month)
+    # ----------------------------
+    articles_per_month = (
+        Article.objects.filter(date_publication__gte=last_12_months)
+        .annotate(month=TruncMonth('date_publication'))
+        .values('month')
+        .annotate(count=Count('id_article'))
+        .order_by('month')
+    )
+
+    vulns_per_month = (
+        Vulnerabilite.objects.filter(date_publication__gte=last_12_months)
+        .annotate(month=TruncMonth('date_publication'))
+        .values('month')
+        .annotate(count=Count('cve_id'))
+        .order_by('month')
+    )
+
+    # Merge trends into a single dict
+    trend_map = defaultdict(lambda: {"articles": 0, "vulnerabilities": 0})
+    for row in articles_per_month:
+        trend_map[row["month"]]["articles"] = row["count"]
+    for row in vulns_per_month:
+        trend_map[row["month"]]["vulnerabilities"] = row["count"]
+
+    trends_data = [
+        {
+            "date": month.strftime("%b %Y"),
+            "articles": values["articles"],
+            "vulnerabilities": values["vulnerabilities"],
+        }
+        for month, values in sorted(trend_map.items())
+    ]
+
+    # ----------------------------
+    # Vulnerabilities by severity
+    # ----------------------------
+    severity_counts = (
+        Vulnerabilite.objects.values('severite')
+        .annotate(count=Count('cve_id'))
+        .order_by('-count')
+    )
+
+    COLORS = {
+        'unknown': '#6c757d',
+        'low': '#10b981',
+        'medium': '#3b82f6',
+        'high': '#f59e0b',
+        'critical': '#ef4444'
     }
+
+    LABELS = {
+        'critical': 'Critical',
+        'high': 'High',
+        'medium': 'Medium',
+        'low': 'Low',
+        'unknown': 'Unknown'
+    }
+
+    severity_data = [
+        {
+            "severity": LABELS.get(item["severite"], item["severite"].title()),
+            "count": item["count"],
+            "color": COLORS.get(item["severite"], "#000000")
+        }
+        for item in severity_counts
+    ]
+
+    # ----------------------------
+    # Assemble final stats
+    # ----------------------------
+    stats = {
+        "totalArticles": Article.objects.count(),
+        "categories": Categorie.objects.count(),
+        "totalVulnerabilities": Vulnerabilite.objects.count(),
+        "recentArticles": recent_articles_qs.count(),
+        "criticalVulnerabilities": Vulnerabilite.objects.filter(severite='critical').count(),
+        "categoriesRepartition": categories_repartition,
+        "trendsData": trends_data,
+        "severityData": severity_data,
+        "recentArticlesData": ArticleListSerializer(
+            recent_articles_qs.order_by('-date_publication'), many=True
+        ).data,
+        "recentVulnerabilitiesData": VulnerabiliteListSerializer(
+            recent_vulns_qs.order_by('-date_publication'), many=True
+        ).data
+    }
+
     return JsonResponse(stats)

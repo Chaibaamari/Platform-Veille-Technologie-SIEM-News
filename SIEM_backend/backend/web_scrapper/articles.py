@@ -10,7 +10,7 @@ import time
 load_dotenv()
 
 # Configure basic logging to the console
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger('backend')
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0",

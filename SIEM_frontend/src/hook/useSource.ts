@@ -1,29 +1,28 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient, apiMutation } from '@/api/client';
 import { useAppSelector } from '@/stores/hooks';
-import type { Source } from '@/types/blog';
 
-
-
-type NewSource = Omit<Source, 'id' | 'last_check' | 'created_by'>;
+type NewSource = {
+    nom_source: string,
+    flux_rss: string,
+    active: boolean
+}
 
 export function useSources() {
-  const queryClient = useQueryClient();
-  const { user } = useAppSelector((state) => state.auth);
+    const queryClient = useQueryClient();
+    //const { user } = useAppSelector((state) => state.auth);
 
-    const sourcesQuery = useQuery<Source[]>({
+    const sourcesQuery = useQuery({
         queryKey: ['sources'],
         queryFn: () => apiClient({ queryKey: ['sources'] }),
     });
 
     const createMutation = useMutation({
         mutationFn: (newSource: NewSource) =>
-            apiMutation('sources', {
+            apiMutation('sources/add/', {
                 method: 'POST',
                 body: JSON.stringify({
-                    ...newSource,
-                    last_check: new Date().toISOString(),
-                    created_by: user?.id,
+                    ...newSource
                 }),
             }),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['sources'] }),
@@ -31,15 +30,15 @@ export function useSources() {
 
     const toggleMutation = useMutation({
         mutationFn: ({ id, active }: { id: number; active: boolean }) =>
-            apiMutation(`sources/${id}`, {
-                method: 'PATCH',
+            apiMutation(`sources/${id}/update/`, {
+                method: 'PUT',
                 body: JSON.stringify({ active }),
             }),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['sources'] }),
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id: number) => apiMutation(`sources/${id}`, { method: 'DELETE' }),
+        mutationFn: (id: number) => apiMutation(`sources/${id}/delete/`, { method: 'DELETE' }),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['sources'] }),
     });
 
@@ -49,7 +48,7 @@ export function useSources() {
     });
 
     return {
-        sources: sourcesQuery.data ?? [],
+        sourcesData: sourcesQuery.data ?? [],
         isLoading: sourcesQuery.isLoading,
         createSource: createMutation.mutate,
         isCreating: createMutation.isPending,

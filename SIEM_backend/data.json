@@ -4,6 +4,7 @@
     "pk": 1,
     "fields": {
       "nom_source": "Help Net security",
+      "active": true,
       "flux_rss": "https://www.helpnetsecurity.com/tag/cloud_security/feed/"
     }
   },
@@ -12,6 +13,7 @@
     "pk": 2,
     "fields": {
       "nom_source": "Microsoft",
+      "active": true,
       "flux_rss": "https://aztty.azurewebsites.net/rss/updates"
     }
   },
@@ -20,6 +22,7 @@
     "pk": 3,
     "fields": {
       "nom_source": "Cisco",
+      "active": true,
       "flux_rss": "https://blogs.cisco.com/cloud/feed"
     }
   },
@@ -28,6 +31,7 @@
     "pk": 4,
     "fields": {
       "nom_source": "Amazon AWS Blogs",
+      "active": true,
       "flux_rss": "https://aws.amazon.com/blogs/aws/feed/"
     }
   },
@@ -36,6 +40,7 @@
     "pk": 5,
     "fields": {
       "nom_source": "Amazon Security Blogs",
+      "active": true,
       "flux_rss": "http://aws.amazon.com/blogs/security/feed/"
     }
   },
@@ -44,6 +49,7 @@
     "pk": 6,
     "fields": {
       "nom_source": "Google",
+      "active": true,
       "flux_rss": "https://cloudblog.withgoogle.com/rss/"
     }
   },
@@ -52,6 +58,7 @@
     "pk": 7,
     "fields": {
       "nom_source": "VMWare",
+      "active": true,
       "flux_rss": "https://blogs.vmware.com/cloudprovider/feed"
     }
   },
@@ -60,6 +67,7 @@
     "pk": 8,
     "fields": {
       "nom_source": "Amazon",
+      "active": true,
       "flux_rss": "https://docs.aws.amazon.com/fr_fr/IAM/latest/UserGuide/aws-iam-release-notes.rss"
     }
   },

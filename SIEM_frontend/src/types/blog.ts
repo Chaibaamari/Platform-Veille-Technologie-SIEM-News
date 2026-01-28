@@ -26,13 +26,6 @@ export interface TypeVulnerability {
   type_vul: string
 }
 
-export interface Vulnerability {
-  cve_id: number;
-  description: string;
-  types: TypeVulnerability[];
-  date_publication?: string; // optional
-}
-
 export interface Article2 {
   id: number;
   title: string;
@@ -45,22 +38,20 @@ export interface Article2 {
   source: string;
 }
 
-export interface Vulnerability2 {
-  id: number;
+export interface Vulnerability {
   cve_id: string;
-  severity: 'critical' | 'high' | 'medium' | 'low';
-  published_date: string; // ISO date string
-  description: string;
-  cvss_score: number;
-  source: 'NVD' | 'MITRE';
-  type: string; // SQL injection, XSS, etc.
+  severite: 'critical' | 'high' | 'medium' | 'low';
+  date_publication: string; // ISO date string
+  description_vuln: string;
+  score_cvss: number;
+  types_vuln: TypeVulnerability[]; // SQL injection, XSS, etc.
 }
 
 // ============ Source & Category Types ============
 export interface Source {
   id: number;
-  name: string;
-  url: string;
+  nom_source: string;
+  flux_rss: string;
   active: boolean;
 }
 

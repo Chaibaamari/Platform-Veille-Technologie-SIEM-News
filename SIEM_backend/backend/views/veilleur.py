@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from backend.models import Source
-from backend.web_scrapper.scraping_runner import start_scraping_background
+from backend.web_scrapper.scraping_runner import start_scraping_background, scraping_progress
 from .utils import paginate_queryset
 
 @api_view(['GET'])
@@ -19,6 +19,10 @@ def api_start_scrapping(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Scraping already running'})
     
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsVeilleur])
+def api_scraping_progress(request):
+    return JsonResponse(scraping_progress)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsVeilleur])
@@ -33,6 +37,7 @@ def api_list_sources(request):
             'id': source.id_source,
             'nom_source': source.nom_source,
             'flux_rss': source.flux_rss,
+            'active': source.active
         })
 
     return JsonResponse({
@@ -49,6 +54,7 @@ def api_add_source(request):
 
         nom_source = data.get('nom_source')
         flux_rss = data.get('flux_rss')
+        active = data.get('active', True)
 
         if not nom_source:
             raise KeyError("nom_source")
@@ -57,7 +63,8 @@ def api_add_source(request):
 
         source = Source.objects.create(
             nom_source=nom_source,
-            flux_rss=flux_rss
+            flux_rss=flux_rss,
+            active=active
         )
 
         return JsonResponse({
@@ -65,7 +72,8 @@ def api_add_source(request):
             'source': {
                 'id': source.id_source,
                 'nom_source': source.nom_source,
-                'flux_rss': source.flux_rss
+                'flux_rss': source.flux_rss,
+                'active': source.active
             }
         }, status=201)
 
@@ -81,8 +89,19 @@ def api_add_source(request):
             'message': str(e)
         }, status=400)
 
-from django.shortcuts import get_object_or_404
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsVeilleur])
+def api_activate_source(request, source_id):
+    source = get_object_or_404(Source, id_source=source_id)
+    data = request.data
+    active =  data.get('active', True)
 
+    source.active = active
+    source.save()
+
+    return JsonResponse({
+        'message': 'Source modifiée avec succès'
+    }, status=200)
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, IsVeilleur])
 def api_delete_source(request, source_id):
