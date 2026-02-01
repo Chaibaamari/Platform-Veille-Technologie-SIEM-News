@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/Newsletter.tsx
 import { useState } from 'react';
-import { CheckCircle, Loader2, AlertCircle, ArrowRight, Calendar, Heart, Badge, Check, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useAppSelector } from '@/stores/hooks';
-import { useFavorites } from '@/hook/useFavorites';
+import { CheckCircle, Loader2, AlertCircle,Check, Sparkles } from 'lucide-react';
 import { getTagBg, getTagText } from '@/lib/utils';
 import { useCategoriesPreferences } from '@/hook/useCategoriesPreferences';
 
@@ -40,9 +37,6 @@ export default function Newsletter({
         setSelectedCategories(Array.from(preferredCategoryIds) as number[]);
     });
     
-    const { favorites, toggleFavorite, isFavorite } = useFavorites();
-    const { role } = useAppSelector((state) => state.auth);
-
     const validateEmail = (email: string) => {
         return email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/);
     };
@@ -253,137 +247,6 @@ export default function Newsletter({
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-            {/* Favorite Articles Section */}
-            <div className="py-16 px-4 border-t border-neutral-800">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex items-center justify-between mb-12">
-                        <div className="flex items-center gap-3">
-                            <Heart className="w-8 h-8 text-violet-500 fill-violet-500" />
-                            <h2 className="text-white text-3xl font-bold">
-                                Articles favoris
-                            </h2>
-                            <span className="px-3 py-1 bg-violet-500/10 border border-violet-500/30 rounded-full text-violet-400 text-sm font-medium">
-                                {favorites.length}
-                            </span>
-                        </div>
-                        <Link
-                            to={`/${role}/article`}
-                            className="flex items-center gap-2 text-violet-400 hover:text-violet-300 transition"
-                        >
-                            <span>Voir tous les articles</span>
-                            <ArrowRight className="w-5 h-5" />
-                        </Link>
-                    </div>
-
-                    {/* Articles Grid */}
-                    {favorites.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {favorites.slice(0, 6).map((article) => (
-                                <div
-                                    key={article.id}
-                                    className="group bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden hover:border-violet-500 transition-all duration-300"
-                                >
-                                    {/* Image */}
-                                    <div className="relative h-48 overflow-hidden">
-                                        <Link to={`/${role}/article/${article.id}`}>
-                                            <img
-                                                src={article.thumbnail || 'https://images.pexels.com/photos/270360/pexels-photo-270360.jpeg'}
-                                                alt={article.titre}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                            />
-                                        </Link>
-                                        
-                                        {/* Favorite Button */}
-                                        <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                toggleFavorite(article);
-                                            }}
-                                            className="absolute top-3 right-3 w-10 h-10 bg-neutral-900/80 backdrop-blur-sm border border-neutral-700 hover:border-red-500 rounded-full flex items-center justify-center transition-all group/heart"
-                                        >
-                                            <Heart
-                                                className={`w-5 h-5 transition-all ${isFavorite(article.id)
-                                                    ? 'text-red-500 fill-red-500'
-                                                    : 'text-neutral-400 group-hover/heart:text-red-500'
-                                                    }`}
-                                            />
-                                        </button>
-                                    </div>
-
-                                    {/* Content */}
-                                    <div className="p-6 space-y-4">
-                                        {/* Category */}
-                                        <div className="flex flex-wrap mt-auto  justify-start items-start gap-2">
-                                            {(article.categories || []).map((tag: string) => (
-                                                <Badge
-                                                    key={tag}
-                                                    className="px-2.5 py-0.5 rounded-2xl text-sm font-medium"
-                                                    style={{
-                                                        backgroundColor: getTagBg(tag),
-                                                        color: getTagText(tag),
-                                                    }}
-                                                >
-                                                    {tag}
-                                                </Badge>
-                                            ))}
-                                        </div>
-
-                                        {/* Title */}
-                                        <Link to={`/${role}/article/${article.id}`}>
-                                            <h3 className="text-white text-xl font-semibold line-clamp-2 group-hover:text-violet-400 transition">
-                                                {article.titre}
-                                            </h3>
-                                        </Link>
-
-                                        {/* Description */}
-                                        <p className="text-neutral-400 text-sm line-clamp-3">
-                                            {article.contenu?.replace(/<[^>]*>/g, '') || 'Aucune description disponible'}
-                                        </p>
-
-                                        {/* Footer */}
-                                        <div className="flex items-center justify-between pt-4 border-t border-neutral-800">
-                                            <div className="flex items-center gap-2 text-neutral-500 text-sm">
-                                                <Calendar className="w-4 h-4" />
-                                                <span>
-                                                    {new Date(article.date_publication).toLocaleDateString('fr-FR', {
-                                                        year: 'numeric',
-                                                        month: 'short',
-                                                        day: 'numeric'
-                                                    })}
-                                                </span>
-                                            </div>
-                                            <Link
-                                                to={`/${role}/article/${article.id}`}
-                                                className="flex items-center gap-1 text-violet-400 hover:text-violet-300 text-sm font-medium transition"
-                                            >
-                                                Lire
-                                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-16">
-                            <Heart className="w-20 h-20 text-neutral-700 mx-auto mb-4" />
-                            <h3 className="text-white text-xl font-semibold mb-2">
-                                Aucun article favori
-                            </h3>
-                            <p className="text-neutral-400 mb-6">
-                                Commencez à ajouter des articles à vos favoris en cliquant sur le cœur
-                            </p>
-                            <Link
-                                to={`/${role}/article`}
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-violet-500 hover:bg-violet-600 rounded-xl text-white font-medium transition"
-                            >
-                                Découvrir les articles
-                                <ArrowRight className="w-5 h-5" />
-                            </Link>
                         </div>
                     )}
                 </div>

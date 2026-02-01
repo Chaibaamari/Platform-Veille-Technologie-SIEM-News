@@ -5,10 +5,28 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useMutation } from '@tanstack/react-query';
-import { Mail, ArrowLeft, Shield } from 'lucide-react';
+import { Mail, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '@/api/auth';
 
+
+const PulseIcon = ({ className }: { className?: string }) => (
+    <svg 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        className={className}
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <path 
+            d="M3 12H7L9 6L11 18L13 9L15 12H21" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+        />
+        <circle cx="12" cy="12" r="2" fill="currentColor" />
+    </svg>
+);
 const forgotSchema = z.object({
   email_utilisateur: z.string().email("Adresse email invalide"),
 });
@@ -72,9 +90,10 @@ export default function ForgotPassword() {
         <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
             <div className="max-w-md w-full space-y-8 p-8">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center bg-linear-to-br from-indigo-500 to-purple-600 p-4 rounded-2xl mb-4">
-                        <Shield className="w-12 h-12 text-white" />
-                    </div>
+                    <div className="inline-flex items-center justify-center bg-linear-to-br from-violet-600 to-fuchsia-600 p-4 rounded-2xl mb-4 relative">
+                            <PulseIcon className="w-12 h-12 text-white" />
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-fuchsia-400 rounded-full animate-pulse"></div>
+                        </div>
                     <h1 className="text-3xl font-bold text-white mb-2">
                         Mot de passe oublié ?
                     </h1>

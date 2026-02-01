@@ -5,7 +5,7 @@ const navLinks : NavItem[] = [
     { name: 'Dashbored', href: '/simple_user/dashbored' },
     { name: 'Article', href: '/simple_user/article' },
     { name: 'Vulnerabilities', href: '/simple_user/vulnerabilities' },
-    { name: 'Newsletter', href: '/simple_user/newsletter' },
+    { name: 'Favoris', href: '/simple_user/favoris' },
 ];
 // src/components/layouts/SimpleUserLayout.tsx
 interface SimpleUserLayoutProps {

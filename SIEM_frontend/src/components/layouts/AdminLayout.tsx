@@ -5,7 +5,7 @@ const navLinks: NavItem[] = [
     { name: 'Articles', href: '/admin/article' },
     { name: 'Vulnérabilités', href: '/admin/vulnerabilities' },
     { name: 'Utilisateurs', href: '/admin/users' },
-    { name: 'Newsletter', href: '/admin/newsletter' },
+    { name: 'Favoris', href: '/admin/favoris' },
 ];
 
 interface AdminLayoutProps {

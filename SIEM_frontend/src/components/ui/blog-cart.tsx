@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Eye, Heart, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // Reusable Blog Card
@@ -23,16 +23,22 @@ const BlogCard = ({ title, description, author, date, views, comments, likes }: 
                     </div>
                     <div className="flex gap-2.5">
                         <div className="px-4 py-2 bg-zinc-900 rounded-full border border-neutral-800 flex items-center gap-1">
-                            <div className="w-5 h-4 bg-orange-600" />
-                            <span className="text-neutral-400">{views}</span>
+                            <Eye className="w-4 h-4 text-violet-500" />
+                            <span className="text-neutral-400 text-sm lg:text-base font-medium">
+                                {views}
+                            </span>
                         </div>
                         <div className="px-4 py-2 bg-zinc-900 rounded-full border border-neutral-800 flex items-center gap-1">
-                            <div className="w-4 h-4 border-2 border-stone-500 rounded-full" />
-                            <span className="text-neutral-400">{comments}</span>
+                            <MessageCircle className="w-4 h-4 text-blue-500" />
+                            <span className="text-neutral-400 text-sm lg:text-base font-medium">
+                                {comments}
+                            </span>
                         </div>
                         <div className="px-4 py-2 bg-zinc-900 rounded-full border border-neutral-800 flex items-center gap-1">
-                            <div className="w-4 h-4 border-2 border-stone-500 rounded-full" />
-                            <span className="text-neutral-400">{likes}</span>
+                            <Heart className="w-4 h-4 text-red-500" />
+                            <span className="text-neutral-400 text-sm lg:text-base font-medium">
+                                {likes}
+                            </span>
                         </div>
                     </div>
                 </div>

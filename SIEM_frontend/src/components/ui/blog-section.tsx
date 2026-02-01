@@ -6,32 +6,59 @@ import ButtonHero from "./button-hero";
 const BlogSection = () => {
     const blogs = [
         {
-            author: { name: "John Techson", avatar: "https://placehold.co/80x80", category: "Quantum Computing" },
-            date: "October 15, 2023",
-            title: "The Quantum Leap in Computing",
-            description: "Explore the revolution in quantum computing, its applications, and its potential impact on various industries.",
-            views: "24.5k", comments: "50", likes: "20"
+            author: { 
+                name: "Marc Dubois", 
+                avatar: "https://i.pravatar.cc/80?img=12", 
+                category: "Intelligence Artificielle" 
+            },
+            date: "12 Janvier 2025",
+            title: "IA et automatisation : l'avenir du secteur industriel",
+            description: "Comment l'intelligence artificielle transforme les processus industriels et optimise la production.",
+            image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=500&fit=crop",
+            views: "18.7k", 
+            comments: "67", 
+            likes: "340"
         },
-        // Add more...
+        {
+            author: { 
+                name: "Alexandre Roux", 
+                avatar: "https://i.pravatar.cc/80?img=33", 
+                category: "Blockchain" 
+            },
+            date: "3 Janvier 2025",
+            title: "Blockchain et traçabilité : applications industrielles",
+            description: "Comment la blockchain améliore la transparence et la traçabilité dans les chaînes d'approvisionnement industrielles.",
+            image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&h=500&fit=crop",
+            views: "8.9k", 
+            comments: "41", 
+            likes: "195"
+        },
     ];
 
     return (
         <section className="bg-zinc-900">
             <div className="px-40 py-28 flex items-center justify-between border-b border-neutral-800">
                 <div className="max-w-2xl">
-                    <span className="px-2.5 py-1.5 bg-zinc-800 rounded text-white text-xl">A Knowledge Treasure Trove</span>
-                    <h2 className="mt-4 text-6xl font-medium text-white">Explore FutureTech's In-Depth Blog Posts</h2>
+                    <span className="px-2.5 py-1.5 bg-zinc-800 rounded text-white text-xl">
+                        Centre de Ressources et d'Expertise
+                    </span>
+                    <h2 className="mt-4 text-6xl font-medium text-white">
+                        Explorez les Analyses Approfondies SIESM
+                    </h2>
                 </div>
                 <ButtonHero variant="outline">
-                    View All Blogs
+                    Tous les Articles
                     <ArrowRight className="w-6 h-6 text-violet-500" />
                 </ButtonHero>
             </div>
 
             {/* Category Tabs */}
             <div className="px-40 py-12 border-b border-neutral-800 flex gap-5">
-                {["All", "Quantum Computing", "AI Ethics", "Space Exploration", "Biotechnology", "Renewable Energy"].map((cat, i) => (
-                    <button key={cat} className={`flex-1 px-6 py-7 rounded-lg border border-neutral-800 ${i === 0 ? 'bg-zinc-900 text-white' : 'text-neutral-400'}`}>
+                {["Tous", "Cybersécurité", "Intelligence Artificielle", "Transformation Digitale", "Réglementation", "Innovation Tech", "Blockchain"].map((cat, i) => (
+                    <button 
+                        key={cat} 
+                        className={`flex-1 px-6 py-7 rounded-lg border border-neutral-800 transition-colors ${i === 0 ? 'bg-violet-600 text-white' : 'text-neutral-400 hover:bg-zinc-800'}`}
+                    >
                         {cat}
                     </button>
                 ))}
@@ -43,4 +70,5 @@ const BlogSection = () => {
         </section>
     );
 };
+
 export default BlogSection;

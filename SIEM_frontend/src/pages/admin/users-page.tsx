@@ -5,7 +5,7 @@ import { apiClient, apiMutation } from '@/api/client';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, UserPlus, Edit, Mail, User, Lock, Shield } from 'lucide-react';
+import { Trash2, UserPlus, Mail, User, Shield } from 'lucide-react';
 
 interface Users {
   id: number;
@@ -19,8 +19,7 @@ interface Users {
 export default function AdminUsersPage() {
   const queryClient = useQueryClient();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<Users | null>(null);
+//   const [isEditOpen, setIsEditOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -57,24 +56,24 @@ export default function AdminUsersPage() {
         }
     });
 
-  // Update user mutation
-    const updateUserMutation = useMutation({
-        mutationFn: async ({ id, data }: { id: number; data: any }) => {
-            return apiMutation(`users/${id}`, {
-                method: 'PATCH',
-                body: JSON.stringify({
-                    ...data,
-                    roles: [{ id: getRoleId(data.role), name: data.role }]
-                })
-            });
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['users'] });
-            setIsEditOpen(false);
-            setSelectedUser(null);
-            resetForm();
-        }
-    });
+//   // Update user mutation
+//     const updateUserMutation = useMutation({
+//         mutationFn: async ({ id, data }: { id: number; data: any }) => {
+//             return apiMutation(`users/${id}`, {
+//                 method: 'PATCH',
+//                 body: JSON.stringify({
+//                     ...data,
+//                     roles: [{ id: getRoleId(data.role), name: data.role }]
+//                 })
+//             });
+//         },
+//         onSuccess: () => {
+//             queryClient.invalidateQueries({ queryKey: ['users'] });
+//             setIsEditOpen(false);
+//             setSelectedUser(null);
+//             resetForm();
+//         }
+//     });
 
   // Delete user mutation
     const deleteUserMutation = useMutation({
@@ -88,15 +87,15 @@ export default function AdminUsersPage() {
         }
     });
 
-    const getRoleId = (role: string) => {
-        const roleMap: any = {
-            admin: 1,
-            veilleur: 2,
-            analyste: 3,
-            user: 4
-        };
-        return roleMap[role] || 4;
-    };
+    // const getRoleId = (role: string) => {
+    //     const roleMap: any = {
+    //         admin: 1,
+    //         veilleur: 2,
+    //         analyste: 3,
+    //         user: 4
+    //     };
+    //     return roleMap[role] || 4;
+    // };
 
     const resetForm = () => {
         setFormData({
@@ -115,28 +114,28 @@ export default function AdminUsersPage() {
         createUserMutation.mutate(formData);
     };
 
-    const handleEdit = (user: Users) => {
-        setSelectedUser(user);
-        setFormData({
-            name: user.username,
-            email: user.email,
-            password: '',
-            role: user.role
-        });
-        setIsEditOpen(true);
-    };
+    // const handleEdit = (user: Users) => {
+    //     setSelectedUser(user);
+    //     setFormData({
+    //         name: user.username,
+    //         email: user.email,
+    //         password: '',
+    //         role: user.role
+    //     });
+    //     setIsEditOpen(true);
+    // };
 
-    const handleUpdate = () => {
-        if (selectedUser) {
-            updateUserMutation.mutate({
-                id: selectedUser.id,
-                data: {
-                    ...formData,
-                    password: formData.password || undefined
-                }
-            });
-        }
-    };
+    // const handleUpdate = () => {
+    //     if (selectedUser) {
+    //         updateUserMutation.mutate({
+    //             id: selectedUser.id,
+    //             data: {
+    //                 ...formData,
+    //                 password: formData.password || undefined
+    //             }
+    //         });
+    //     }
+    // };
 
     const handleDelete = (id: number) => {
         deleteUserMutation.mutate(id);
@@ -330,14 +329,14 @@ export default function AdminUsersPage() {
                                 </div>
 
                                 <div className="flex gap-2">
-                                    <Button
+                                    {/* <Button
                                         variant="ghost"
                                         size="icon"
                                         onClick={() => handleEdit(user)}
                                         className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
                                     >
                                         <Edit className="w-4 h-4" />
-                                    </Button>
+                                    </Button> */}
                                     <Button
                                         variant="ghost"
                                         size="icon"
@@ -359,7 +358,7 @@ export default function AdminUsersPage() {
                     )}
                 </div>
 
-                {/* Edit Dialog */}
+                {/* Edit Dialog
                 <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                     <DialogContent className="bg-linear-to-br from-slate-900 to-slate-800 text-white border border-slate-700/50 shadow-2xl max-w-lg">
                         <DialogHeader>
@@ -448,7 +447,7 @@ export default function AdminUsersPage() {
                             </Button>
                         </DialogFooter>
                     </DialogContent>
-                </Dialog>
+                </Dialog> */}
             </div>
         </div>
     );

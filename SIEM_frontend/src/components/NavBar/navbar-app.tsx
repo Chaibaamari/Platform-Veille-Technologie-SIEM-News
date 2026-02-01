@@ -5,6 +5,7 @@ import { useAppDispatch } from '@/stores/hooks';
 import { logout } from '@/stores/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { memo, useState } from 'react';
+import { SIEMIcon } from '@/pages/Home/home-page';
 
 export type NavItem = {
     id?: number;
@@ -35,9 +36,32 @@ const Navbar: React.FC<Props> = memo(({ data }) => {
             <nav className="mx-auto max-w-7xl px-6 py-7"> {/* Responsive container */}
                 <div className="flex items-center justify-between">
                     {/* Logo / Brand */}
-                    <Link to="/" className="text-2xl font-semibold text-white  transition-colors">
+                    {/* <Link to="/" className="text-2xl font-semibold text-white  transition-colors">
                         News Collector
-                    </Link>
+                    </Link> */}
+                    <div
+                        className="flex items-center gap-3 cursor-pointer group"
+                        // onClick={() => navigate('/')}
+                    >
+                        <div className="relative w-11 h-11 rounded-xl bg-linear-to-br from-violet-600 via-violet-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-violet-900/50 group-hover:shadow-violet-900/80 transition-all group-hover:scale-105">
+                            <SIEMIcon />
+                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-fuchsia-400 rounded-full animate-SIEM" />
+                        </div>
+                        <div className="hidden sm:block">
+                            <div className="flex items-center gap-2">
+                                <span className="text-white font-bold text-xl tracking-tight">
+                                    SIEM<span className="bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">News</span>
+                                </span>
+                            </div>
+                            <p className="text-xs text-neutral-400 -mt-1">
+                                Le Pouls de votre Secteur
+                            </p>
+                        </div>
+                        <span className="sm:hidden text-white font-bold text-lg">
+                            SIEM
+                            <span className="bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">News</span>
+                        </span>
+                    </div>
 
                     {/* Desktop Navigation Links */}
                     <div className="hidden md:flex items-center gap-8">

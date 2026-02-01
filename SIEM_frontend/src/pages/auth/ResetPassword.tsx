@@ -1,13 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/pages/auth/ResetPassword.tsx
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Lock, Shield, AlertCircle } from 'lucide-react';
+import { Lock, AlertCircle } from 'lucide-react';
 import { authApi } from '@/api/auth';
+
+const PulseIcon = ({ className }: { className?: string }) => (
+    <svg 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        className={className}
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <path 
+            d="M3 12H7L9 6L11 18L13 9L15 12H21" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+        />
+        <circle cx="12" cy="12" r="2" fill="currentColor" />
+    </svg>
+);
 
 const resetSchema = z.object({
   new_password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
@@ -79,12 +96,15 @@ export default function ResetPassword() {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center px-6">
         <div className="max-w-md bg-slate-900/80 rounded-2xl p-10 text-center border border-green-800/30">
-          <Shield className="w-20 h-20 mx-auto text-green-500 mb-6" />
+          <div className="inline-flex items-center justify-center bg-linear-to-br from-violet-600 to-fuchsia-600 p-4 rounded-2xl mb-4 relative">
+                            <PulseIcon className="w-12 h-12 text-white" />
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-fuchsia-400 rounded-full animate-pulse"></div>
+                        </div>
           <h1 className="text-3xl font-bold text-white mb-4">Succès !</h1>
           <p className="text-slate-300 mb-8">Votre mot de passe a été modifié.</p>
           <button
             onClick={() => navigate('/login')}
-            className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl text-white"
+            className="w-full py-4 bg-linear-to-r from-indigo-600 to-purple-600 rounded-xl text-white"
           >
             Se connecter
           </button>
@@ -97,7 +117,7 @@ export default function ResetPassword() {
         <div className="min-h-screen bg-slate-950 flex items-center justify-center px-6">
             <div className="w-full max-w-md bg-slate-900/70 backdrop-blur-md border border-slate-700/60 rounded-2xl p-8 md:p-10">
                 <div className="text-center mb-10">
-                    <div className="inline-flex w-20 h-20 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 mb-6">
+                    <div className="inline-flex w-20 h-20 items-center justify-center rounded-full bg-linear-to-br from-indigo-600 to-purple-600 mb-6">
                         <Lock className="w-10 h-10 text-white" />
                     </div>
                     <h1 className="text-3xl font-bold text-white">Nouveau mot de passe</h1>
@@ -146,7 +166,7 @@ export default function ResetPassword() {
                     <button
                         type="submit"
                         disabled={mutation.isPending}
-                        className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:brightness-110 text-white font-medium rounded-xl transition-all disabled:opacity-60"
+                        className="w-full py-4 bg-linear-to-r from-indigo-600 to-purple-600 hover:brightness-110 text-white font-medium rounded-xl transition-all disabled:opacity-60"
                     >
                         {mutation.isPending ? 'Modification en cours...' : 'Modifier mon mot de passe'}
                     </button>

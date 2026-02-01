@@ -127,7 +127,7 @@ export default function AppRoutes() {
                                     <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
                                     <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
                                     <Route path="sources" element={<VeilleurSourcesPage />} />
-                                    <Route path="newsletter" element={<NewsletterPage />} />
+                                    <Route path="favoris" element={<FavoritesPage />} />
                                     <Route path="*" element={<NotFound />}  />
                                 </Routes>
                                 <Footer />

@@ -8,6 +8,25 @@ import { getDashboardPathForRole, normalizeRole } from '@/lib/auth-utils';
 import { authApi } from '@/api/auth';
 import { Lock, Mail, Shield, Eye, EyeOff } from 'lucide-react';
 
+
+// Icône PulseNews
+const PulseIcon = ({ className }: { className?: string }) => (
+    <svg 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        className={className}
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <path 
+            d="M3 12H7L9 6L11 18L13 9L15 12H21" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+        />
+        <circle cx="12" cy="12" r="2" fill="currentColor" />
+    </svg>
+);
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -97,14 +116,15 @@ export default function Login() {
                                 <div className="space-y-6">
                                     {/* Icon/Logo Area */}
                                     <div className="flex items-center justify-center">
-                                        <div className="bg-linear-to-br from-indigo-500 to-purple-600 p-6 rounded-2xl">
-                                            <Shield className="w-16 h-16 text-white" />
+                                        <div className="bg-linear-to-br from-violet-600 to-fuchsia-600 p-6 rounded-2xl relative">
+                                            <PulseIcon className="w-16 h-16 text-white" />
+                                            <div className="absolute -top-2 -right-2 w-6 h-6 bg-fuchsia-400 rounded-full animate-pulse"></div>
                                         </div>
                                     </div>
                                     
                                     {/* Title */}
                                     <h2 className="text-4xl font-bold text-white text-center">
-                                        Veille Stratégique SIESM
+                                        Veille Stratégique SIEM
                                     </h2>
                                     
                                     {/* Description */}
@@ -175,15 +195,10 @@ export default function Login() {
 
                     {/* Desktop Logo */}
                     <div className="hidden lg:block text-center">
-                        <div className="inline-flex items-center justify-center bg-linear-to-br from-indigo-500 to-purple-600 p-4 rounded-2xl mb-4">
-                            <Shield className="w-12 h-12 text-white" />
+                        <div className="inline-flex items-center justify-center bg-linear-to-br from-violet-600 to-fuchsia-600 p-4 rounded-2xl mb-4 relative">
+                            <PulseIcon className="w-12 h-12 text-white" />
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-fuchsia-400 rounded-full animate-pulse"></div>
                         </div>
-                        <h1 className="text-3xl font-bold text-white mb-2">
-                            CIEM Veille Dashboard
-                        </h1>
-                        <p className="text-slate-400">
-                            Connexion sécurisée
-                        </p>
                     </div>
 
                     {/* Login Form */}

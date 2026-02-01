@@ -2,7 +2,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Check, ChevronDown, ChevronLeft, FileSpreadsheet, FileText, Heart, Loader2, Tag } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, FileSpreadsheet, FileText,Loader2, Tag } from 'lucide-react';
 import { apiClient, apiMutation } from '@/api/client';
 import { Badge } from '@/components/ui/badge';
 import { getTagBg, getTagText } from '@/lib/utils';
