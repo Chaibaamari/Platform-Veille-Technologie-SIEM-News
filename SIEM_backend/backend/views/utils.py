@@ -114,3 +114,26 @@ def send_login_credentials_to_user(utilisateur: Utilisateur, generated_password:
 
     except Exception as e:
         logger.error(f"L'email n'a pas été envoyé à l'utilisateur {username}: {e}")
+
+
+from bs4 import BeautifulSoup
+
+def clean_html_for_pdf(html: str) -> str:
+    soup = BeautifulSoup(html, 'html.parser')
+    
+    # Remove tags that ReportLab can't handle
+    for tag in soup.find_all(['ul', 'li', 'span', 'div']):
+        tag.unwrap()  # keep text, remove tag
+    
+    return str(soup)
+
+
+def html_to_plain_text(html: str) -> str:
+    soup = BeautifulSoup(html, 'html.parser')
+    text = ""
+    for element in soup.descendants:
+        if element.name == "li":
+            text += f"• {element.get_text(strip=True)}\n"
+        elif element.string:
+            text += element.string.strip() + " "
+    return text

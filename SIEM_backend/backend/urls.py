@@ -69,4 +69,15 @@ urlpatterns = [
     path('sources/add/', views.api_add_source),
     path('sources/<int:source_id>/delete/', views.api_delete_source),
     path('sources/<int:source_id>/update/', views.api_activate_source),
+
+    # ============================================
+    # RAPPORTS
+    # ============================================
+    path('reports/articles/pdf/', views.generate_articles_pdf, name='articles-pdf'),
+    path('reports/articles/excel/', views.generate_articles_excel, name='articles-excel'),
+    path('reports/vulnerabilities/pdf/', views.generate_vulnerabilities_pdf, name='vulnerabilities-pdf'),
+    path('reports/vulnerabilities/excel/', views.generate_vulnerabilities_excel, name='vulnerabilities-excel'),
+    path('reports/comprehensive/', views.generate_comprehensive_report, name='comprehensive-report'),
+    path('reports/article/<int:article_id>/pdf/', views.generate_single_article_pdf, name='single-article-pdf'),
+    path('reports/article/<int:article_id>/excel/', views.generate_single_article_excel, name='single-article-excel'),
 ]

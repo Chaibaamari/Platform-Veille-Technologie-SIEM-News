@@ -20,7 +20,6 @@ from backend.serializers import (
     UtilisateurSerializer, 
     UtilisateurLoginSerializer,
     UtilisateurProfileSerializer,
-    CategorieSerializer,
     ForgotPasswordSerializer,
     ResetPasswordSerializer
 )

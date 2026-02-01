@@ -1,15 +1,15 @@
 import Navbar, { type NavItem } from "../NavBar/navbar-app";
 
 const navLinks : NavItem[] = [
-    { name: 'Dashbored', href: '/analytics/dashbored' },
-    { name: 'Article', href: '/analytics/article' },
-    { name: 'Vulnerabilities', href: '/analytics/vulnerabilities' },
-    { name: 'Newsletter', href: '/analytics/newsletter' },
+    { name: 'Dashboard', href: '/analyste/dashboard' },
+    { name: 'Article', href: '/analyste/article' },
+    { name: 'Vulnerabilities', href: '/analyste/vulnerabilities' },
+    { name: 'Favoris', href: '/analyste/favoris' },
 ];
-interface AnalyticsLayoutProps {
+interface AnalysteLayoutProps {
     children: React.ReactNode;
 }
-export default function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
+export default function AnalyticsLayout({ children }: AnalysteLayoutProps) {
     return (
         <div className="min-h-screen">
             {/* Your sidebar, navbar, etc. */}
