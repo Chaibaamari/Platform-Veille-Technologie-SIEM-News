@@ -23,7 +23,7 @@ const VeilleurLayout = lazy(() => import('@/components/layouts/VeilleurLayout'))
 const VeilleurSourcesPage = lazy(() => import('@/pages/veilleur/source-page'));
 
 // Analytics routes
-const AnalyticsLayout = lazy(() => import('@/components/layouts/AnalyticsLayout'));
+const AnalysteLayout = lazy(() => import('@/components/layouts/AnalysteLayout'));
 
 // Simple User routes
 const Dashboard = lazy(() => import('@/pages/simple-user/dashboard'));
@@ -33,7 +33,7 @@ const ArticleDetail = lazy(() => import('@/pages/simple-user/Article/article-det
 const VulnerabilitiesPage = lazy(() => import('@/pages/simple-user/Vulnerability/vulnerabilities-page'));
 const VulnerabilityDetail = lazy(() => import('@/pages/simple-user/Vulnerability/vulnerability-detail'));
 const HomePage = lazy(() => import('@/pages/Home/home-page'));
-const NewsletterPage = lazy(() => import('@/pages/simple-user/newslatter'));
+const FavoritesPage = lazy(() => import('@/pages/simple-user/favorites'));
 
 // Default dashboard redirect based on role
 const DashboardRedirect = () => {
@@ -84,7 +84,7 @@ export default function AppRoutes() {
                                     <Route path="article/:id" element={<ArticleDetail />} />
                                     <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
                                     <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
-                                    <Route path="newsletter" element={<NewsletterPage />} />
+                                    <Route path="favoris" element={<FavoritesPage />} />
                                     <Route path="*" element={<NotFound />}  />
                                 </Routes>
                                 <Footer />
@@ -94,10 +94,10 @@ export default function AppRoutes() {
                 /> 
                 {/* Analytics Routes */}
                 <Route
-                    path="/analytics/*"
+                    path="/analyste/*"
                     element={
-                        <RoleGuard allowedRoles={['analytics']}>
-                            <AnalyticsLayout>
+                        <RoleGuard allowedRoles={['analyste']}>
+                            <AnalysteLayout>
                                 <Routes>
                                     <Route path="dashboard" element={<Dashboard />} />
                                     <Route path="article" element={<SimpleUserArticles />} />
@@ -105,11 +105,11 @@ export default function AppRoutes() {
                                     <Route path="article/:id" element={<ArticleDetail />} />
                                     <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
                                     <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
-                                    <Route path="newsletter" element={<NewsletterPage />} />
+                                    <Route path="favoris" element={<FavoritesPage />} />
                                     <Route path="*" element={<NotFound />}  />
                                 </Routes>
                                 <Footer />
-                            </AnalyticsLayout>
+                            </AnalysteLayout>
                         </RoleGuard>
                     }
                 />
@@ -149,7 +149,7 @@ export default function AppRoutes() {
                                     <Route path="article/:id" element={<ArticleDetail />} />
                                     <Route path="vulnerabilities" element={<VulnerabilitiesPage />} />
                                     <Route path="vulnerabilities/:id" element={<VulnerabilityDetail />} />
-                                    <Route path="newsletter" element={<NewsletterPage />} />
+                                    <Route path="favoris" element={<FavoritesPage />} />
                                     <Route path="*" element={<NotFound />}  />
                                 </Routes>
                                 <Footer />

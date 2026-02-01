@@ -1,4 +1,4 @@
-export type NormalizedRole = 'analytics' | 'simple_user' | "admin" | "veilleur" | string;
+export type NormalizedRole = 'analyste' | 'simple_user' | "admin" | "veilleur" | string;
 
 const ROLE_ALIASES: Record<string, NormalizedRole> = {
     'admin': 'admin',
@@ -10,9 +10,9 @@ const ROLE_ALIASES: Record<string, NormalizedRole> = {
     'watcher': 'veilleur',
     'monitor': 'veilleur',
     
-    'analytics': 'analytics',
-    'analytic': 'analytics',
-    'analyst': 'analytics',
+    'analytics': 'analyste',
+    'analytic': 'analyste',
+    'analyste': 'analyste',
 
     'simple_user': 'simple_user',
     'simple-user': 'simple_user',
@@ -21,7 +21,7 @@ const ROLE_ALIASES: Record<string, NormalizedRole> = {
 };
 
 const DASHBOARD_ROUTE_MAP: Record<NormalizedRole, string> = {
-    analytics: '/analytics/dashboard',
+    analyste: '/analyste/dashboard',
     simple_user: '/simple_user/dashboard',
     admin: '/admin/dashboard',
     veilleur: '/veilleur/dashboard',
@@ -52,6 +52,7 @@ export const normalizeRole = (role?: string | null): NormalizedRole | null => {
 
 export const getDashboardPathForRole = (role?: string | null): string | null => {
     const normalized = normalizeRole(role);
+    console.log(normalized)
     if (!normalized) {
         return null;
     }

@@ -11,6 +11,7 @@ import { ErrorState } from '../ui/ErrorState';
 export default function BlogPage() {
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [days, setDays] = useState<number>(30)
 
     const { data, isLoading, error, isError } = useQuery({
         queryKey: ["articles/"],
@@ -20,10 +21,10 @@ export default function BlogPage() {
 
     const { generateReport, isGenerating } = useReports();
 
-    const handleGenerateReport = (format: 'pdf' | 'excel') => {
+    const handleGenerateReport = (format: 'pdf' | 'excel', days: number) => {
         setIsDropdownOpen(false);
         generateReport(
-            { format }
+            { format, days }
         );
     };
     
@@ -84,31 +85,57 @@ export default function BlogPage() {
                             {/* Dropdown Menu */}
                             {isDropdownOpen && !isGenerating && (
                                 <div className="absolute top-full mt-2 right-0 w-56 bg-neutral-900 border border-neutral-800 rounded-xl shadow-xl overflow-hidden z-10">
-                                    <button
-                                        onClick={() => handleGenerateReport('pdf')}
-                                        className="w-full px-4 py-3 flex items-center gap-3 hover:bg-neutral-800 transition text-left text-neutral-300 hover:text-white"
-                                    >
-                                        <FileText className="w-5 h-5 text-red-500" />
-                                        <div>
-                                            <div className="font-medium">Format PDF</div>
-                                            <div className="text-xs text-neutral-500">Document imprimable</div>
-                                        </div>
-                                    </button>
-                                        
+                                    
+                                    {/* Input for number of days */}
+                                    <div className="px-4 py-3">
+                                        <label className="block text-xs text-neutral-500 mb-1" htmlFor="lastNDays">
+                                            Générer le rapport des N derniers jours
+                                        </label>
+                                        <input
+                                            id="lastNDays"
+                                            type="number"
+                                            min={1}
+                                            max={365}
+                                            value={days} // `days` comes from useState
+                                            onChange={(e) => setDays(Number(e.target.value))}
+                                            className="
+                                            w-full px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700 text-neutral-200
+                                            focus:outline-none focus:border-red-500
+                                            appearance-none
+                                            [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                        />
+                                    </div>
+
                                     <div className="h-px bg-neutral-800"></div>
-                                        
+
+                                    {/* PDF button */}
                                     <button
-                                        onClick={() => handleGenerateReport('excel')}
-                                        className="w-full px-4 py-3 flex items-center gap-3 hover:bg-neutral-800 transition text-left text-neutral-300 hover:text-white"
+                                    onClick={() => handleGenerateReport('pdf', days)}
+                                    className="w-full px-4 py-3 flex items-center gap-3 hover:bg-neutral-800 transition text-left text-neutral-300 hover:text-white"
                                     >
-                                        <FileSpreadsheet className="w-5 h-5 text-green-500" />
-                                        <div>
-                                            <div className="font-medium">Format Excel</div>
-                                            <div className="text-xs text-neutral-500">Tableau de données</div>
-                                        </div>
+                                    <FileText className="w-5 h-5 text-red-500" />
+                                    <div>
+                                        <div className="font-medium">Format PDF</div>
+                                        <div className="text-xs text-neutral-500">Document imprimable</div>
+                                    </div>
+                                    </button>
+
+                                    <div className="h-px bg-neutral-800"></div>
+
+                                    {/* Excel button */}
+                                    <button
+                                    onClick={() => handleGenerateReport('excel', days)}
+                                    className="w-full px-4 py-3 flex items-center gap-3 hover:bg-neutral-800 transition text-left text-neutral-300 hover:text-white"
+                                    >
+                                    <FileSpreadsheet className="w-5 h-5 text-green-500" />
+                                    <div>
+                                        <div className="font-medium">Format Excel</div>
+                                        <div className="text-xs text-neutral-500">Tableau de données</div>
+                                    </div>
                                     </button>
                                 </div>
-                            )}
+                                )}
+
                         </div>
                     </div>
                     {/* Afficher le contenu */}

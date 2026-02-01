@@ -33,7 +33,7 @@ export default function Newsletter({
         preferredCategoryIds,
         updatePreferences,
         isUpdating,
-        isCategoryPreferred,
+        // isCategoryPreferred,
     } = useCategoriesPreferences();
 
     useState(() => {

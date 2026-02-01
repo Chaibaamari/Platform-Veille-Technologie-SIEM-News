@@ -1,6 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const API_BASE_URL = 'http://127.0.0.1:8000/api/';
 
+function handleUnauthorized(response: Response) {
+    if (response.status === 401) {
+        // Clear token if needed
+        localStorage.removeItem('auth_token');
+        // Redirect to login
+        window.location.href = '/home';
+        // Optionally throw to stop further processing
+        throw new Error('Unauthorized - redirecting to login');
+    }
+}
+
+
 // Custom fetch wrapper for React Query (kept for future real API integration, but not used currently)
 export const apiClient = async ({ queryKey, signal }: { queryKey: [string, ...unknown[]], signal?: AbortSignal }) => {
     const [url, options = {}] = queryKey as [string, RequestInit?];
@@ -16,9 +28,10 @@ export const apiClient = async ({ queryKey, signal }: { queryKey: [string, ...un
         },
         ...options,
     };
-    console.log(`Fetching from API: ${API_BASE_URL}${url} with config:`, config);
 
     const response = await fetch(`${API_BASE_URL}${url}`, config);
+    if (response.status === 401) handleUnauthorized(response);
+
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -51,6 +64,8 @@ export const apiBlog = async ({
         }
     )
 
+    handleUnauthorized(response)
+
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -74,6 +89,9 @@ export const apiMutation = async (url: string, options: RequestInit = {}) => {
     };
 
     const response = await fetch(`${API_BASE_URL}${url}`, config);
+
+    if (response.status === 401) handleUnauthorized(response);
+
 
     if (!response.ok) {
         const errorText = await response.text();
@@ -101,12 +119,14 @@ export async function downloadReport(
         headers,
     });
 
+    if (response.status === 401) handleUnauthorized(response);
+
     if (!response.ok) {
-    let errorText = '';
-    try {
-        errorText = await response.text();
-    } catch {
-        throw new Error(`Report download failed: ${response.status} - ${errorText || response.statusText}`);
+        let errorText = '';
+        try {
+            errorText = await response.text();
+        } catch {
+            throw new Error(`Report download failed: ${response.status} - ${errorText || response.statusText}`);
     }
     };
 

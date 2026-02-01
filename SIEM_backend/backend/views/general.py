@@ -13,6 +13,7 @@ from backend.serializers import ArticleListSerializer, VulnerabiliteListSerializ
 from django.db.models.functions import TruncMonth
 from collections import defaultdict
 
+@permission_classes([IsAuthenticated])
 def api_home(request):
     """Endpoint racine - Informations API"""
     data = {
@@ -54,6 +55,7 @@ def api_home(request):
 
     return JsonResponse(data)
 
+@permission_classes([IsAuthenticated])
 def api_articles_list(request):
     articles = Article.objects.all().order_by('-date_publication')
 
@@ -98,6 +100,7 @@ def api_article_detail(request, article_id):
     
     return JsonResponse(data)
 
+@permission_classes([IsAuthenticated])
 def api_categories_list(request):
     categories = Categorie.objects.all().order_by('nom_categorie')
 
@@ -118,6 +121,7 @@ def api_categories_list(request):
     })
 
 
+@permission_classes([IsAuthenticated])
 def api_vulnerabilities_list(request):
     vulnerabilities = Vulnerabilite.objects.all().order_by('-date_publication')
     paginated = paginate_queryset(vulnerabilities, request, page_size=10)
@@ -131,12 +135,14 @@ def api_vulnerabilities_list(request):
         'vulnerabilities': VulnerabiliteListSerializer(vuln_data, many=True).data
     })
 
+@permission_classes([IsAuthenticated])
 def api_vulnerability_detail(request, vulnerability_id):
     """Détail d'un article spécifique"""
     vulnerabilitie = get_object_or_404(Vulnerabilite, cve_id=vulnerability_id)
     data = VulnerabiliteDetailSerializer(vulnerabilitie).data
     return JsonResponse(data)
 
+@permission_classes([IsAuthenticated])
 def api_stats(request):
     """Return general dashboard statistics."""
 

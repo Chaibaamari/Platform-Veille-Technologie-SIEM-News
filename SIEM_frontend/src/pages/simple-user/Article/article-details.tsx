@@ -2,7 +2,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Check, ChevronDown, ChevronLeft, Heart, Tag } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, FileSpreadsheet, FileText, Heart, Loader2, Tag } from 'lucide-react';
 import { apiClient, apiMutation } from '@/api/client';
 import { Badge } from '@/components/ui/badge';
 import { getTagBg, getTagText } from '@/lib/utils';
@@ -13,15 +13,14 @@ import { useAppSelector } from '@/stores/hooks';
 import BlogHero from '@/components/hero/BlogHero';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { useFavorites } from '@/hook/useFavorites';
+import { useReports } from '@/hook/useReport';
 
 export default function ArticleDetail() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { role } = useAppSelector((state) => state.auth);
-    const { toggleFavorite, isFavorite } = useFavorites();
-
-    
+    // const { toggleFavorite, isFavorite } = useFavorites();
+    const { generateDetailedReport, isGenerating } = useReports();
 
     const { data: article, isLoading, error , isError } = useQuery({
         queryKey: ['articles', id],
@@ -42,13 +41,20 @@ export default function ArticleDetail() {
     const categories = fetched_categories?.['categories']
 
     const [openPopover, setOpenPopover] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
-    
 
     const recommendedArticles = articles?.articles
         ?.filter((a: any) => a.id !== Number(id))
         .slice(0, 9) || [];
     
+    const handleGenerateReport = (format: 'pdf' | 'excel') => {
+        setIsDropdownOpen(false);
+        generateDetailedReport(
+            { format, id }
+        );
+    };
+
     const updateCategoriesMutation = useMutation({
         mutationFn: (selectedIds: number[]) => {
             const payload = {
@@ -125,88 +131,134 @@ export default function ArticleDetail() {
                         <div className="self-stretch flex justify-start items-start gap-4">
                             <h1 className="flex-1 text-white text-4xl font-bold leading-10">
                                 {article.titre}
-                            </h1>
-                            <button
-                                onClick={() => toggleFavorite(article)}
-                                className={`px-4 py-3 rounded-xl flex items-center gap-2 transition border ${isFavorite(article.id)
-                                        ? 'bg-red-500/10 border-red-500/50 text-red-400 hover:bg-red-500/20'
-                                        : 'bg-transparent border-neutral-800 text-neutral-400 hover:bg-neutral-800 hover:border-violet-500 hover:text-white'
-                                    }`}
-                            >
-                                <Heart
-                                    className={`w-5 h-5 transition ${isFavorite(article.id) ? 'fill-red-500' : ''
-                                        }`}
-                                />
-                                <span>{isFavorite(article.id) ? 'Enregistré' : 'Enregistrer'}</span>
-                            </button>
+                            </h1>                            
+                            
+                            <div className="relative">
+                                <button
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    disabled={isGenerating}
+                                    className="px-6 py-3 rounded-xl flex items-center gap-2 transition bg-transparent border border-neutral-800 hover:bg-neutral-800 hover:border-violet-500 text-neutral-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isGenerating ? (
+                                        <>
+                                            <Loader2 className="w-5 h-5 text-violet-500 animate-spin" />
+                                            <span>Génération...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FileText className="w-5 h-5 text-violet-500" />
+                                            <span>Générer un rapport</span>
+                                            <ChevronDown className={`w-4 h-4 text-violet-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                                        </>
+                                    )}
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                {
+                                    isDropdownOpen && (
+                                    <div className="absolute top-full mt-2 right-0 w-56 bg-neutral-900 border border-neutral-800 rounded-xl shadow-xl overflow-hidden z-10">
+                                    {/* PDF button */}
+                                    <button
+                                    onClick={() => handleGenerateReport('pdf')}
+                                    className="w-full px-4 py-3 flex items-center gap-3 hover:bg-neutral-800 transition text-left text-neutral-300 hover:text-white"
+                                    >
+                                    <FileText className="w-5 h-5 text-red-500" />
+                                    <div>
+                                        <div className="font-medium">Format PDF</div>
+                                        <div className="text-xs text-neutral-500">Document imprimable</div>
+                                    </div>
+                                    </button>
+
+                                    <div className="h-px bg-neutral-800"></div>
+
+                                    {/* Excel button */}
+                                    <button
+                                    onClick={() => handleGenerateReport('excel')}
+                                    className="w-full px-4 py-3 flex items-center gap-3 hover:bg-neutral-800 transition text-left text-neutral-300 hover:text-white"
+                                    >
+                                    <FileSpreadsheet className="w-5 h-5 text-green-500" />
+                                    <div>
+                                        <div className="font-medium">Format Excel</div>
+                                        <div className="text-xs text-neutral-500">Tableau de données</div>
+                                    </div>
+                                    </button>
+                                </div>
+                                )
+                                }
+
+                            </div>
 
                             {/* Category Button with Popover */}
-                            <Popover open={openPopover} onOpenChange={setOpenPopover}>
-                                <PopoverTrigger asChild>
-                                    <button className="px-6 py-3 rounded-xl flex items-center gap-2 transition bg-transparent border border-neutral-800 hover:bg-neutral-800 hover:border-violet-500 text-neutral-400 hover:text-white">
-                                        <Tag className="w-5 h-5 text-violet-500" />
-                                        <span>Categories</span>
-                                        <ChevronDown className={`w-4 h-4 text-violet-500 transition-transform ${openPopover ? 'rotate-180' : ''}`} />
-                                    </button>
-                                </PopoverTrigger>
-                                <PopoverContent
-                                    className="w-80 p-4 bg-slate-900 border border-slate-700 shadow-xl"
-                                    align="end"
-                                >
-                                    <div className="flex flex-col gap-4">
-                                        <div className="flex items-center justify-between border-b border-slate-700 pb-3">
-                                            <h3 className="text-white font-semibold">Manage Categories</h3>
-                                            <span className="text-xs text-neutral-400">
-                                                {selectedCategoryIds.length} selected
-                                            </span>
-                                        </div>
-                                        
-                                        <div className="flex flex-col gap-2 max-h-72 overflow-y-auto">
-                                            {categories && categories.map((category: any) => {
-                                                const isSelected = selectedCategoryIds.includes(category.id);
+                            {
+                                role == 'analyste' && (
+                                    <Popover open={openPopover} onOpenChange={setOpenPopover}>
+                                        <PopoverTrigger asChild>
+                                            <button className="px-6 py-3 rounded-xl flex items-center gap-2 transition bg-transparent border border-neutral-800 hover:bg-neutral-800 hover:border-violet-500 text-neutral-400 hover:text-white">
+                                                <Tag className="w-5 h-5 text-violet-500" />
+                                                <span>Categories</span>
+                                                <ChevronDown className={`w-4 h-4 text-violet-500 transition-transform ${openPopover ? 'rotate-180' : ''}`} />
+                                            </button>
+                                        </PopoverTrigger>
+                                        <PopoverContent
+                                            className="w-80 p-4 bg-slate-900 border border-slate-700 shadow-xl"
+                                            align="end"
+                                        >
+                                            <div className="flex flex-col gap-4">
+                                                <div className="flex items-center justify-between border-b border-slate-700 pb-3">
+                                                    <h3 className="text-white font-semibold">Manage Categories</h3>
+                                                    <span className="text-xs text-neutral-400">
+                                                        {selectedCategoryIds.length} selected
+                                                    </span>
+                                                </div>
                                                 
-                                                return (
+                                                <div className="flex flex-col gap-2 max-h-72 overflow-y-auto">
+                                                    {categories && categories.map((category: any) => {
+                                                        const isSelected = selectedCategoryIds.includes(category.id);
+                                                        
+                                                        return (
+                                                            <button
+                                                                key={category.id}
+                                                                onClick={() => toggleCategory(category.id)}
+                                                                className={`
+                                                                    flex items-center justify-between px-3 py-2.5 rounded-lg 
+                                                                    transition-all duration-200
+                                                                    ${isSelected
+                                                                        ? 'bg-violet-500/20 border border-violet-500/50'
+                                                                        : 'bg-slate-800/50 border border-slate-700 hover:bg-slate-800'
+                                                                    }
+                                                                `}
+                                                            >
+                                                                <span className={`font-medium ${isSelected ? 'text-violet-300' : 'text-neutral-300'}`}>
+                                                                    {category.nom}
+                                                                </span>
+                                                                {isSelected && (
+                                                                    <Check size={18} className="text-violet-400" />
+                                                                )}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                                
+                                                <div className="flex gap-2 border-t border-slate-700 pt-3">
                                                     <button
-                                                        key={category.id}
-                                                        onClick={() => toggleCategory(category.id)}
-                                                        className={`
-                                                            flex items-center justify-between px-3 py-2.5 rounded-lg 
-                                                            transition-all duration-200
-                                                            ${isSelected
-                                                                ? 'bg-violet-500/20 border border-violet-500/50'
-                                                                : 'bg-slate-800/50 border border-slate-700 hover:bg-slate-800'
-                                                            }
-                                                        `}
+                                                        onClick={() => setOpenPopover(false)}
+                                                        className="flex-1 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-neutral-300 font-medium transition-colors"
                                                     >
-                                                        <span className={`font-medium ${isSelected ? 'text-violet-300' : 'text-neutral-300'}`}>
-                                                            {category.nom}
-                                                        </span>
-                                                        {isSelected && (
-                                                            <Check size={18} className="text-violet-400" />
-                                                        )}
+                                                        Cancel
                                                     </button>
-                                                );
-                                            })}
-                                        </div>
-                                        
-                                        <div className="flex gap-2 border-t border-slate-700 pt-3">
-                                            <button
-                                                onClick={() => setOpenPopover(false)}
-                                                className="flex-1 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-neutral-300 font-medium transition-colors"
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button
-                                                onClick={handleSave}
-                                                disabled={updateCategoriesMutation.isPending}
-                                                className="flex-1 px-4 py-2 bg-violet-500 hover:bg-violet-600 disabled:bg-violet-500/50 rounded-lg text-white font-medium transition-colors"
-                                            >
-                                                {updateCategoriesMutation.isPending ? 'Saving...' : 'Save'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </PopoverContent>
-                            </Popover>
+                                                    <button
+                                                        onClick={handleSave}
+                                                        disabled={updateCategoriesMutation.isPending}
+                                                        className="flex-1 px-4 py-2 bg-violet-500 hover:bg-violet-600 disabled:bg-violet-500/50 rounded-lg text-white font-medium transition-colors"
+                                                    >
+                                                        {updateCategoriesMutation.isPending ? 'Saving...' : 'Save'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
+                                )
+                            }
                         </div>
 
                         <img
