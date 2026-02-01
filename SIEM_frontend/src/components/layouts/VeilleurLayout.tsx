@@ -6,6 +6,7 @@ const navLinks: NavItem[] = [
     { name: 'Articles', href: '/veilleur/article' },
     { name: 'Vulnérabilités', href: '/veilleur/vulnerabilities' },
     { name: 'Sources', href: '/veilleur/sources' },
+    { name: 'Newsletter', href: '/veilleur/newsletter' },
 ];
 
 interface VeilleurLayoutProps {
