@@ -2,14 +2,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient, apiMutation } from '@/api/client';
 
 export type Category = {
-    id: number;
-    nom: string;
-    description?: string;
+    id_categorie: number;
+    nom_categorie: string;
 };
 
 export type UserCategoryPreference = {
     id: number;
-    categorie: number;
     categorie_nom?: string;
 };
 
@@ -24,24 +22,24 @@ export function useCategoriesPreferences() {
 
     // Récupérer les catégories préférées de l'utilisateur
     const preferencesQuery = useQuery({
-        queryKey: ['user-categories-preferences'],
-        queryFn: () => apiClient({ queryKey: ['user-categories-preferences'] }),
+        queryKey: ['users/categories/followed'],
+        queryFn: () => apiClient({ queryKey: ['users/categories/followed'] }),
     });
 
     // Mettre à jour les catégories préférées
     const updatePreferencesMutation = useMutation({
         mutationFn: (categoryIds: number[]) =>
-            apiMutation('user-categories-preferences/update/', {
+            apiMutation('users/categories/followed/update/', {
                 method: 'POST',
                 body: JSON.stringify({ categories: categoryIds }),
             }),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['user-categories-preferences'] });
+            queryClient.invalidateQueries({ queryKey: ['users/categories/followed'] });
         },
     });
 
     const preferredCategoryIds = new Set(
-        (preferencesQuery.data ?? []).map((pref: UserCategoryPreference) => pref.categorie)
+        (preferencesQuery.data ?? []).map((pref: UserCategoryPreference) => pref.id)
     );
 
     return {

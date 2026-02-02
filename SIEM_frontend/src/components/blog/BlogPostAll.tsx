@@ -4,7 +4,7 @@ import type { Article } from '@/types/blog';
 // import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {useMutation, useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { ChevronLeft, ChevronRight, Trash2} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2, Search} from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { getTagBg, getTagText } from '@/lib/utils';
 import { Link } from 'react-router-dom';
@@ -27,17 +27,20 @@ interface ArticlesResponse {
   };
 }
 
-const PAGE_SIZE = 9; // matches 3 rows × 3 articles
+const PAGE_SIZE = 12; // matches 4 rows × 3 articles
 
 export default function BlogPostsPage() {
     const [page, setPage] = useState(1);
     const { role } = useAppSelector((state) => state.auth);
 
+    const [searchInput, setSearchInput] = useState(''); // updates as user types
+    const [searchQuery, setSearchQuery] = useState<string>('');
+
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['articles/', page, PAGE_SIZE],
         queryFn: async () => {
             const response = await apiClient({
-                queryKey: [`articles/?page=${page}&page_size=${PAGE_SIZE}`], // note: ? not &
+                queryKey: [`articles/?page=${page}&page_size=${PAGE_SIZE}&q=${searchQuery}`], // note: ? not &
             });
             return response as ArticlesResponse;
         },
@@ -111,6 +114,41 @@ export default function BlogPostsPage() {
                 <h3 className="self-stretch text-white text-2xl font-semibold  leading-8">
                     All blog posts
                 </h3>
+
+                {/* Search and Filters */}
+                <div className="bg-zinc-800 rounded-xl shadow-sm border border-zinc-700 p-6 mb-8 w-full">
+                    <div className="flex flex-col md:flex-row gap-4">
+                        
+                        {/* Search Input */}
+                        <div className="flex-1 relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-400" />
+                        <input
+                            type="text"
+                            placeholder="Rechercher des articles ou CVE..."
+                            value={searchInput} // bind to input state
+                            onChange={(e) => setSearchInput(e.target.value)} // typing doesn't trigger query
+                            onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                setPage(1);                
+                                setSearchQuery(searchInput); // triggers query refetch
+                            }
+                            }}
+                            className="
+                            w-full
+                            pl-10 pr-4 py-2.5
+                            bg-zinc-900
+                            border border-zinc-700
+                            rounded-lg
+                            text-white
+                            placeholder-zinc-500
+                            focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+                            outline-none
+                            transition-colors
+                            "
+                        />
+                        </div>
+                    </div>
+                </div>
 
                 <div className="self-stretch flex flex-col justify-start items-start gap-12">
                     {allArticles.length === 0 ? (

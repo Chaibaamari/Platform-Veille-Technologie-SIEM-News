@@ -31,6 +31,7 @@ urlpatterns = [
     # ============================================
     path('articles/', views.api_articles_list, name='api_articles_list'),
     path('articles/<int:article_id>/', views.api_article_detail, name='api_article_detail'),
+    path('articles/<int:article_id>/categories', views.api_update_article_categories, name='api_article_categories'),
     # path('articles/create/', views.APICreateArticle.as_view(), name='api_create_article'),
     
     # ============================================
@@ -39,8 +40,9 @@ urlpatterns = [
     path('categories/', views.api_categories_list, name='api_categories_list'),
     path('users/add-category/', views.api_add_category_to_user),
     path('users/remove-category/', views.api_remove_category_from_user),
-    path('users/categories/followed/', views.api_user_followed_categories, name='followed-categories'),
-    
+    path('users/categories/followed/', views.api_user_favorite_categories, name='followed-categories'),
+    path('users/categories/followed/update/', views.api_update_user_favorite_categories, name='followed-categories-update'),    
+
     # ============================================
     # VULNÉRABILITÉS
     # ============================================

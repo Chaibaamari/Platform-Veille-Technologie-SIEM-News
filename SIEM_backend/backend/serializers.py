@@ -207,7 +207,7 @@ class CategorieListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categorie
         fields = [
-            'id_categorie',
+            'id',
             'nom_categorie',
             'nb_articles'
         ]

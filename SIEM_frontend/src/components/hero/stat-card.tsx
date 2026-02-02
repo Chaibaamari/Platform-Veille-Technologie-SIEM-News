@@ -2,7 +2,7 @@ interface StatCardProps {
   icon: React.ReactNode;
   title: string;
   value: number;
-  change: string;
+  change?: string;
   gradient: string;
 };
 
@@ -14,10 +14,20 @@ const StatCard: React.FC<StatCardProps> = ({ icon, title, value, change, gradien
                     <p className="text-sm text-slate-400 mb-1">{title}</p>
                     <h3 className="text-3xl font-bold mb-2 text-white">{value.toLocaleString()}</h3>
                     <div className="flex items-center gap-1">
-                        <span className={`text-sm font-medium ${change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                            {change}
-                        </span>
-                        <span className="text-xs text-slate-500">vs mois dernier</span>
+                        {
+                            change && (
+                                <>
+                                    <span className={`text-sm font-medium ${change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
+                                        {change}
+                                    </span>
+                                    <span className="text-xs text-slate-500">vs mois dernier</span>
+                                </>
+
+                            )
+                            
+
+
+                        }
                     </div>
                 </div>
                 <div className={`bg-linear-to-br ${gradient} p-3 rounded-xl text-white`}>
