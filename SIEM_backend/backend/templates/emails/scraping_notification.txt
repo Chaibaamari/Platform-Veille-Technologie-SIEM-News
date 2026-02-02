@@ -1,0 +1,66 @@
+Bonjour {{ nom_utilisateur }},
+
+Voici un résumé de la veille de sécurité effectuée le {{ date|date:"d/m/Y" }} :
+
+{% if has_vulnerabilities %}
+=== NOUVELLES VULNÉRABILITÉS ({{ vulnerabilities_count }}) ===
+
+{% if critical_vulns %}
+CRITIQUES ({{ critical_vulns|length }}) :
+{% for vuln in critical_vulns %}
+- {{ vuln.cve_id }}{% if vuln.score_cvss %} - CVSS: {{ vuln.score_cvss }}{% endif %}
+  {{ vuln.description_vuln|truncatewords:30 }}
+  Publié le {{ vuln.date_publication|date:"d/m/Y" }}
+{% endfor %}
+{% endif %}
+
+{% if high_vulns %}
+ÉLEVÉES ({{ high_vulns|length }}) :
+{% for vuln in high_vulns %}
+- {{ vuln.cve_id }}{% if vuln.score_cvss %} - CVSS: {{ vuln.score_cvss }}{% endif %}
+  {{ vuln.description_vuln|truncatewords:30 }}
+  Publié le {{ vuln.date_publication|date:"d/m/Y" }}
+{% endfor %}
+{% endif %}
+
+{% if medium_vulns %}
+MOYENNES ({{ medium_vulns|length }}) :
+{% for vuln in medium_vulns|slice:":5" %}
+- {{ vuln.cve_id }}{% if vuln.score_cvss %} - CVSS: {{ vuln.score_cvss }}{% endif %}
+  {{ vuln.description_vuln|truncatewords:20 }}
+{% endfor %}
+{% if medium_vulns|length > 5 %}
+... et {{ medium_vulns|length|add:"-5" }} autre(s) vulnérabilité(s) moyenne(s)
+{% endif %}
+{% endif %}
+
+{% endif %}
+
+{% if relevant_categories %}
+=== NOUVEAUX ARTICLES ({{ total_articles }}) ===
+
+{% for category, articles in relevant_categories.items %}
+{{ category.nom_categorie }} ({{ articles|length }}) :
+{% for article in articles|slice:":3" %}
+- {{ article.titre_article }}
+  {{ article.summary_article|default:article.description_article|truncatewords:25 }}
+  Source: {{ article.source.nom_source }} | {{ article.date_publication|date:"d/m/Y" }}
+  Lien: {{ article.url_article }}
+{% endfor %}
+{% if articles|length > 3 %}
+... et {{ articles|length|add:"-3" }} autre(s) article(s)
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% if not has_vulnerabilities and not relevant_categories %}
+Aucune nouvelle vulnérabilité ou article dans vos catégories suivies aujourd'hui.
+{% endif %}
+
+---
+Pour consulter tous les détails, rendez-vous sur votre tableau de bord :
+{{ frontend_url }}
+
+Ceci est une notification automatique de votre système de veille de sécurité.
+Pour gérer vos préférences, connectez-vous à votre compte.

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container { 
+            max-width: 650px; 
+            margin: 20px auto; 
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            padding: 30px 20px; 
+            text-align: center; 
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .content {
+            padding: 30px 25px;
+        }
+        .greeting {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .section { 
+            margin: 25px 0; 
+            padding: 20px; 
+            background-color: #f9f9f9; 
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        .vulnerability { 
+            margin: 12px 0; 
+            padding: 15px; 
+            background-color: white; 
+            border-radius: 4px;
+            border-left: 4px solid #e74c3c;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .vulnerability.critical { border-left-color: #c0392b; background-color: #fff5f5; }
+        .vulnerability.high { border-left-color: #e74c3c; background-color: #fff8f8; }
+        .vulnerability.medium { border-left-color: #f39c12; background-color: #fffaf5; }
+        .vulnerability.low { border-left-color: #3498db; background-color: #f5f9ff; }
+        
+        .article { 
+            margin: 12px 0; 
+            padding: 15px; 
+            background-color: white; 
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .category-title { 
+            color: #667eea; 
+            font-weight: 600; 
+            margin-top: 20px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .badge { 
+            display: inline-block; 
+            padding: 4px 10px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-critical { background-color: #c0392b; }
+        .badge-high { background-color: #e74c3c; }
+        .badge-medium { background-color: #f39c12; }
+        .badge-low { background-color: #3498db; }
+        
+        .vuln-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .vuln-score {
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .vuln-description {
+            color: #555;
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .vuln-date, .article-meta {
+            color: #888;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        
+        .article-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+        .article-title a {
+            color: #2c3e50;
+            text-decoration: none;
+        }
+        .article-title a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+        .article-summary {
+            color: #555;
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .summary-note {
+            color: #777;
+            font-style: italic;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 20px 0;
+            font-weight: 600;
+            text-align: center;
+        }
+        .cta-button:hover {
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .footer { 
+            margin-top: 30px; 
+            padding: 25px; 
+            background-color: #f5f5f5;
+            border-top: 1px solid #e0e0e0; 
+            font-size: 13px; 
+            color: #777; 
+            text-align: center;
+            line-height: 1.6;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 6px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔔 Veille de Sécurité</h1>
+            <p>{{ date|date:"l d F Y" }}</p>
+        </div>
+
+        <div class="content">
+            <div class="greeting">
+                Bonjour <strong>{{ nom_utilisateur }}</strong>,
+            </div>
+
+            <p>Voici un résumé de la veille de sécurité effectuée aujourd'hui :</p>
+
+            <div class="stats">
+                {% if has_vulnerabilities %}
+                <div class="stat-item">
+                    <div class="stat-number">{{ vulnerabilities_count }}</div>
+                    <div class="stat-label">Vulnérabilité{{ vulnerabilities_count|pluralize }}</div>
+                </div>
+                {% endif %}
+                {% if total_articles > 0 %}
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_articles }}</div>
+                    <div class="stat-label">Article{{ total_articles|pluralize }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if has_vulnerabilities %}
+            <div class="section">
+                <h2>🚨 Nouvelles Vulnérabilités</h2>
+                
+                {% if critical_vulns %}
+                <h3 style="color: #c0392b; font-size: 16px; margin-top: 15px;">Critiques ({{ critical_vulns|length }})</h3>
+                {% for vuln in critical_vulns %}
+                <div class="vulnerability critical">
+                    <div class="vuln-title">
+                        {{ vuln.cve_id }}
+                        <span class="badge badge-critical">Critique</span>
+                        {% if vuln.score_cvss %}
+                        <span class="vuln-score" style="color: #c0392b;">CVSS: {{ vuln.score_cvss }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="vuln-description">{{ vuln.description_vuln|truncatewords:30 }}</div>
+                    <div class="vuln-date">📅 Publié le {{ vuln.date_publication|date:"d/m/Y" }}</div>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                {% if high_vulns %}
+                <h3 style="color: #e74c3c; font-size: 16px; margin-top: 20px;">Élevées ({{ high_vulns|length }})</h3>
+                {% for vuln in high_vulns %}
+                <div class="vulnerability high">
+                    <div class="vuln-title">
+                        {{ vuln.cve_id }}
+                        <span class="badge badge-high">Élevée</span>
+                        {% if vuln.score_cvss %}
+                        <span class="vuln-score" style="color: #e74c3c;">CVSS: {{ vuln.score_cvss }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="vuln-description">{{ vuln.description_vuln|truncatewords:30 }}</div>
+                    <div class="vuln-date">📅 Publié le {{ vuln.date_publication|date:"d/m/Y" }}</div>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                {% if medium_vulns %}
+                <h3 style="color: #f39c12; font-size: 16px; margin-top: 20px;">Moyennes ({{ medium_vulns|length }})</h3>
+                {% for vuln in medium_vulns|slice:":5" %}
+                <div class="vulnerability medium">
+                    <div class="vuln-title">
+                        {{ vuln.cve_id }}
+                        <span class="badge badge-medium">Moyenne</span>
+                        {% if vuln.score_cvss %}
+                        <span class="vuln-score" style="color: #f39c12;">CVSS: {{ vuln.score_cvss }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="vuln-description">{{ vuln.description_vuln|truncatewords:20 }}</div>
+                    <div class="vuln-date">📅 Publié le {{ vuln.date_publication|date:"d/m/Y" }}</div>
+                </div>
+                {% endfor %}
+                {% if medium_vulns|length > 5 %}
+                <p class="summary-note">... et {{ medium_vulns|length|add:"-5" }} autre{{ medium_vulns|length|add:"-5"|pluralize }} vulnérabilité{{ medium_vulns|length|add:"-5"|pluralize }} moyenne{{ medium_vulns|length|add:"-5"|pluralize }}</p>
+                {% endif %}
+                {% endif %}
+
+                {% if low_vulns %}
+                <h3 style="color: #3498db; font-size: 16px; margin-top: 20px;">Faibles ({{ low_vulns|length }})</h3>
+                {% for vuln in low_vulns|slice:":3" %}
+                <div class="vulnerability low">
+                    <div class="vuln-title">
+                        {{ vuln.cve_id }}
+                        <span class="badge badge-low">Faible</span>
+                        {% if vuln.score_cvss %}
+                        <span class="vuln-score" style="color: #3498db;">CVSS: {{ vuln.score_cvss }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="vuln-description">{{ vuln.description_vuln|truncatewords:20 }}</div>
+                    <div class="vuln-date">📅 Publié le {{ vuln.date_publication|date:"d/m/Y" }}</div>
+                </div>
+                {% endfor %}
+                {% if low_vulns|length > 3 %}
+                <p class="summary-note">... et {{ low_vulns|length|add:"-3" }} autre{{ low_vulns|length|add:"-3"|pluralize }} vulnérabilité{{ low_vulns|length|add:"-3"|pluralize }} faible{{ low_vulns|length|add:"-3"|pluralize }}</p>
+                {% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if relevant_categories %}
+            <div class="section">
+                <h2>📰 Nouveaux Articles dans vos catégories</h2>
+                
+                {% for category, articles in relevant_categories.items %}
+                <div class="category-title">
+                    📌 {{ category.nom_categorie }} ({{ articles|length }})
+                </div>
+                {% for article in articles|slice:":3" %}
+                <div class="article">
+                    <div class="article-title">
+                        <a href="{{ article.url_article }}" target="_blank">{{ article.titre_article }}</a>
+                    </div>
+                    <div class="article-summary">
+                        {{ article.summary_article|default:article.description_article|truncatewords:25 }}
+                    </div>
+                    <div class="article-meta">
+                        🏢 {{ article.source.nom_source }} • 📅 {{ article.date_publication|date:"d/m/Y" }}
+                    </div>
+                </div>
+                {% endfor %}
+                {% if articles|length > 3 %}
+                <p class="summary-note">... et {{ articles|length|add:"-3" }} autre{{ articles|length|add:"-3"|pluralize }} article{{ articles|length|add:"-3"|pluralize }}</p>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if not has_vulnerabilities and not relevant_categories %}
+            <div class="section">
+                <p style="text-align: center; color: #888;">
+                    Aucune nouvelle vulnérabilité ou article dans vos catégories suivies aujourd'hui.
+                </p>
+            </div>
+            {% endif %}
+
+            <div style="text-align: center;">
+                <a href="{{ frontend_url }}" class="cta-button">Voir le tableau de bord complet</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>Notification automatique</strong> de votre système de veille de sécurité</p>
+            <p>Pour gérer vos préférences de catégories, <a href="{{ frontend_url }}/settings">connectez-vous à votre compte</a></p>
+            <p style="margin-top: 15px; font-size: 11px; color: #999;">
+                Vous recevez cet email car vous êtes inscrit sur notre plateforme de veille.<br>
+                Si vous ne souhaitez plus recevoir ces notifications, contactez votre administrateur.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

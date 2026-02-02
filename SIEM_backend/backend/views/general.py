@@ -12,7 +12,7 @@ from .utils import paginate_queryset
 from backend.serializers import ArticleListSerializer, VulnerabiliteListSerializer, VulnerabiliteDetailSerializer, CategorieListSerializer
 from django.db.models.functions import TruncMonth
 from collections import defaultdict
-from rest_framework.authentication import TokenAuthentication
+from django.db.models import Q
 
 @permission_classes([IsAuthenticated])
 def api_home(request):
@@ -161,15 +161,34 @@ def api_update_user_favorite_categories(request):
         },
         status=200
     )
-
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def api_vulnerabilities_list(request):
-    vulnerabilities = Vulnerabilite.objects.all().order_by('-date_publication')
+    # Get query parameters
+    search_query = request.GET.get('q', '').strip()  # search by CVE ID or description
+    severity_filter = request.GET.get('severity', '').lower().strip()  # filter by severity
+
+    # Start with all vulnerabilities
+    vulnerabilities = Vulnerabilite.objects.all()
+
+    # Apply search query
+    if search_query:
+        vulnerabilities = vulnerabilities.filter(
+            Q(cve_id__icontains=search_query) |
+            Q(description_vuln__icontains=search_query)
+        )
+
+    # Apply severity filter
+    if severity_filter and severity_filter in dict(Vulnerabilite.SEVERITY_CHOICES):
+        vulnerabilities = vulnerabilities.filter(severite=severity_filter)
+
+    # Order by publication date
+    vulnerabilities = vulnerabilities.order_by('-date_publication')
+
+    # Pagination (reuse your existing helper)
     paginated = paginate_queryset(vulnerabilities, request, page_size=10)
 
-    vuln_data = []
-    for vuln in paginated['items']:
-        vuln_data.append(vuln)
+    vuln_data = list(paginated['items'])
 
     return JsonResponse({
         'pagination': paginated['pagination'],

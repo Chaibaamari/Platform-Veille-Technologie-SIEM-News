@@ -6,7 +6,7 @@ import { Check, ChevronDown, ChevronLeft, FileSpreadsheet, FileText,Loader2, Tag
 import { apiClient, apiMutation } from '@/api/client';
 import { Badge } from '@/components/ui/badge';
 import { getTagBg, getTagText } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { queryClient } from '@/main';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAppSelector } from '@/stores/hooks';
@@ -39,7 +39,6 @@ export default function ArticleDetail() {
     });
 
     const categories = fetched_categories?.['categories']
-
     const [openPopover, setOpenPopover] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
@@ -58,9 +57,11 @@ export default function ArticleDetail() {
     const updateCategoriesMutation = useMutation({
         mutationFn: (selectedIds: number[]) => {
             const payload = {
-                id: Number(id),
-                category_ids: selectedIds,
+                id_article: Number(id),
+                categories_ids: selectedIds,
             };
+
+            console.log(payload)
             return apiMutation(`articles/${id}/categories`, {
                 method: 'POST',
                 body: JSON.stringify(payload),
@@ -86,8 +87,14 @@ export default function ArticleDetail() {
 
     const handleSave = () => {
         console.log('Saving categories:', selectedCategoryIds);
-        // updateCategoriesMutation.mutate(selectedCategoryIds);
+        updateCategoriesMutation.mutate(selectedCategoryIds);
     };
+
+    useEffect(() => {
+        if (!article?.categories) return; // only run if categories exist
+        const ids = article.categories.map((category: any) => category.id);
+        setSelectedCategoryIds(ids);
+    }, [article?.categories]);
 
     if (isLoading) {
         return (
@@ -109,6 +116,7 @@ export default function ArticleDetail() {
                     </div>
                 );
     }
+
 
     return (
         <div className="w-full max-w-[1216] mx-auto px-8 py-12 flex flex-col gap-8 bg-linear-to-b from-slate-950 to-zinc-900">
@@ -185,7 +193,6 @@ export default function ArticleDetail() {
                                 </div>
                                 )
                                 }
-
                             </div>
 
                             {/* Category Button with Popover */}
