@@ -4,34 +4,54 @@ import { type Article } from "@/types/blog"
 import { getTagBg, getTagText } from "@/lib/utils"
 import { Link } from "react-router-dom"
 import { useAppSelector } from "@/stores/hooks"
+import { Button } from "../ui/button"
+import { Trash2 } from "lucide-react"
 
 interface BlogCardProps {
   article: Article
   large?: boolean
   variant?: "default" | "row"
+  onDelete?: (id: string | number) => void
 }
 
 export default function BlogCard({
   article,
   large = false,
-  variant = "default",
+    variant = "default",
+    onDelete,
 }: BlogCardProps) {
     const { role } = useAppSelector((state) => state.auth);
+    const handleDelete = (e: React.MouseEvent) => {
+        e.preventDefault(); // Empêche la navigation vers l'article
+        e.stopPropagation();
+        if (onDelete) {
+            onDelete(article.id);
+        }
+    };
 
     /* ROW VARIANT (FULL WIDTH) */
   if (variant === "row") {
       return (
-          <Card className="bg-transparent border-none">
+          <Card className="bg-transparent border-none group">
               <Link to={`/${role}/article/${article.id}`}>
                   <div className="flex gap-8 items-start">
                       {/* Image */}
-                      <div className="shrink-0">
+                      <div className="shrink-0 relative">
 
                           <img
                               src={article?.thumbnail || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUkOkp-ul9SF-K79OGubZg13v0qMPuV271RQ&s"}
                               alt={article.titre}
                               className="w-148 h-74 object-cover rounded-lg"
                           />
+                          {onDelete && (
+                                <Button
+                                    onClick={handleDelete}
+                                    size="icon"
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-red-500/90 hover:bg-red-600 text-white border-none h-8 w-8"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </Button>
+                            )}
                       </div>
 
                       {/* Content */}
@@ -50,7 +70,6 @@ export default function BlogCard({
                                   className="w-5 h-5 mt-1"
                               />
                           </div>
-
                           <p className="text-neutral-300 text-base leading-6 line-clamp-2">
                               {article.description}
                           </p>
@@ -78,7 +97,7 @@ export default function BlogCard({
 
     /* EXISTING CARD (unchanged) */
     return (
-        <Card className="bg-transparent border-none shadow-none h-fit">
+        <Card className="bg-transparent border-none shadow-none h-fit group">
             <Link to={`/${role}/article/${article.id}`}>
                 <div className="group cursor-pointer h-full">
                     {large ? (
@@ -91,6 +110,15 @@ export default function BlogCard({
                                     alt={article.titre}
                                     className="w-full h-fit object-cover"
                                 />
+                                {onDelete && (
+                                    <Button
+                                        onClick={handleDelete}
+                                        size="icon"
+                                        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-red-500/90 hover:bg-red-600 text-white border-none h-9 w-9"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                )}
                             </div>
                 
                             {/* Content below image */}
@@ -131,12 +159,21 @@ export default function BlogCard({
                         /* SMALL CARD LAYOUT */
                         <div className="flex gap-4 h-full items-start">
                             {/* Image - fixed size */}
-                            <div>
+                            <div className="relative">
                                 <img
                                     src={article?.thumbnail || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUkOkp-ul9SF-K79OGubZg13v0qMPuV271RQ&s"}
                                     alt={article.titre}
                                     className="w-[592px] h-[296px] object-cover rounded-lg"
-                                />
+                                    />
+                                    {onDelete && (
+                                    <Button
+                                        onClick={handleDelete}
+                                        size="icon"
+                                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-red-500/90 hover:bg-red-600 text-white border-none h-8 w-8"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                )}
                             </div>
                 
                             {/* Content */}

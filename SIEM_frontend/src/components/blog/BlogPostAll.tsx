@@ -1,10 +1,10 @@
 // components/BlogPostsPage.tsx
-import { apiClient } from '@/api/client';
+import { apiClient, apiMutation } from '@/api/client';
 import type { Article } from '@/types/blog';
 // import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import {useQuery } from '@tanstack/react-query';
+import {useMutation, useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { ChevronLeft, ChevronRight} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2} from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { getTagBg, getTagText } from '@/lib/utils';
 import { Link } from 'react-router-dom';
@@ -12,6 +12,8 @@ import { useAppSelector } from '@/stores/hooks';
 import { useState } from 'react';
 import { ErrorState } from '../ui/ErrorState';
 import { LoadingState } from '../ui/LoadingState';
+import { queryClient } from '@/main';
+import { Button } from '../ui/button';
 
 interface ArticlesResponse {
   articles: Article[];
@@ -41,6 +43,27 @@ export default function BlogPostsPage() {
         },
         staleTime: 3 * 60 * 1000, // 3 minutes – adjust as needed
     });
+
+    // Mutation pour supprimer un article
+    const deleteArticleMutation = useMutation({
+        mutationFn: (articleId: string | number) =>
+            apiMutation(`articles/${articleId}`, {
+                method: 'DELETE',
+                body: JSON.stringify({ articleId: articleId }),
+            }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['articles/'] });
+        },
+    });
+
+    const handleDeleteArticle = (e: React.MouseEvent, articleId: string | number) => {
+        e.preventDefault(); // Empêche la navigation
+        e.stopPropagation();
+        
+        if (window.confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
+            deleteArticleMutation.mutate(articleId);
+        }
+    };
 
     const typedData = data as ArticlesResponse | undefined;
     const allArticles = typedData?.articles || [];
@@ -107,7 +130,7 @@ export default function BlogPostsPage() {
                                             <Link
                                                 to={`/${role}/article/${article.id}`}
                                                 key={article.id}
-                                                className="flex-1 flex flex-col justify-start items-start gap-8"
+                                                className="flex-1 flex flex-col justify-start items-start gap-8 group"
                                             >
                                                 <img
                                                     className="self-stretch h-60 relative object-cover"
@@ -116,9 +139,19 @@ export default function BlogPostsPage() {
                                                 />
                                                 <div className="self-stretch flex flex-col justify-start items-start gap-6">
                                                     <div className="self-stretch flex flex-col justify-start items-start gap-3">
-                                                        <div className="text-violet-700 text-sm font-semibold  leading-5">
-                                                            {format(new Date(article.date_publication), 'EEEE, d MMM yyyy')}
-                                                        </div>
+                                                        <div className="w-full flex items-center justify-between">
+                                                                <div className="text-violet-700 text-sm font-semibold leading-5">
+                                                                    {format(new Date(article.date_publication), 'EEEE, d MMM yyyy')}
+                                                                </div>
+                                                                <Button
+                                                                    onClick={(e) => handleDeleteArticle(e, article.id)}
+                                                                    size="icon"
+                                                                    variant="ghost"
+                                                                    className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500 hover:text-red-600 h-8 w-8"
+                                                                >
+                                                                    <Trash2 className="w-4 h-4" />
+                                                                </Button>
+                                                            </div>
                                                         <div className="self-stretch flex justify-start items-start gap-4">
                                                             <h2 className="flex-1 text-white text-2xl font-semibold  leading-8 line-clamp-1">
                                                                 {article.titre}

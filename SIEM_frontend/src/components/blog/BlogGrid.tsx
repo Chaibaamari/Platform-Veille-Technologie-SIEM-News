@@ -3,9 +3,10 @@ import { type Article } from "@/types/blog"
 
 interface BlogGridProps {
     posts: Article[];
+    onDelete?: (id: string | number) => void;
 }
 
-export default function BlogGrid({ posts }: BlogGridProps) {
+export default function BlogGrid({ posts , onDelete }: BlogGridProps) {
     if (!posts.length) return null;
 
     const featured = posts[0];
@@ -17,11 +18,11 @@ export default function BlogGrid({ posts }: BlogGridProps) {
 
             {/* Top section */}
             <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
-                <BlogCard article={featured} large />
+                <BlogCard article={featured} large onDelete={onDelete} />
 
                 <div className="grid grid-cols-1 gap-8 ">
                     {rightPosts.map((post) => (
-                        <BlogCard key={post.id} article={post} />
+                        <BlogCard key={post.id} article={post} onDelete={onDelete} />
                     ))}
                 </div>
             </div>
@@ -33,6 +34,7 @@ export default function BlogGrid({ posts }: BlogGridProps) {
                         key={post.id}
                         article={post}
                         variant="row"
+                        onDelete={onDelete}
                     />
                 ))}
             </div>
