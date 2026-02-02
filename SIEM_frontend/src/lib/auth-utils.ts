@@ -21,8 +21,8 @@ const ROLE_ALIASES: Record<string, NormalizedRole> = {
 };
 
 const DASHBOARD_ROUTE_MAP: Record<NormalizedRole, string> = {
-    analyste: '/analyste/articles',
-    simple_user: '/simple_user/articles',
+    analyste: '/analyste/article',
+    simple_user: '/simple_user/article',
     admin: '/admin/users',
     veilleur: '/veilleur/sources',
 };

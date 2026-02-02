@@ -9,7 +9,7 @@ export function useReports() {
         mutationFn: async ({ format, days }: { format: 'pdf' | 'excel' ; days: number}) => {
             const endpoint = format === 'pdf'
                 ? `reports/articles/pdf/?days=${days}`
-                : `reports/articles/excel/days=${days}`;
+                : `reports/articles/excel/?days=${days}`;
 
             const fileName = `articles-report.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
 
@@ -50,9 +50,34 @@ export function useReports() {
         },
     })
 
+    const generateVulnerabilitiesReport = useMutation({
+        mutationFn: async ({ format, days }: { format: 'pdf' | 'excel' ; days: number}) => {
+            const endpoint = format === 'pdf'
+                ? `reports/vulnerabilities/pdf/?days=${days}`
+                : `reports/vulnerabilities/excel/?days=${days}`;
+
+            const fileName = `vulnerabilities-report.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
+
+            await downloadReport(endpoint, fileName);
+        },
+
+        // Optional: if you want to show global toast / track last success
+        onSuccess: () => {
+            // You could invalidate something if report generation creates new data
+            queryClient.invalidateQueries({ queryKey: ['articles'] });
+            console.log('Report generated and downloaded');
+        },
+
+        onError: (error) => {
+            console.error('Report mutation failed:', error);
+            // Here you can show a toast: "Failed to generate report"
+        },
+    })
+
     return {
         generateDetailedReport: generateDetailedReportPage.mutate,
         generateReport: generateReportMutation.mutate,
+        generateVulnerabilitiesReport: generateVulnerabilitiesReport.mutate,
         isGenerating: generateReportMutation.isPending,
         generateError: generateReportMutation.error,
     };

@@ -50,7 +50,7 @@ export default function BlogPostsPage() {
     // Mutation pour supprimer un article
     const deleteArticleMutation = useMutation({
         mutationFn: (articleId: string | number) =>
-            apiMutation(`articles/${articleId}`, {
+            apiMutation(`articles/${articleId}/`, {
                 method: 'DELETE',
                 body: JSON.stringify({ articleId: articleId }),
             }),

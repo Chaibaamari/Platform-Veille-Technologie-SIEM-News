@@ -2,9 +2,9 @@ import Navbar, { type NavItem } from "../NavBar/navbar-app";
 
 const navLinks : NavItem[] = [
     { name: 'Articles', href: '/analyste/article' },
-    { name: 'Dashboard', href: '/analyste/dashboard' },
     { name: 'Vulnerabilités', href: '/analyste/vulnerabilities' },
     { name: 'Favoris', href: '/analyste/favoris' },
+    { name: 'Dashboard', href: '/analyste/dashboard' },
 ];
 interface AnalysteLayoutProps {
     children: React.ReactNode;

@@ -21,13 +21,14 @@ export default function BlogPage() {
         staleTime: 5000
     });
 
-    // Mutation pour supprimer un article
     const deleteArticleMutation = useMutation({
-        mutationFn: (articleId: string | number) =>
-            apiMutation(`articles/${articleId}`, {
+        mutationFn: (articleId: string | number) => {
+            const url = `/article/${articleId}/`;
+            console.log('DELETE URL:', url);  // Check what's being sent
+            return apiMutation(url, {
                 method: 'DELETE',
-                body: JSON.stringify({ articleId: articleId }),
-            }),
+            });
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['articles/'] });
         },
@@ -45,6 +46,7 @@ export default function BlogPage() {
 
     const handleDeleteArticle = (articleId: string | number) => {
         if (window.confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
+            console.log("About to delete")
             deleteArticleMutation.mutate(articleId);
         }
     };

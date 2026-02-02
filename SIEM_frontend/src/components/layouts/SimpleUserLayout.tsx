@@ -2,10 +2,10 @@ import Navbar, { type NavItem } from "../NavBar/navbar-app";
 
 
 const navLinks : NavItem[] = [
-    { name: 'Dashboard', href: '/simple_user/dashboard' },
     { name: 'Articles', href: '/simple_user/article' },
     { name: 'Vulnerabilités', href: '/simple_user/vulnerabilities' },
     { name: 'Favoris', href: '/simple_user/favoris' },
+    { name: 'Dashboard', href: '/simple_user/dashboard' },
 ];
 // src/components/layouts/SimpleUserLayout.tsx
 interface SimpleUserLayoutProps {
