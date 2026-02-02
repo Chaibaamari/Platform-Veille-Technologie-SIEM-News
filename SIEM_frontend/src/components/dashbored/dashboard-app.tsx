@@ -1,7 +1,6 @@
-import React, { useState} from 'react';
 import { AreaChart, Area, BarChart, Bar,  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { AlertTriangle, TrendingUp, Database, Search, Download, Filter, FileText, Shield } from 'lucide-react';
-import { COLORS, type FilterSeverity, type SeverityData, type Vulnerability } from '@/types/blog';
+import { AlertTriangle, TrendingUp, Database, Filter, FileText, Shield } from 'lucide-react';
+import { COLORS, type SeverityData, type Vulnerability } from '@/types/blog';
 import StatCard from '@/components/hero/stat-card';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/api/client';
@@ -16,18 +15,13 @@ interface Article {
 }
 
 const Dashboard: React.FC = () => {
-    const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filterSeverity, setFilterSeverity] = useState<FilterSeverity>('all');
 
-    // useQeury to fetch dashboard data
+    // useQuery to fetch dashboard data
     const { data } = useQuery({
         queryKey: ["stats/"],
         queryFn: apiClient,
         staleTime: 5000
     });
-
-    console.log(data)
-
 
     // Données simulées basées sur la nouvelle BDD
     const stats = data
@@ -66,68 +60,29 @@ const Dashboard: React.FC = () => {
                             icon={<FileText className="w-6 h-6" />}
                             title="Total Articles"
                             value={stats?.totalArticles || 0}
-                            change="+12.5%"
                             gradient="from-indigo-500 to-indigo-600"
                         />
                         <StatCard
                             icon={<Database className="w-6 h-6" />}
                             title="Articles Récents (7j)"
                             value={stats?.recentArticles || 0}
-                            change="+8"
                             gradient="from-green-500 to-green-600"
                         />
                         <StatCard
                             icon={<Shield className="w-6 h-6" />}
                             title="Total Vulnérabilités"
                             value={stats?.totalVulnerabilities || 0}
-                            change="-5"
                             gradient="from-orange-500 to-orange-600"
                         />
                         <StatCard
                             icon={<AlertTriangle className="w-6 h-6" />}
                             title="Vulnérabilités Critiques"
                             value={stats?.criticalVulnerabilities || 0}
-                            change="+4"
                             gradient="from-red-500 to-red-600"
                         />
                     </div>
                 )
             }
-
-            {/* Search and Filters */}
-            <div className="bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-6 mb-8">
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="Rechercher des articles ou CVE..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 outline-none"
-                        />
-                    </div>
-          
-                    <div className="flex gap-3">
-                        <select
-                            value={filterSeverity}
-                            onChange={(e) => setFilterSeverity(e.target.value as FilterSeverity)}
-                            className="px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                        >
-                            <option value="all">Toutes sévérités</option>
-                            <option value="critical">Critical</option>
-                            <option value="high">High</option>
-                            <option value="medium">Medium</option>
-                            <option value="low">Low</option>
-                        </select>
-
-                        <button className="px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors flex items-center gap-2">
-                            <Download className="w-4 h-4" />
-                            Export
-                        </button>
-                    </div>
-                </div>
-            </div>
 
             {/* Main Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -201,6 +156,10 @@ const Dashboard: React.FC = () => {
                         Articles Récents
                     </h3>
                     <div className="space-y-3">
+                        {
+                            articlesData?.length == 0 &&
+                            <div className='text-center text-white'>Aucun article récent</div>
+                        }
                         {articlesData?.map((article: Article) => (
                             <div
                                 key={article.id_article}
@@ -228,6 +187,10 @@ const Dashboard: React.FC = () => {
                         Vulnérabilités Récentes
                     </h3>
                     <div className="space-y-3">
+                        {
+                            vulnerabilitiesData?.length == 0 &&
+                            <div className='text-center text-white'>Aucune vulnérabilité récente</div>
+                        }
                         {vulnerabilitiesData?.map((vuln: Vulnerability) => (
                             <div key={vuln.cve_id} className="border-l-4 border-red-500 pl-4 py-2 bg-slate-900/50 rounded-r pr-2">
                                 <div className="flex items-start justify-between mb-1">

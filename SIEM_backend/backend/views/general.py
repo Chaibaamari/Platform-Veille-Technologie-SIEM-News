@@ -1,7 +1,7 @@
 from datetime import timedelta
 from django.db.models import Count
 from django.utils import timezone
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import permission_classes, api_view, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -9,9 +9,10 @@ from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 from backend.models import Article, Categorie, Vulnerabilite
 from .utils import paginate_queryset
-from backend.serializers import ArticleListSerializer, VulnerabiliteListSerializer, VulnerabiliteDetailSerializer
+from backend.serializers import ArticleListSerializer, VulnerabiliteListSerializer, VulnerabiliteDetailSerializer, CategorieListSerializer
 from django.db.models.functions import TruncMonth
 from collections import defaultdict
+from rest_framework.authentication import TokenAuthentication
 
 @permission_classes([IsAuthenticated])
 def api_home(request):
@@ -93,7 +94,7 @@ def api_article_detail(request, article_id):
         'date_publication': article.date_publication.strftime('%Y-%m-%d'),
         'thumbnail': article.thumbnail,
         'categories': [{
-            'id': cat.id_categorie,
+            'id': cat.id,
             'nom': cat.nom_categorie
         } for cat in article.categories.all()]
     }
@@ -120,6 +121,46 @@ def api_categories_list(request):
         'categories': categories_data
     })
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_user_favorite_categories(request):
+
+    user = request.user
+    categories = user.categories_suivies.all()
+
+    serializer = CategorieListSerializer(categories, many=True)
+
+    return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_update_user_favorite_categories(request):
+    utilisateur = request.user
+    category_ids = request.data.get('categories', [])
+
+    if not isinstance(category_ids, list):
+        return JsonResponse(
+            {"error": "categories must be a list of IDs"},
+            status=400
+        )
+
+    # Fetch valid categories
+    categories = Categorie.objects.filter(id__in=category_ids)
+
+    # Replace followed categories
+    utilisateur.categories_suivies.set(categories)
+
+    return JsonResponse(
+        {
+            "message": "Favorite categories updated successfully",
+            "categories_count": categories.count(),
+            "categories": list(
+                categories.values('id', 'nom_categorie')
+            )
+        },
+        status=200
+    )
 
 @permission_classes([IsAuthenticated])
 def api_vulnerabilities_list(request):

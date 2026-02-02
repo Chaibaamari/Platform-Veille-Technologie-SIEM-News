@@ -13,7 +13,6 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
 from backend.views.utils import clean_html_for_pdf
-
 from .models import Article, Vulnerabilite
 
 

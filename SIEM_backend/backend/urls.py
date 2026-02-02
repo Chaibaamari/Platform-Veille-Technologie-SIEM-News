@@ -39,8 +39,9 @@ urlpatterns = [
     path('categories/', views.api_categories_list, name='api_categories_list'),
     path('users/add-category/', views.api_add_category_to_user),
     path('users/remove-category/', views.api_remove_category_from_user),
-    path('users/categories/followed/', views.api_user_followed_categories, name='followed-categories'),
-    
+    path('users/categories/followed/', views.api_user_favorite_categories, name='followed-categories'),
+    path('users/categories/followed/update/', views.api_update_user_favorite_categories, name='followed-categories-update'),    
+
     # ============================================
     # VULNÉRABILITÉS
     # ============================================

@@ -118,22 +118,35 @@ def send_login_credentials_to_user(utilisateur: Utilisateur, generated_password:
 
 from bs4 import BeautifulSoup
 
-def clean_html_for_pdf(html: str) -> str:
-    soup = BeautifulSoup(html, 'html.parser')
-    
-    # Remove tags that ReportLab can't handle
-    for tag in soup.find_all(['ul', 'li', 'span', 'div']):
-        tag.unwrap()  # keep text, remove tag
-    
-    return str(soup)
+def clean_html_for_pdf(html_content: str) -> str:
+    """
+    Clean HTML for reportlab PDF Paragraph:
+    - Remove unsupported tags
+    - Remove empty paragraphs
+    - Convert <br> and <p> to newlines
+    - Keep simple formatting: bold, italic
+    """
+    soup = BeautifulSoup(html_content, "html.parser")
 
+    # Remove empty tags
+    for tag in soup.find_all():
+        if tag.name in ["p", "div", "span"] and not tag.get_text(strip=True):
+            tag.decompose()
 
-def html_to_plain_text(html: str) -> str:
-    soup = BeautifulSoup(html, 'html.parser')
-    text = ""
-    for element in soup.descendants:
-        if element.name == "li":
-            text += f"• {element.get_text(strip=True)}\n"
-        elif element.string:
-            text += element.string.strip() + " "
-    return text
+    # Only keep tags supported by reportlab
+    for tag in soup.find_all():
+        if tag.name not in ["b", "strong", "i", "em", "u", "a", "br"]:
+            tag.unwrap()
+
+    # Convert paragraphs to text + line breaks
+    for p in soup.find_all("p"):
+        p.insert_before("\n")  # Add newline before paragraph
+        p.insert_after("\n")   # Add newline after paragraph
+        p.unwrap()
+
+    # Convert <br> to newline
+    for br in soup.find_all("br"):
+        br.replace_with("\n")
+
+    # Return cleaned text
+    return soup.get_text()

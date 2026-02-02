@@ -58,13 +58,19 @@ def scrape_article(article: object):
     og = lambda p: soup.find("meta", property=p)
     
     # extract article thumbnail
-    article["thumbnail"] = og("og:image")["content"] if og("og:image") else None
+    og_img = og("og:image")
+    article["thumbnail"] = og_img["content"] if og_img and og_img.has_attr("content") else None
+
 
     # content extraction
     doc = Document(html)
     article_html = doc.summary()
-
     article_soup = BeautifulSoup(article_html, "html.parser")
+
+    # Remove empty tags
+    for tag in article_soup.find_all(["p", "div"]):
+        if not tag.get_text(strip=True):
+            tag.decompose()
 
     clean_html = bleach.clean(
         str(article_soup),
