@@ -94,10 +94,20 @@ def api_articles_list(request):
         'articles': articles_data
     })
 
+@api_view(['GET', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def api_article_detail(request, article_id):
     """Détail d'un article spécifique"""
     article = get_object_or_404(Article, id_article=article_id)
+
+    if request.method == 'DELETE':
+        article.delete()
+        return JsonResponse(
+            {
+                "message": "Article supprimé avec succès",
+                "article_id": article_id
+            }
+        )
     
     data = {
         'id': article.id_article,

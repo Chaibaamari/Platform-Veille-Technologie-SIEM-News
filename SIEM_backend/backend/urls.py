@@ -32,6 +32,7 @@ urlpatterns = [
     path('articles/', views.api_articles_list, name='api_articles_list'),
     path('articles/<int:article_id>/', views.api_article_detail, name='api_article_detail'),
     path('articles/<int:article_id>/categories', views.api_update_article_categories, name='api_article_categories'),
+
     # path('articles/create/', views.APICreateArticle.as_view(), name='api_create_article'),
     
     # ============================================

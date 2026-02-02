@@ -66,3 +66,21 @@ def api_update_article_categories(request, article_id):
         },
         status=status.HTTP_200_OK,
     )
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsAnalyste])
+def api_delete_article(request, article_id):
+    """
+    Delete an article by ID
+    """
+    article = get_object_or_404(Article, id_article=article_id)
+
+    article.delete()
+
+    return Response(
+        {
+            "message": "Article supprimé avec succès",
+            "article_id": article_id
+        },
+        status=status.HTTP_200_OK
+    )
