@@ -1,6 +1,6 @@
 // src/pages/blog/index.tsx
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/api/client';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { apiClient, apiMutation } from '@/api/client';
 import BlogGrid from './BlogGrid';
 import BlogGridSkeleton from '../ui/SkeletonCard';
 import { ChevronDown, FileSpreadsheet, FileText, Loader2} from 'lucide-react';
@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useReports } from '@/hook/useReport';
 import { ErrorState } from '../ui/ErrorState';
 import { useAppSelector } from '@/stores/hooks';
+import { queryClient } from '@/main';
 
 export default function BlogPage() {
     const { role } = useAppSelector((state) => state.auth);
@@ -20,6 +21,19 @@ export default function BlogPage() {
         staleTime: 5000
     });
 
+    // Mutation pour supprimer un article
+    const deleteArticleMutation = useMutation({
+        mutationFn: (articleId: string | number) =>
+            apiMutation(`articles/${articleId}`, {
+                method: 'DELETE',
+                body: JSON.stringify({ articleId: articleId }),
+            }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['articles/'] });
+        },
+    });
+    
+
     const { generateReport, isGenerating } = useReports();
 
     const handleGenerateReport = (format: 'pdf' | 'excel', days: number) => {
@@ -27,6 +41,12 @@ export default function BlogPage() {
         generateReport(
             { format, days }
         );
+    };
+
+    const handleDeleteArticle = (articleId: string | number) => {
+        if (window.confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
+            deleteArticleMutation.mutate(articleId);
+        }
     };
     
 
@@ -146,7 +166,7 @@ export default function BlogPage() {
                     </div>
                     {/* Afficher le contenu */}
                     {!isLoading && !error && (
-                        <BlogGrid posts={posts} />
+                        <BlogGrid posts={posts}  onDelete={handleDeleteArticle}/>
                     )}
                 </div>
             </section>

@@ -5,7 +5,6 @@ import BlogHero from "@/components/hero/BlogHero";
 export default function Articles() {
     return (
         <div className="h-full w-full ">
-            {/* <BlogHero title="SIEM NEWS"/> */}
             <BlogHero/>
             <BlogPage />
             <BlogPostsPage />
