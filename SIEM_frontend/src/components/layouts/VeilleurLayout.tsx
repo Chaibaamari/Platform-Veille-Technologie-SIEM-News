@@ -2,11 +2,11 @@
 import Navbar, { type NavItem } from "../NavBar/navbar-app";
 
 const navLinks: NavItem[] = [
-    { name: 'Dashboard', href: '/veilleur/dashboard' },
+    { name: 'Sources', href: '/veilleur/sources' },
     { name: 'Articles', href: '/veilleur/article' },
     { name: 'Vulnérabilités', href: '/veilleur/vulnerabilities' },
-    { name: 'Sources', href: '/veilleur/sources' },
     { name: 'Favoris', href: '/veilleur/favoris' },
+    { name: 'Dashboard', href: '/veilleur/dashboard' },
 ];
 
 interface VeilleurLayoutProps {

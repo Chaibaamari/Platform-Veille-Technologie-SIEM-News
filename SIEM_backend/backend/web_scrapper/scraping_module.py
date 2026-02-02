@@ -4,6 +4,8 @@ from .articles import scrape_rss_feeds_articles, summarize_articles
 from .vulnerability import extract_vulnerabilities
 from backend.faiss_service import faiss_service
 import logging
+from backend.filters.article_filter import CloudPermissionArticleFilter
+
 
 # Configure basic logging to the console
 logger = logging.getLogger('backend')
@@ -66,6 +68,20 @@ def launch_web_scrapping():
     update_progress("Collecte des articles", 30, f"Collecte des articles: {len(new_articles)} Total")
     scrapped_articles = scrape_rss_feeds_articles(new_articles)
     
+    # **NOUVEAU: Filtrage par pertinence thématique**
+    update_progress("Filtrage thématique", 40, f"Filtrage des articles par pertinence")
+    
+    article_filter = CloudPermissionArticleFilter()
+    relevant_articles, rejected_articles = article_filter.filter_articles(scrapped_articles)
+    
+    logging.info(f"Articles après filtrage thématique: {len(relevant_articles)}/{len(scrapped_articles)}")
+    if rejected_articles:
+        logging.info(f"Articles rejetés pour non-pertinence: {len(rejected_articles)}")
+        # Optionnel: logger quelques exemples d'articles rejetés
+        for article in rejected_articles[:3]:
+            logging.debug(f"  - Rejeté: {article.get('title', 'Sans titre')} (Score: {article.get('relevance_score', 0)})")
+   
+
     unique_articles = []
     all_categories = []
     update_progress("Suppression des doublons", 50, "Détection et suppression des doublons")

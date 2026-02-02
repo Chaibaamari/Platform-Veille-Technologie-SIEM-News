@@ -35,7 +35,7 @@ export default function BlogPostsPage() {
     const [searchQuery, setSearchQuery] = useState<string>('');
 
     const { data, isLoading, isError, error } = useQuery({
-        queryKey: ['articles/', page, PAGE_SIZE],
+        queryKey: ['articles/', page, PAGE_SIZE, searchQuery],
         queryFn: async () => {
             const response = await apiClient({
                 queryKey: [`articles/?page=${page}&page_size=${PAGE_SIZE}&q=${searchQuery}`], // note: ? not &
@@ -108,6 +108,7 @@ export default function BlogPostsPage() {
                             if (e.key === 'Enter') {
                                 setPage(1);                
                                 setSearchQuery(searchInput); // triggers query refetch
+                                console.log('hello')
                             }
                             }}
                             className="

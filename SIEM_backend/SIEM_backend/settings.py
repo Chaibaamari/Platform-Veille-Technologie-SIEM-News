@@ -35,6 +35,14 @@ ALLOWED_HOSTS = []
 
 # settings.py
 
+# Configuration du filtre d'articles
+ARTICLE_FILTER_CONFIG = {
+    'enabled': True,
+    'minimum_score': 10,  # Ajustez selon vos besoins
+    'log_rejected_articles': True,  # Pour debug
+    'save_rejected_articles': False,  # Pour analyse ultérieure
+}
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587

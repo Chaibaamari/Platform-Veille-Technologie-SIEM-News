@@ -53,9 +53,6 @@ const Navbar: React.FC<Props> = memo(({ data }) => {
                                     SIEM<span className="bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">News</span>
                                 </span>
                             </div>
-                            <p className="text-xs text-neutral-400 -mt-1">
-                                Le Pouls de votre Secteur
-                            </p>
                         </div>
                         <span className="sm:hidden text-white font-bold text-lg">
                             SIEM
@@ -84,7 +81,7 @@ const Navbar: React.FC<Props> = memo(({ data }) => {
                             className="flex items-center gap-3 rounded-full bg-white px-6 py-3 text-[#090D1F] cursor-pointer"
                         >
                             <LogOut className="h-5 w-5" />
-                            <span className="text-base font-medium">Logout</span>
+                            <span className="text-base font-medium">Déconnecter</span>
                         </button>
                     </div>
 

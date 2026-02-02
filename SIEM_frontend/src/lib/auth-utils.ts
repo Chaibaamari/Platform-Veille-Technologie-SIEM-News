@@ -21,10 +21,10 @@ const ROLE_ALIASES: Record<string, NormalizedRole> = {
 };
 
 const DASHBOARD_ROUTE_MAP: Record<NormalizedRole, string> = {
-    analyste: '/analyste/dashboard',
-    simple_user: '/simple_user/dashboard',
-    admin: '/admin/dashboard',
-    veilleur: '/veilleur/dashboard',
+    analyste: '/analyste/articles',
+    simple_user: '/simple_user/articles',
+    admin: '/admin/users',
+    veilleur: '/veilleur/sources',
 };
 
 export const normalizeRole = (role?: string | null): NormalizedRole | null => {

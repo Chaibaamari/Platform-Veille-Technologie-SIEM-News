@@ -58,8 +58,23 @@ def api_home(request):
 
 @permission_classes([IsAuthenticated])
 def api_articles_list(request):
-    articles = Article.objects.all().order_by('-date_publication')
+    search_query = request.GET.get('q', '').strip()
 
+    # Start with all articles
+    articles = Article.objects.all()
+
+    # Apply search query
+    if search_query:
+        articles = articles.filter(
+            Q(categories__nom_categorie__icontains=search_query) |
+            Q(titre_article__icontains=search_query) |
+            Q(contenu_article__icontains=search_query)
+        ).distinct()  # distinct to prevent duplicates if multiple categories match
+
+    # Order by publication date
+    articles = articles.order_by('-date_publication')
+
+    # Pagination
     paginated = paginate_queryset(articles, request, page_size=30)
 
     articles_data = []

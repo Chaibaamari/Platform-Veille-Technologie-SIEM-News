@@ -7,9 +7,10 @@ import { ChevronDown, FileSpreadsheet, FileText, Loader2} from 'lucide-react';
 import { useState } from 'react';
 import { useReports } from '@/hook/useReport';
 import { ErrorState } from '../ui/ErrorState';
+import { useAppSelector } from '@/stores/hooks';
 
 export default function BlogPage() {
-
+    const { role } = useAppSelector((state) => state.auth);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [days, setDays] = useState<number>(30)
 
@@ -60,27 +61,32 @@ export default function BlogPage() {
                 <div className="mx-auto px-34">
                     <div className="mb-4 flex items-center justify-between">
                         <h3 className=" text-white text-2xl font-semibold leading-8">
-                            Recent blog posts
+                            Articles récents
                         </h3>
                         <div className="relative">
-                            <button
-                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                disabled={isGenerating}
-                                className="px-6 py-3 rounded-xl flex items-center gap-2 transition bg-transparent border border-neutral-800 hover:bg-neutral-800 hover:border-violet-500 text-neutral-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isGenerating ? (
-                                    <>
-                                        <Loader2 className="w-5 h-5 text-violet-500 animate-spin" />
-                                        <span>Génération...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <FileText className="w-5 h-5 text-violet-500" />
-                                        <span>Générer un rapport</span>
-                                        <ChevronDown className={`w-4 h-4 text-violet-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-                                    </>
-                                )}
-                            </button>
+                            {
+                                (role == 'analyste' || role == 'simple-user') && (
+                                    <button
+                                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                        disabled={isGenerating}
+                                        className="px-6 py-3 rounded-xl flex items-center gap-2 transition bg-transparent border border-neutral-800 hover:bg-neutral-800 hover:border-violet-500 text-neutral-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isGenerating ? (
+                                            <>
+                                                <Loader2 className="w-5 h-5 text-violet-500 animate-spin" />
+                                                <span>Génération...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FileText className="w-5 h-5 text-violet-500" />
+                                                <span>Générer un rapport</span>
+                                                <ChevronDown className={`w-4 h-4 text-violet-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                                            </>
+                                        )}
+                                    </button>
+                                )
+                            }
+
 
                             {/* Dropdown Menu */}
                             {isDropdownOpen && !isGenerating && (

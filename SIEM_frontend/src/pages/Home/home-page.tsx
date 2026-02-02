@@ -80,9 +80,6 @@ export default function HomePage() {
                                         SIEM<span className="bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">News</span>
                                     </span>
                                 </div>
-                                <p className="text-xs text-neutral-400 -mt-1">
-                                    Le Pouls de votre Secteur
-                                </p>
                             </div>
                             <span className="sm:hidden text-white font-bold text-lg">
                                 SIEM

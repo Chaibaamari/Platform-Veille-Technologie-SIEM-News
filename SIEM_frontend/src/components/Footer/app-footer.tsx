@@ -1,4 +1,4 @@
-import { Twitter, Linkedin, Mail, Rss, Plus } from 'lucide-react';
+import { Twitter, Linkedin, Mail } from 'lucide-react';
 
 export default function Footer() {
     // bg-slate-950
@@ -7,7 +7,7 @@ export default function Footer() {
             <div className="w-full max-w-[1216] px-8 inline-flex justify-start items-start gap-3.5 flex-wrap">
                 {/* Copyright */}
                 <div className="text-white text-xl font-normal  leading-6">
-                    © {new Date().getFullYear()}
+                    © SIEM News{new Date().getFullYear()}
                 </div>
 
                 {/* Social Links */}
@@ -38,25 +38,6 @@ export default function Footer() {
                     >
                         <Mail size={20} />
                         Email
-                    </a>
-
-                    <a
-                        href="/rss.xml"
-                        target="_blank"
-                        className="flex items-center gap-2 text-white text-xl font-normal  leading-6 hover:text-violet-400 transition-colors"
-                    >
-                        <Rss size={20} />
-                        RSS feed
-                    </a>
-
-                    <a
-                        href="https://feedly.com/i/subscription/feed/http://yourdomain.com/rss.xml"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-white text-xl font-normal  leading-6 hover:text-violet-400 transition-colors"
-                    >
-                        <Plus size={20} className="text-green-500" />
-                        Add to Feedly
                     </a>
                 </div>
             </div>

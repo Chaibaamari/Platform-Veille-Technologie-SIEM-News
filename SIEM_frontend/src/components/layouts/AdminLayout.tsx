@@ -1,11 +1,10 @@
 import Navbar, { type NavItem } from "../NavBar/navbar-app";
 
 const navLinks: NavItem[] = [
-    { name: 'Dashboard', href: '/admin/dashboard' },
+    { name: 'Utilisateurs', href: '/admin/users' },
     { name: 'Articles', href: '/admin/article' },
     { name: 'Vulnérabilités', href: '/admin/vulnerabilities' },
-    { name: 'Utilisateurs', href: '/admin/users' },
-    { name: 'Favoris', href: '/admin/favoris' },
+    { name: 'Dashboard', href: '/admin/dashboard' }
 ];
 
 interface AdminLayoutProps {

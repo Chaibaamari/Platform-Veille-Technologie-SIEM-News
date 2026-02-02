@@ -128,7 +128,7 @@ export default function ArticleDetail() {
                         onClick={() => navigate(`/${role}/article`)}
                         className="flex items-center gap-2 text-violet-400 hover:text-violet-300"
                     >
-                        <ChevronLeft size={20} /> Back to all posts
+                        <ChevronLeft size={20} /> Retour
                     </button>
 
                     <div className="self-stretch flex flex-col justify-start items-start gap-8">
@@ -142,24 +142,29 @@ export default function ArticleDetail() {
                             </h1>                            
                             
                             <div className="relative">
-                                <button
-                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                    disabled={isGenerating}
-                                    className="px-6 py-3 rounded-xl flex items-center gap-2 transition bg-transparent border border-neutral-800 hover:bg-neutral-800 hover:border-violet-500 text-neutral-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {isGenerating ? (
-                                        <>
-                                            <Loader2 className="w-5 h-5 text-violet-500 animate-spin" />
-                                            <span>Génération...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <FileText className="w-5 h-5 text-violet-500" />
-                                            <span>Générer un rapport</span>
-                                            <ChevronDown className={`w-4 h-4 text-violet-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-                                        </>
-                                    )}
-                                </button>
+                                {
+                                    (role == 'analyste' || role == 'simple-user') &&
+                                    (
+                                        <button
+                                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                            disabled={isGenerating}
+                                            className="px-6 py-3 rounded-xl flex items-center gap-2 transition bg-transparent border border-neutral-800 hover:bg-neutral-800 hover:border-violet-500 text-neutral-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {isGenerating ? (
+                                                <>
+                                                    <Loader2 className="w-5 h-5 text-violet-500 animate-spin" />
+                                                    <span>Génération...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <FileText className="w-5 h-5 text-violet-500" />
+                                                    <span>Générer un rapport</span>
+                                                    <ChevronDown className={`w-4 h-4 text-violet-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                                                </>
+                                            )}
+                                        </button>
+                                    )
+                                }
 
                                 {/* Dropdown Menu */}
                                 {
