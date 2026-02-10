@@ -158,7 +158,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
                             className="flex flex-col items-center gap-2"
                         >
                             <h1 className="text-5xl font-bold text-white tracking-tight">
-                                SIEM<span className="bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">News</span>
+                                CIEM<span className="bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">News</span>
                             </h1>
                             <motion.p
                                 initial={{ opacity: 0 }}

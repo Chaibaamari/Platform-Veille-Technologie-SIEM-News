@@ -50,12 +50,12 @@ const Navbar: React.FC<Props> = memo(({ data }) => {
                         <div className="hidden sm:block">
                             <div className="flex items-center gap-2">
                                 <span className="text-white font-bold text-xl tracking-tight">
-                                    SIEM<span className="bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">News</span>
+                                    CIEM<span className="bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">News</span>
                                 </span>
                             </div>
                         </div>
                         <span className="sm:hidden text-white font-bold text-lg">
-                            SIEM
+                            CIEM
                             <span className="bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">News</span>
                         </span>
                     </div>

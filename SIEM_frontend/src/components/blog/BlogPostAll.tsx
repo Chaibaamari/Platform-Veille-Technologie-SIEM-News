@@ -27,7 +27,7 @@ interface ArticlesResponse {
   };
 }
 
-const PAGE_SIZE = 12; // matches 4 rows × 3 articles
+const PAGE_SIZE = 11 // matches 4 rows × 3 articles
 
 export default function BlogPostsPage() {
     const [page, setPage] = useState(1);
@@ -76,6 +76,8 @@ export default function BlogPostsPage() {
     const currentPage = pagination?.page ?? 1;
     const hasPrevious = pagination?.has_previous ?? false;
     const hasNext = pagination?.has_next ?? false;
+
+    console.log(allArticles.length)
 
     // Helper to generate page numbers for display
     const getPageNumbers = () => {
@@ -151,80 +153,70 @@ export default function BlogPostsPage() {
                     </div>
                 </div>
 
-                <div className="self-stretch flex flex-col justify-start items-start gap-12">
+
+                <div className="self-stretch grid grid-cols-3 gap-8 auto-rows-fr">
                     {allArticles.length === 0 ? (
-                        <p className="text-neutral-300">No posts found.</p>
+                        <p className="text-neutral-300 col-span-3">No posts found.</p>
                     ) : (
                         <>
-                            {Array.from({ length: Math.ceil(allArticles.length / 3) }).map((_, rowIndex) => {
-                                const start = rowIndex * 3;
-                                const rowArticles = allArticles.slice(start, start + 3);
-
-                                return (
-                                    <div
-                                        key={rowIndex}
-                                        className="self-stretch flex justify-center items-start gap-8"
-                                    >
-                                        {rowArticles.map((article: Article) => (
-                                            <Link
-                                                to={`/${role}/article/${article.id}`}
-                                                key={article.id}
-                                                className="flex-1 flex flex-col justify-start items-start gap-8 group"
-                                            >
-                                                <img
-                                                    className="self-stretch h-60 relative object-cover"
-                                                    src={article.thumbnail || 'https://placehold.co/384x240'}
-                                                    alt={article.titre}
-                                                />
-                                                <div className="self-stretch flex flex-col justify-start items-start gap-6">
-                                                    <div className="self-stretch flex flex-col justify-start items-start gap-3">
-                                                        <div className="w-full flex items-center justify-between">
-                                                                <div className="text-violet-700 text-sm font-semibold leading-5">
-                                                                    {format(new Date(article.date_publication), 'EEEE, d MMM yyyy')}
-                                                                </div>
-                                                                <Button
-                                                                    onClick={(e) => handleDeleteArticle(e, article.id)}
-                                                                    size="icon"
-                                                                    variant="ghost"
-                                                                    className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500 hover:text-red-600 h-8 w-8"
-                                                                >
-                                                                    <Trash2 className="w-4 h-4" />
-                                                                </Button>
-                                                            </div>
-                                                        <div className="self-stretch flex justify-start items-start gap-4">
-                                                            <h2 className="flex-1 text-white text-2xl font-semibold  leading-8 line-clamp-1">
-                                                                {article.titre}
-                                                            </h2>
-                                                            <img
-                                                                src="/images/arrow-up-right.svg"
-                                                                alt="arrow"
-                                                                className="w-5 h-5 mt-1"
-                                                            />
-                                                        </div>
-                                                        <div className="text-neutral-300 text-base font-normal  leading-6 line-clamp-2">
-                                                            {article.description || article.summary}
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex flex-wrap mt-auto  justify-start items-start gap-2">
-                                                        {(article.categories || []).map((tag: string) => (
-                                                            <Badge
-                                                                key={tag}
-                                                                className="px-2.5 py-0.5 rounded-2xl text-sm font-medium"
-                                                                style={{
-                                                                    backgroundColor: getTagBg(tag),
-                                                                    color: getTagText(tag),
-                                                                }}
-                                                            >
-                                                                {tag}
-                                                            </Badge>
-                                                        ))}
-                                                    </div>
+                            {allArticles.map((article: Article) => (
+                                <Link
+                                    to={`/${role}/article/${article.id}`}
+                                    key={article.id}
+                                    className="flex flex-col justify-start items-start gap-8 group"
+                                >
+                                    {/* Rest of your article card code stays the same */}
+                                    <img
+                                        className="w-full h-60 object-cover"
+                                        src={article.thumbnail || 'https://placehold.co/384x240'}
+                                        alt={article.titre}
+                                    />
+                                    <div className="flex flex-col justify-start items-start gap-6 flex-1">
+                                        <div className="flex flex-col justify-start items-start gap-3 flex-1">
+                                            <div className="w-full flex items-center justify-between">
+                                                <div className="text-violet-700 text-sm font-semibold leading-5">
+                                                    {format(new Date(article.date_publication), 'EEEE, d MMM yyyy')}
                                                 </div>
-                                            </Link>
-                                        ))}
+                                                <Button
+                                                    onClick={(e) => handleDeleteArticle(e, article.id)}
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500 hover:text-red-600 h-8 w-8"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            </div>
+                                            <div className="flex justify-start items-start gap-4">
+                                                <h2 className="flex-1 text-white text-2xl font-semibold leading-8 line-clamp-1">
+                                                    {article.titre}
+                                                </h2>
+                                                <img
+                                                    src="/images/arrow-up-right.svg"
+                                                    alt="arrow"
+                                                    className="w-5 h-5 mt-1"
+                                                />
+                                            </div>
+                                            <div className="text-neutral-300 text-base font-normal leading-6 line-clamp-2">
+                                                {article.description || article.summary}
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-wrap mt-auto justify-start items-start gap-2">
+                                            {(article.categories || []).map((tag: string) => (
+                                                <Badge
+                                                    key={tag}
+                                                    className="px-2.5 py-0.5 rounded-2xl text-sm font-medium"
+                                                    style={{
+                                                        backgroundColor: getTagBg(tag),
+                                                        color: getTagText(tag),
+                                                    }}
+                                                >
+                                                    {tag}
+                                                </Badge>
+                                            ))}
+                                        </div>
                                     </div>
-                                );
-                            })}
+                                </Link>
+                            ))}
                         </>
                     )}
                 </div>

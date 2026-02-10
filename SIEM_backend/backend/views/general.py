@@ -313,10 +313,10 @@ def api_stats(request):
 
     COLORS = {
         'unknown': '#6c757d',
-        'low': '#10b981',
-        'medium': '#3b82f6',
-        'high': '#f59e0b',
-        'critical': '#ef4444'
+        'Faible': '#10b981',
+        'Moyenne': '#3b82f6',
+        'Élevée': '#f59e0b',
+        'Critique': '#ef4444'
     }
 
     LABELS = {

@@ -40,7 +40,7 @@ export interface Article2 {
 
 export interface Vulnerability {
   cve_id: string;
-  severite: 'critical' | 'high' | 'medium' | 'low';
+  severite: 'Critique' | 'Élevée' | 'Moyenne' | 'Faible';
   date_publication: string; // ISO date string
   description_vuln: string;
   score_cvss: number;
